@@ -1,12 +1,10 @@
 #pragma once
 
 namespace nf {
-	class Config {
+	struct Config {
 	public:
-		Config() {
-
-		}
-	private:
-
+		int m_width;
+		int m_height;
+		bool m_fullscreen;
 	};
 }
