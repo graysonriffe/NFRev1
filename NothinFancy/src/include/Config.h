@@ -3,8 +3,9 @@
 namespace nf {
 	struct Config {
 	public:
-		int m_width;
-		int m_height;
-		bool m_fullscreen;
+		int width;
+		int height;
+		bool fullscreen;
+		const char* title;
 	};
 }

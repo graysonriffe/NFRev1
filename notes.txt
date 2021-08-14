@@ -20,7 +20,8 @@ NatVis
 Command line options
 Video options
 Alt-Enter
-Writing settings to file (Executable directory)
+File IO functions
+Options file (Executable directory)
 Input
 Audio
 Game states
