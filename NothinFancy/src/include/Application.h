@@ -9,8 +9,11 @@ namespace nf {
 		Application() = delete;
 		Application(Application& other) = delete;
 
-		Config& getConfig();
+		void setWindowIcon(HANDLE hIcon);
+		void setWindowCursor(HCURSOR hCursor);
+		void startLoop();
 		void showWindow(bool show);
+		Config& getConfig();
 
 		~Application();
 	private:
@@ -21,6 +24,7 @@ namespace nf {
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 		Config m_currentConfig;
+		bool m_running;
 		HINSTANCE m_hInst;
 		LPCWSTR m_wclassName;
 		HWND m_window;
