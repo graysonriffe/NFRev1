@@ -1,5 +1,9 @@
 #include "Application.h"
 #include "Utility.h"
+#ifdef NFENGINE
+#include "GL\glew.h"
+#include "GL\wglew.h"
+#endif
 
 namespace nf {
 	DEBUGINIT;
@@ -19,6 +23,8 @@ namespace nf {
 		m_window = CreateWindowEx(NULL, m_wclassName, toWide(m_currentConfig.title), WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 1280, windowSize.bottom, NULL, NULL, m_hInst, NULL);
 		SetProp(m_window, L"App", this);
 		if(m_currentConfig.fullscreen) toggleFullscreen();
+
+		createOpenGLContext();
 	}
 
 	void Application::setWindowIcon(HANDLE hIcon) {
@@ -41,6 +47,9 @@ namespace nf {
 				if (msg.message == WM_QUIT) 
 					m_running = false;
 			}
+			glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
+			SwapBuffers(m_hdc);
 			//TODO: Update and render current state
 		}
 	}
@@ -60,7 +69,7 @@ namespace nf {
 		m_wclassName = L"NFClass";
 		WNDCLASS wclass = { };
 		wclass.lpszClassName = m_wclassName;
-		wclass.hCursor = NULL;
+		wclass.hCursor = LoadCursor(NULL, IDC_ARROW);
 		wclass.hIcon = NULL;
 		wclass.hInstance = m_hInst;
 		wclass.lpfnWndProc = Application::WindowProc;
@@ -124,6 +133,49 @@ namespace nf {
 			}
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);//TODO: Fill out events
+	}
+
+	void Application::createOpenGLContext() {
+		m_hdc = GetDC(m_window);
+		PIXELFORMATDESCRIPTOR pfd = {
+			sizeof(PIXELFORMATDESCRIPTOR),
+			1,
+			PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
+			PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
+			32,                   // Colordepth of the framebuffer.
+			0, 0, 0, 0, 0, 0,
+			0,
+			0,
+			0,
+			0, 0, 0, 0,
+			24,                   // Number of bits for the depthbuffer
+			8,                    // Number of bits for the stencilbuffer
+			0,                    // Number of Aux buffers in the framebuffer.
+			PFD_MAIN_PLANE,
+			0,
+			0, 0, 0
+		};
+		int pf = ChoosePixelFormat(m_hdc, &pfd);
+		SetPixelFormat(m_hdc, pf, &pfd);
+		m_hglrc = wglCreateContext(m_hdc);
+		wglMakeCurrent(m_hdc, m_hglrc);
+		glewExperimental = GL_TRUE;
+		if (glewInit() != GLEW_OK) {
+			Error("Could not initialize GLEW");
+		}
+		const int attrib[] = {
+			WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 3,
+			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+			0, 0
+		};
+		wglDeleteContext(m_hglrc);
+		m_hglrc = wglCreateContextAttribsARB(m_hdc, NULL, attrib);
+		wglMakeCurrent(m_hdc, m_hglrc);
+		Log((char*)glGetString(GL_VERSION));
+		GLuint vao;
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
 	}
 
 	Application::~Application() {

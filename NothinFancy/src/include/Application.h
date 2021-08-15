@@ -23,11 +23,15 @@ namespace nf {
 
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+		void createOpenGLContext();
+
 		Config m_currentConfig;
 		bool m_running;
 		HINSTANCE m_hInst;
 		LPCWSTR m_wclassName;
 		HWND m_window;
 		WINDOWPLACEMENT m_wndPlacement;
+		HDC m_hdc;
+		HGLRC m_hglrc;
 	};
 }
