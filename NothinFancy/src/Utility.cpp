@@ -16,6 +16,16 @@ namespace nf {
 		std::printf("[%.4f] Debug: %s\n", time.count(), in.c_str());
 	}
 
+	void Debug::LogImp(int in) {
+		std::chrono::duration<float> time = getCurrentTime();
+		std::printf("[%.4f] Debug: %i\n", time.count(), in);
+	}
+
+	void Debug::LogImp(double in) {
+		std::chrono::duration<float> time = getCurrentTime();
+		std::printf("[%.4f] Debug: %.4f\n", time.count(), in);
+	}
+
 	void Debug::ErrorImp(const char* in, const char* filename, int line) {
 		std::chrono::duration<float> time = getCurrentTime();
 		HANDLE cmd = GetStdHandle(STD_OUTPUT_HANDLE);

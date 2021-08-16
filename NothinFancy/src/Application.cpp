@@ -5,6 +5,10 @@
 #include "GL\wglew.h"
 #endif
 
+extern "C" {
+	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+}
+
 namespace nf {
 	DEBUGINIT;
 
@@ -22,7 +26,7 @@ namespace nf {
 
 		m_window = CreateWindowEx(NULL, m_wclassName, toWide(m_currentConfig.title), WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 1280, windowSize.bottom, NULL, NULL, m_hInst, NULL);
 		SetProp(m_window, L"App", this);
-		if(m_currentConfig.fullscreen) toggleFullscreen();
+		if (m_currentConfig.fullscreen) toggleFullscreen();
 
 		createOpenGLContext();
 	}
@@ -37,20 +41,36 @@ namespace nf {
 	}
 
 	void Application::startLoop() {
+		showWindow(true);
 		m_running = true;
 		MSG msg = { };
 		while (m_running) {
-			//TODO: FPS and delta timing
-			while (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-				if (msg.message == WM_QUIT) 
-					m_running = false;
+			//TODO: delta timing
+
+			m_fpsDuration = std::chrono::steady_clock::now() - m_frameClock;
+
+			if (m_fpsDuration.count() >= m_minFrametime) {
+				m_deltaTime = m_fpsDuration.count();
+				while (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+					if (msg.message == WM_QUIT)
+						m_running = false;
+				}
+				glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+				glClear(GL_COLOR_BUFFER_BIT);
+				SwapBuffers(m_hdc);
+				m_frames++;
+				m_frameClock = std::chrono::steady_clock::now();
+				//TODO: Update and render current state
 			}
-			glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
-			SwapBuffers(m_hdc);
-			//TODO: Update and render current state
+			m_fpsClock2 = std::chrono::steady_clock::now();
+			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
+			if (m_fpsDuration.count() >= 1.0) {
+				m_fpsClock1 = std::chrono::steady_clock::now();
+				m_FPS = m_frames;
+				m_frames = 0;
+			}
 		}
 	}
 
@@ -63,6 +83,10 @@ namespace nf {
 
 	Config& Application::getConfig() {
 		return m_currentConfig;
+	}
+
+	int Application::getFPS() {
+		return m_FPS;
 	}
 
 	void Application::registerWindowClass() {
@@ -107,30 +131,30 @@ namespace nf {
 	LRESULT CALLBACK Application::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		Application* app = (Application*)GetProp(hWnd, L"App");
 		switch (uMsg) {
-			case WM_CREATE: {
-				
+		case WM_CREATE: {
+
+			return 0;
+		}
+		case WM_SYSKEYDOWN: {
+			if (GetKeyState(VK_RETURN) & 0x8000) {
+				app->toggleFullscreen();
 				return 0;
 			}
-			case WM_SYSKEYDOWN: {
-				if (GetKeyState(VK_RETURN) & 0x8000) {
-					app->toggleFullscreen();
-					return 0;
-				}
-				break;
-			}
-			case WM_MENUCHAR: {
-				return MNC_CLOSE << 16;
-			}
-			case WM_CLOSE: {
-				//State onExit() in order
-				//unload anything else
-				DestroyWindow(hWnd);
-				return 0;
-			}
-			case WM_DESTROY: {
-				PostQuitMessage(0);
-				return 0;
-			}
+			break;
+		}
+		case WM_MENUCHAR: {
+			return MNC_CLOSE << 16;
+		}
+		case WM_CLOSE: {
+			//State onExit() in order
+			//unload anything else
+			DestroyWindow(hWnd);
+			return 0;
+		}
+		case WM_DESTROY: {
+			PostQuitMessage(0);
+			return 0;
+		}
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);//TODO: Fill out events
 	}
@@ -172,7 +196,7 @@ namespace nf {
 		wglDeleteContext(m_hglrc);
 		m_hglrc = wglCreateContextAttribsARB(m_hdc, NULL, attrib);
 		wglMakeCurrent(m_hdc, m_hglrc);
-		Log((char*)glGetString(GL_VERSION));
+		Log("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 		GLuint vao;
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);

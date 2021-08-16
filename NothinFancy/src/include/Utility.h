@@ -21,6 +21,8 @@ DebugBreak();
 	public:
 		static void LogImp(const char* in);
 		static void LogImp(const std::string& in);
+		static void LogImp(int in);
+		static void LogImp(double in);
 		static void ErrorImp(const char* in, const char* filename, int line);
 	};
 #else
