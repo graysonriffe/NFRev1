@@ -48,3 +48,8 @@ namespace nf {
 		return out;
 	}
 }
+
+//Nvidia Optimius support
+extern "C" {
+	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+}

@@ -192,11 +192,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Gamestates\Gamestate.cpp" />
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Application.h" />
     <ClInclude Include="src\include\Config.h" />
+    <ClInclude Include="src\include\Gamestate.h" />
     <ClInclude Include="src\include\NothinFancy.h" />
     <ClInclude Include="src\include\Utility.h" />
   </ItemGroup>
