@@ -56,5 +56,6 @@ namespace nf {
 		//The currently active and loaded states where the top-most is the current one
 		std::vector<IGamestate*> m_activeStates;
 		IntroGamestate* m_sIntro;
+		bool m_defaultStateAdded = false;
 	};
 }

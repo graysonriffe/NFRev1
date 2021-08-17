@@ -47,8 +47,14 @@ namespace nf {
 	}
 
 	void Application::addDefaultState(IGamestate* in) {
-		(*in).onEnter();
-		m_activeStates.push_back(in);
+		if (!m_defaultStateAdded) {
+			(*in).onEnter();
+			m_activeStates.push_back(in);
+			m_defaultStateAdded = true;
+		}
+		else {
+			Error("More than one default state defined"); //TODO: Test this
+		}
 	}
 
 	void Application::run() {
