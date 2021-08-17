@@ -21,30 +21,42 @@ namespace nf {
 		RECT windowSize = getWindowRect();
 
 		m_window = CreateWindowEx(NULL, m_wclassName, toWide(m_currentConfig.title), WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 1280, windowSize.bottom, NULL, NULL, m_hInst, NULL);
+		m_defaultWindowStyle = GetWindowLong(m_window, GWL_STYLE);
 		SetProp(m_window, L"App", this);
 		if (m_currentConfig.fullscreen) toggleFullscreen();
 
 		createOpenGLContext();
+		m_states.reserve(100);
+		m_activeStates.reserve(100);
+		m_sIntro = new IntroGamestate;
+		addState(m_sIntro);
 	}
 
 	void Application::setWindowIcon(HANDLE hIcon) {
 		SendMessage(m_window, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
 		SendMessage(m_window, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
 	}
-
+	//TODO: Test these top-level features
 	void Application::setWindowCursor(HCURSOR hCursor) {
 		SetClassLongPtr(m_window, GCLP_HCURSOR, (LONG_PTR)hCursor);
 	}
 
-	void Application::startLoop() {
+	void Application::addState(IGamestate* in) {
+		(*in).onEnter();
+		m_states.push_back(in);
+	}
+
+	void Application::addDefaultState(IGamestate* in) {
+		(*in).onEnter();
+		m_activeStates.push_back(in);
+	}
+
+	void Application::run() {
 		showWindow(true);
 		m_running = true;
 		MSG msg = { };
 		while (m_running) {
-			//TODO: delta timing
-
 			m_fpsDuration = std::chrono::steady_clock::now() - m_frameClock;
-
 			if (m_fpsDuration.count() >= m_minFrametime) {
 				m_deltaTime = m_fpsDuration.count();
 				while (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
@@ -53,7 +65,6 @@ namespace nf {
 					if (msg.message == WM_QUIT)
 						m_running = false;
 				}
-				glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 				glClear(GL_COLOR_BUFFER_BIT);
 				SwapBuffers(m_hdc);
 				m_frames++;
@@ -77,11 +88,11 @@ namespace nf {
 			ShowWindow(m_window, SW_HIDE);
 	}
 
-	Config& Application::getConfig() {
+	const Config& Application::getConfig() const {
 		return m_currentConfig;
-	}
+	}//Test this
 
-	int Application::getFPS() {
+	int Application::getFPS() const {
 		return m_FPS;
 	}
 
@@ -106,13 +117,13 @@ namespace nf {
 			SetWindowPos(m_window, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 		}
 		else {
-			SetWindowLong(m_window, GWL_STYLE, wndStyle | WS_OVERLAPPEDWINDOW);
 			SetWindowPlacement(m_window, &m_wndPlacement);
 			SetWindowPos(m_window, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+			SetWindowLong(m_window, GWL_STYLE, m_defaultWindowStyle);
 		}
 	}
 
-	RECT Application::getWindowRect() {
+	RECT Application::getWindowRect() const {
 		int w = m_currentConfig.width;
 		int h = m_currentConfig.height;
 		RECT temp = { };
@@ -196,9 +207,10 @@ namespace nf {
 		GLuint vao;
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
 	Application::~Application() {
-
+		//TODO: Iterate through m_activeStates and m_states and exit and unload them
 	}
 }

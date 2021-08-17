@@ -1,5 +1,6 @@
 #pragma once
 #include "Config.h"
+#include "IntroGamestate.h"
 #include <Windows.h>
 #include <chrono>
 #include <vector>
@@ -13,16 +14,18 @@ namespace nf {
 
 		void setWindowIcon(HANDLE hIcon);
 		void setWindowCursor(HCURSOR hCursor);
-		void startLoop();
+		void addState(IGamestate* in);
+		void addDefaultState(IGamestate* in);
+		void run();
 		void showWindow(bool show);
-		Config& getConfig();
-		int getFPS();
+		const Config& getConfig() const;
+		int getFPS() const;
 
 		~Application();
 	private:
 		void registerWindowClass();
 		void toggleFullscreen();
-		RECT getWindowRect();
+		RECT getWindowRect() const;
 
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -33,6 +36,7 @@ namespace nf {
 		HINSTANCE m_hInst;
 		LPCWSTR m_wclassName;
 		HWND m_window;
+		LONG m_defaultWindowStyle;
 		WINDOWPLACEMENT m_wndPlacement;
 		HDC m_hdc;
 		HGLRC m_hglrc;
@@ -47,6 +51,10 @@ namespace nf {
 		const double m_minFrametime = 1.0 / m_targetFPS;
 		int m_FPS;
 
-		
+		//Inactive states states to potentially be loaded during the Application's lifetime
+		std::vector<IGamestate*> m_states;
+		//The currently active and loaded states where the top-most is the current one
+		std::vector<IGamestate*> m_activeStates;
+		IntroGamestate* m_sIntro;
 	};
 }

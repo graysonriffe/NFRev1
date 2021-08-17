@@ -21,7 +21,7 @@
     <ClCompile Include="src\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Gamestates\Gamestate.cpp">
+    <ClCompile Include="src\IntroGamestate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,7 +38,10 @@
     <ClInclude Include="src\include\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Gamestate.h">
+    <ClInclude Include="src\include\IGamestate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\IntroGamestate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

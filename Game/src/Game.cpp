@@ -10,8 +10,9 @@ int main(int argc, char* argv[]) {
 	Application app(conf);
 	//app.setWindowIcon(...);
 	// app.setWindowCursor(...);
-	//Create game states, load some assets, launch loop that continually updates and renders the current state and switches states when appropriate.
-	app.startLoop();
+	//Configure states
+	// app.addDefaultState(...);
+	app.run();
 
 	return 0;
 }
