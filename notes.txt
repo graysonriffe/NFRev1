@@ -12,14 +12,14 @@ Something that multiplayer could eventually work with
 
 Remember to use tasks (//TODO: )
 
-Engine (Name?) "Nothin' Fancy"
-Separate project
-Namespaced
-Debug and log system
+*Engine (Name?) "Nothin' Fancy"
+*Separate project
+*Namespaced
+*Debug and log system
 NatVis
 Command line options
 Video options
-Alt-Enter
+*Alt-Enter
 File IO functions
 Options file (Executable directory)
 Input
