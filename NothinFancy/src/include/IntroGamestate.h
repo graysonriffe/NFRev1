@@ -1,4 +1,5 @@
 #include "IGamestate.h"
+#include "Utility.h"
 
 namespace nf {
 	class IntroGamestate : public IGamestate {

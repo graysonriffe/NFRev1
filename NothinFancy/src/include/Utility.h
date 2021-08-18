@@ -10,8 +10,8 @@ namespace nf {
 #define DEBUGINIT std::chrono::steady_clock::time_point Debug::m_initTime = std::chrono::high_resolution_clock::now();
 #define SleepS(x) std::this_thread::sleep_for(std::chrono::seconds(x))
 #define SleepMS(x) std::this_thread::sleep_for(std::chrono::milliseconds(x))
-#define Log(x) Debug::LogImp(x)
-#define Error(x) Debug::ErrorImp(x,__FILENAME__, __LINE__);\
+#define Log(x) nf::Debug::LogImp(x)
+#define Error(x) nf::Debug::ErrorImp(x,__FILENAME__, __LINE__);\
 DebugBreak();
 
 	class Debug {

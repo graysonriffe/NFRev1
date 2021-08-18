@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "Utility.h"
 #ifdef NFENGINE
 #include "GL\glew.h"
 #include "GL\wglew.h"
@@ -28,8 +27,6 @@ namespace nf {
 		createOpenGLContext();
 		m_states.reserve(100);
 		m_activeStates.reserve(100);
-		m_sIntro = new IntroGamestate;
-		addState(m_sIntro);
 	}
 
 	void Application::setWindowIcon(HANDLE hIcon) {
@@ -41,24 +38,39 @@ namespace nf {
 		SetClassLongPtr(m_window, GCLP_HCURSOR, (LONG_PTR)hCursor);
 	}
 
-	void Application::addState(IGamestate* in) {
-		(*in).onEnter();
-		m_states.push_back(in);
+	void Application::addState(const char* stateName, IGamestate* state) {
+		m_states[stateName] = state;
 	}
 
-	void Application::addDefaultState(IGamestate* in) {
+	void Application::addDefaultState(const char* stateName) {
 		if (!m_defaultStateAdded) {
-			(*in).onEnter();
-			m_activeStates.push_back(in);
-			m_defaultStateAdded = true;
+			if (m_states.find(stateName) != m_states.end()) {
+				m_DefaultState = m_states[stateName];
+				m_defaultStateAdded = true;
+			}
+			else {
+				Error(("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!").c_str());
+			}
 		}
 		else {
 			Error("More than one default state defined"); //TODO: Test this
 		}
 	}
 
+	void Application::changeState(const char* stateName) {
+		if (m_states.find(stateName) != m_states.end()) {
+			m_currentState->onExit();
+			m_currentState = m_states[stateName];
+		}
+		else {
+			Error(("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!").c_str());
+		}
+	}
+
 	void Application::run() {
 		showWindow(true);
+		addIntroState();
+		m_currentState = m_sIntro;
 		m_running = true;
 		MSG msg = { };
 		while (m_running) {
@@ -70,13 +82,17 @@ namespace nf {
 					DispatchMessage(&msg);
 					if (msg.message == WM_QUIT)
 						m_running = false;
+						goto FrameEnd;
 				}
 				glClear(GL_COLOR_BUFFER_BIT);
+				m_currentState->update();
+				m_currentState->render();
 				SwapBuffers(m_hdc);
 				m_frames++;
 				m_frameClock = std::chrono::steady_clock::now();
 				//TODO: Update and render current state
 			}
+			FrameEnd:
 			m_fpsClock2 = std::chrono::steady_clock::now();
 			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
 			if (m_fpsDuration.count() >= 1.0) {
@@ -100,6 +116,12 @@ namespace nf {
 
 	int Application::getFPS() const {
 		return m_FPS;
+	}
+
+	void Application::addIntroState() {
+		m_sIntro = new IntroGamestate;
+		m_sIntro->onEnter();
+		m_activeStates.push_back(m_sIntro);
 	}
 
 	void Application::registerWindowClass() {
@@ -164,12 +186,12 @@ namespace nf {
 			return MNC_CLOSE << 16;
 		}
 		case WM_CLOSE: {
-			//State onExit() in order
-			//unload anything else
 			DestroyWindow(hWnd);
 			return 0;
 		}
 		case WM_DESTROY: {
+			app->m_currentState->onExit();
+			//Unload anything else
 			PostQuitMessage(0);
 			return 0;
 		}

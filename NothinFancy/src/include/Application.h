@@ -1,8 +1,10 @@
 #pragma once
 #include "Config.h"
+#include "Utility.h"
 #include "IntroGamestate.h"
 #include <Windows.h>
 #include <chrono>
+#include <unordered_map>
 #include <vector>
 
 namespace nf {
@@ -14,8 +16,9 @@ namespace nf {
 
 		void setWindowIcon(HANDLE hIcon);
 		void setWindowCursor(HCURSOR hCursor);
-		void addState(IGamestate* in);
-		void addDefaultState(IGamestate* in);
+		void addState(const char* stateName, IGamestate* state);
+		void addDefaultState(const char* stateName);
+		void changeState(const char* stateName);
 		void run();
 		void showWindow(bool show);
 		const Config& getConfig() const;
@@ -23,6 +26,7 @@ namespace nf {
 
 		~Application();
 	private:
+		void addIntroState();
 		void registerWindowClass();
 		void toggleFullscreen();
 		RECT getWindowRect() const;
@@ -52,10 +56,12 @@ namespace nf {
 		int m_FPS;
 
 		//Inactive states states to potentially be loaded during the Application's lifetime
-		std::vector<IGamestate*> m_states;
+		std::unordered_map<const char*, IGamestate*> m_states;
 		//The currently active and loaded states where the top-most is the current one
 		std::vector<IGamestate*> m_activeStates;
 		IntroGamestate* m_sIntro;
+		IGamestate* m_DefaultState;
 		bool m_defaultStateAdded = false;
+		IGamestate* m_currentState;
 	};
 }
