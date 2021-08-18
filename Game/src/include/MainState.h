@@ -3,7 +3,7 @@
 
 class MainState : public nf::IGamestate {
 public:
-	void onEnter() override;
+	void onEnter(Application* app) override;
 	void onExit() override;
 
 	void update() override;

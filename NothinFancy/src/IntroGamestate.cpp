@@ -1,8 +1,11 @@
 #include "IntroGamestate.h"
+#include "Application.h"
 
 namespace nf {
-	void IntroGamestate::onEnter() {
+	void IntroGamestate::onEnter(Application* app) {
 		Log("Intro onEnter!");
+		m_app = app;
+		counter = 0;
 	}
 
 	void IntroGamestate::onExit() {
@@ -11,6 +14,10 @@ namespace nf {
 
 	void IntroGamestate::update() {
 		Log("Intro update!");
+		if (counter >= 120) {
+			m_app->changeState("Main State");
+		}
+		counter++;
 	}
 
 	void IntroGamestate::render() {

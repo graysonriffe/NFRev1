@@ -1,6 +1,6 @@
 #include "MainState.h"
 
-void MainState::onEnter() {
+void MainState::onEnter(Application* app) {
 	Log("MainState update!");
 }
 

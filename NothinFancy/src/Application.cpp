@@ -120,7 +120,7 @@ namespace nf {
 
 	void Application::addIntroState() {
 		m_sIntro = new IntroGamestate;
-		m_sIntro->onEnter();
+		m_sIntro->onEnter(this);
 		m_activeStates.push_back(m_sIntro);
 	}
 
@@ -170,9 +170,9 @@ namespace nf {
 
 	LRESULT CALLBACK Application::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		Application* app = (Application*)GetProp(hWnd, L"App");
+		//TODO: Dragging blocks thread
 		switch (uMsg) {
 		case WM_CREATE: {
-
 			return 0;
 		}
 		case WM_SYSKEYDOWN: {
