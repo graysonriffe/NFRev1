@@ -55,10 +55,9 @@ namespace nf {
 		const double m_minFrametime = 1.0 / m_targetFPS;
 		int m_FPS;
 
-		//Inactive states states to potentially be loaded during the Application's lifetime
+		//Inactive states states to potentially be active during the Application's lifetime
+		//Mapped to const char* to be referenced later in the frontend
 		std::unordered_map<const char*, IGamestate*> m_states;
-		//The currently active and loaded states where the top-most is the current one
-		std::vector<IGamestate*> m_activeStates;
 		IntroGamestate* m_sIntro;
 		IGamestate* m_DefaultState;
 		bool m_defaultStateAdded = false;

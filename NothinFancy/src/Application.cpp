@@ -23,10 +23,7 @@ namespace nf {
 		m_defaultWindowStyle = GetWindowLong(m_window, GWL_STYLE);
 		SetProp(m_window, L"App", this);
 		if (m_currentConfig.fullscreen) toggleFullscreen();
-
 		createOpenGLContext();
-		m_states.reserve(100);
-		m_activeStates.reserve(100);
 	}
 
 	void Application::setWindowIcon(HANDLE hIcon) {
@@ -39,7 +36,12 @@ namespace nf {
 	}
 
 	void Application::addState(const char* stateName, IGamestate* state) {
-		m_states[stateName] = state;
+		if (m_states.find(stateName) == m_states.end()) {
+			m_states[stateName] = state;
+		}
+		else {
+			Error(("State \"" + (std::string)stateName + (std::string)"\" already exists!").c_str());
+		}
 	}
 
 	void Application::addDefaultState(const char* stateName) {
@@ -53,7 +55,7 @@ namespace nf {
 			}
 		}
 		else {
-			Error("More than one default state defined"); //TODO: Test this
+			Error("More than one default state defined");
 		}
 	}
 
@@ -61,6 +63,7 @@ namespace nf {
 		if (m_states.find(stateName) != m_states.end()) {
 			m_currentState->onExit();
 			m_currentState = m_states[stateName];
+			m_currentState->onEnter(this);
 		}
 		else {
 			Error(("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!").c_str());
@@ -68,9 +71,8 @@ namespace nf {
 	}
 
 	void Application::run() {
-		showWindow(true);
 		addIntroState();
-		m_currentState = m_sIntro;
+		showWindow(true);
 		m_running = true;
 		MSG msg = { };
 		while (m_running) {
@@ -82,7 +84,7 @@ namespace nf {
 					DispatchMessage(&msg);
 					if (msg.message == WM_QUIT)
 						m_running = false;
-						goto FrameEnd;
+					goto FrameEnd;
 				}
 				glClear(GL_COLOR_BUFFER_BIT);
 				m_currentState->update();
@@ -92,7 +94,7 @@ namespace nf {
 				m_frameClock = std::chrono::steady_clock::now();
 				//TODO: Update and render current state
 			}
-			FrameEnd:
+		FrameEnd:
 			m_fpsClock2 = std::chrono::steady_clock::now();
 			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
 			if (m_fpsDuration.count() >= 1.0) {
@@ -121,7 +123,7 @@ namespace nf {
 	void Application::addIntroState() {
 		m_sIntro = new IntroGamestate;
 		m_sIntro->onEnter(this);
-		m_activeStates.push_back(m_sIntro);
+		m_currentState = m_sIntro;
 	}
 
 	void Application::registerWindowClass() {
@@ -150,9 +152,9 @@ namespace nf {
 			SetWindowPos(m_window, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 		}
 		else {
+			SetWindowLong(m_window, GWL_STYLE, m_defaultWindowStyle);
 			SetWindowPlacement(m_window, &m_wndPlacement);
 			SetWindowPos(m_window, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-			SetWindowLong(m_window, GWL_STYLE, m_defaultWindowStyle);
 		}
 	}
 
@@ -191,6 +193,7 @@ namespace nf {
 		}
 		case WM_DESTROY: {
 			app->m_currentState->onExit();
+			app->m_currentState = nullptr;
 			//Unload anything else
 			PostQuitMessage(0);
 			return 0;
@@ -244,6 +247,7 @@ namespace nf {
 	}
 
 	Application::~Application() {
+		Log("Exiting NF application");
 		//TODO: Iterate through m_activeStates and m_states and exit and unload them
 	}
 }
