@@ -28,7 +28,8 @@ DebugBreak();
 #else
 #define DEBUGINIT
 #define Log(x)
-#define Error(x)
+#define Error(x) MessageBox(FindWindow(L"NFClass", NULL), toWide(x), L"NF Engine Error", MB_OK | MB_ICONERROR);\
+std::exit(-1)
 #endif
 
 	const wchar_t* toWide(const char* in);

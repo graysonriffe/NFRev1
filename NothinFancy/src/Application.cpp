@@ -103,14 +103,19 @@ namespace nf {
 	}
 
 	void Application::registerWindowClass() {
-		m_wclassName = L"NFClass";
-		WNDCLASS wclass = { };
-		wclass.lpszClassName = m_wclassName;
-		wclass.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wclass.hIcon = NULL;
-		wclass.hInstance = m_hInst;
-		wclass.lpfnWndProc = Application::WindowProc;
-		RegisterClass(&wclass);
+		if (!FindWindow(L"NFClass", NULL)) {
+			m_wclassName = L"NFClass";
+			WNDCLASS wclass = { };
+			wclass.lpszClassName = m_wclassName;
+			wclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+			wclass.hIcon = NULL;
+			wclass.hInstance = m_hInst;
+			wclass.lpfnWndProc = Application::WindowProc;
+			RegisterClass(&wclass);
+		}
+		else {
+			Error("Cannot run two NF applications at once.");
+		}
 	}
 
 	void Application::toggleFullscreen() {
