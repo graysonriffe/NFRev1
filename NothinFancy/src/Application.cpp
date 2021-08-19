@@ -82,9 +82,10 @@ namespace nf {
 				while (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
 					TranslateMessage(&msg);
 					DispatchMessage(&msg);
-					if (msg.message == WM_QUIT)
+					if (msg.message == WM_QUIT) {
 						m_running = false;
-					goto FrameEnd;
+						goto FrameEnd;
+					}
 				}
 				glClear(GL_COLOR_BUFFER_BIT);
 				m_currentState->update();
@@ -94,7 +95,6 @@ namespace nf {
 				m_frameClock = std::chrono::steady_clock::now();
 				//TODO: Update and render current state
 			}
-		FrameEnd:
 			m_fpsClock2 = std::chrono::steady_clock::now();
 			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
 			if (m_fpsDuration.count() >= 1.0) {
@@ -102,6 +102,7 @@ namespace nf {
 				m_FPS = m_frames;
 				m_frames = 0;
 			}
+		FrameEnd:;
 		}
 	}
 
