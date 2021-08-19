@@ -27,6 +27,7 @@ namespace nf {
 		~Application();
 	private:
 		void addIntroState();
+		void startMainThread();
 		void registerWindowClass();
 		void toggleFullscreen();
 		RECT getWindowRect() const;

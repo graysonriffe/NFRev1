@@ -23,7 +23,6 @@ namespace nf {
 		m_defaultWindowStyle = GetWindowLong(m_window, GWL_STYLE);
 		SetProp(m_window, L"App", this);
 		if (m_currentConfig.fullscreen) toggleFullscreen();
-		createOpenGLContext();
 	}
 
 	void Application::setWindowIcon(HANDLE hIcon) {
@@ -75,35 +74,18 @@ namespace nf {
 		showWindow(true);
 		m_running = true;
 		MSG msg = { };
+		std::thread mainThread(&Application::startMainThread, this);
 		while (m_running) {
-			m_fpsDuration = std::chrono::steady_clock::now() - m_frameClock;
-			if (m_fpsDuration.count() >= m_minFrametime) {
-				m_deltaTime = m_fpsDuration.count();
-				while (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
-					TranslateMessage(&msg);
-					DispatchMessage(&msg);
-					if (msg.message == WM_QUIT) {
-						m_running = false;
-						goto FrameEnd;
-					}
+			while (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+				if (msg.message == WM_QUIT) {
+					m_running = false;
+					break;
 				}
-				glClear(GL_COLOR_BUFFER_BIT);
-				m_currentState->update();
-				m_currentState->render();
-				SwapBuffers(m_hdc);
-				m_frames++;
-				m_frameClock = std::chrono::steady_clock::now();
-				//TODO: Update and render current state
 			}
-			m_fpsClock2 = std::chrono::steady_clock::now();
-			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
-			if (m_fpsDuration.count() >= 1.0) {
-				m_fpsClock1 = std::chrono::steady_clock::now();
-				m_FPS = m_frames;
-				m_frames = 0;
-			}
-		FrameEnd:;
 		}
+		mainThread.join();
 	}
 
 	void Application::showWindow(bool show) {
@@ -125,6 +107,32 @@ namespace nf {
 		m_sIntro = new IntroGamestate;
 		m_sIntro->onEnter(this);
 		m_currentState = m_sIntro;
+	}
+
+	void Application::startMainThread() {
+		createOpenGLContext();
+		while (m_running) {
+			m_fpsDuration = std::chrono::steady_clock::now() - m_frameClock;
+			if (m_fpsDuration.count() >= m_minFrametime) {
+				m_deltaTime = m_fpsDuration.count();
+				glClear(GL_COLOR_BUFFER_BIT);
+				m_currentState->update();
+				m_currentState->render();
+				SwapBuffers(m_hdc);
+				m_frames++;
+				m_frameClock = std::chrono::steady_clock::now();
+			}
+			m_fpsClock2 = std::chrono::steady_clock::now();
+			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
+			if (m_fpsDuration.count() >= 1.0) {
+				m_fpsClock1 = std::chrono::steady_clock::now();
+				glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+				m_FPS = m_frames;
+				m_frames = 0;
+				Log((int)glGetError());
+			}
+		}
+		m_currentState->onExit();
 	}
 
 	void Application::registerWindowClass() {
@@ -193,9 +201,6 @@ namespace nf {
 			return 0;
 		}
 		case WM_DESTROY: {
-			app->m_currentState->onExit();
-			app->m_currentState = nullptr;
-			//Unload anything else
 			PostQuitMessage(0);
 			return 0;
 		}
