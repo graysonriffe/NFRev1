@@ -112,25 +112,25 @@ namespace nf {
 	void Application::startMainThread() {
 		createOpenGLContext();
 		while (m_running) {
-			m_fpsDuration = std::chrono::steady_clock::now() - m_frameClock;
-			if (m_fpsDuration.count() >= m_minFrametime) {
-				m_deltaTime = m_fpsDuration.count();
-				glClear(GL_COLOR_BUFFER_BIT);
-				m_currentState->update();
-				m_currentState->render();
-				SwapBuffers(m_hdc);
-				m_frames++;
-				m_frameClock = std::chrono::steady_clock::now();
-			}
+			m_deltaTime = m_fpsDuration.count();
+			glClear(GL_COLOR_BUFFER_BIT);
+			m_currentState->update();
+			m_currentState->render();
+			SwapBuffers(m_hdc);
+			m_frames++;
 			m_fpsClock2 = std::chrono::steady_clock::now();
 			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
 			if (m_fpsDuration.count() >= 1.0) {
 				m_fpsClock1 = std::chrono::steady_clock::now();
-				glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 				m_FPS = m_frames;
 				m_frames = 0;
-				Log((int)glGetError());
+				Log(m_FPS);
 			}
+			m_fpsDuration = std::chrono::steady_clock::now() - m_frameClock;
+			while (m_fpsDuration.count() < m_minFrametime) {
+				m_fpsDuration = std::chrono::steady_clock::now() - m_frameClock;
+			}
+			m_frameClock = std::chrono::steady_clock::now();
 		}
 		m_currentState->onExit();
 	}

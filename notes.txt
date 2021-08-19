@@ -16,15 +16,14 @@ Remember to use tasks (//TODO: )
 *Separate project
 *Namespaced
 *Debug and log system
-NatVis
-Command line options
+*NatVis
 Video options
 *Alt-Enter
 File IO functions
 Options file (Executable directory)
 Input
 Audio
-Game states
+*Game states
 Text rendering
 UI elements
 Resource system and custom format
