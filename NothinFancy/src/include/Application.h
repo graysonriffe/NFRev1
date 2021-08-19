@@ -1,11 +1,12 @@
 #pragma once
-#include "Config.h"
-#include "Utility.h"
-#include "IntroGamestate.h"
 #include <Windows.h>
 #include <chrono>
 #include <unordered_map>
 #include <vector>
+
+#include "Config.h"
+#include "Utility.h"
+#include "IntroGamestate.h"
 
 namespace nf {
 	class Application {
@@ -23,6 +24,7 @@ namespace nf {
 		void showWindow(bool show);
 		const Config& getConfig() const;
 		int getFPS() const;
+		bool isInput(unsigned int code);
 
 		~Application();
 	private:
@@ -63,5 +65,8 @@ namespace nf {
 		IGamestate* m_DefaultState;
 		bool m_defaultStateAdded = false;
 		IGamestate* m_currentState;
+
+		//Array of booleans that represent keyboard and mouse input minus the scrollwheel
+		bool m_input[164];
 	};
 }

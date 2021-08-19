@@ -1,8 +1,9 @@
 //TODO: Debug logger
 //TODO: File IO functions
+#include <Windows.h>
+
 #include "Utility.h"
 #include "Config.h"
-#include <Windows.h>
 
 namespace nf {
 #ifdef _DEBUG

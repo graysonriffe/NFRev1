@@ -103,6 +103,15 @@ namespace nf {
 		return m_FPS;
 	}
 
+	bool Application::isInput(unsigned int code) {
+		if (code < 164) {
+			return m_input[code];
+		}
+		else {
+			return false;
+		}
+	}
+
 	void Application::addIntroState() {
 		m_sIntro = new IntroGamestate;
 		m_sIntro->onEnter(this);
@@ -191,10 +200,46 @@ namespace nf {
 				app->toggleFullscreen();
 				return 0;
 			}
-			break;
+			return 0;
 		}
 		case WM_MENUCHAR: {
 			return MNC_CLOSE << 16;
+		}
+		case WM_LBUTTONDOWN: {
+			app->m_input[1] = true;
+			return 0;
+		}
+		case WM_LBUTTONUP: {
+			app->m_input[1] = false;
+			return 0;
+		}
+		case WM_RBUTTONDOWN: {
+			app->m_input[2] = true;
+			return 0;
+		}
+		case WM_RBUTTONUP: {
+			app->m_input[2] = false;
+			return 0;
+		}
+		case WM_MBUTTONDOWN: {
+			app->m_input[4] = true;
+			return 0;
+		}
+		case WM_MBUTTONUP: {
+			app->m_input[4] = false;
+			return 0;
+		}
+		case WM_KEYDOWN: {
+			if (wParam < 164 && !(lParam & (1 << 30))) {
+				app->m_input[wParam] = true;
+			}
+			break;
+		}
+		case WM_KEYUP: {
+			if (wParam < 164) {
+				app->m_input[wParam] = false;
+			}
+			break;
 		}
 		case WM_CLOSE: {
 			DestroyWindow(hWnd);
@@ -245,6 +290,7 @@ namespace nf {
 		wglDeleteContext(m_hglrc);
 		m_hglrc = wglCreateContextAttribsARB(m_hdc, NULL, attrib);
 		wglMakeCurrent(m_hdc, m_hglrc);
+		wglSwapIntervalEXT(0);
 		Log("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 		GLuint vao;
 		glGenVertexArrays(1, &vao);

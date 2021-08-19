@@ -1,11 +1,12 @@
 #include "MainState.h"
 
 void MainState::onEnter(Application* app) {
-	Log("MainState update!");
+	Log("MainState onEnter!");
+	m_app = app;
 }
 
 void MainState::onExit() {
-	Log("MainState update!");
+	Log("MainState onExit!");
 }
 
 void MainState::update() {

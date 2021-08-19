@@ -200,6 +200,7 @@
     <ClInclude Include="src\include\Config.h" />
     <ClInclude Include="src\include\IGamestate.h" />
     <ClInclude Include="src\include\IntroGamestate.h" />
+    <ClInclude Include="src\include\Input.h" />
     <ClInclude Include="src\include\NothinFancy.h" />
     <ClInclude Include="src\include\Utility.h" />
   </ItemGroup>

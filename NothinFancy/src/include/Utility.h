@@ -6,13 +6,19 @@
 
 namespace nf {
 #ifdef _DEBUG
+//Strips __FILE__ down to only the name of the file
 #define __FILENAME__ strrchr(__FILE__, '\\') + 1
+//Initializes static variables needed for debugging
 #define DEBUGINIT std::chrono::steady_clock::time_point Debug::m_initTime = std::chrono::high_resolution_clock::now();
+//Sleep for an amount of seconds
 #define SleepS(x) std::this_thread::sleep_for(std::chrono::seconds(x))
+//Sleep for an amount of milliseconds
 #define SleepMS(x) std::this_thread::sleep_for(std::chrono::milliseconds(x))
+//Prints a nicely-formatted message complete with a timestamp
 #define Log(x) nf::Debug::LogImp(x)
+//Prints error message and breaks the debugger
 #define Error(x) nf::Debug::ErrorImp(x,__FILENAME__, __LINE__);\
-DebugBreak();
+__debugbreak();
 
 	class Debug {
 	private:
