@@ -3,6 +3,8 @@
 #include <thread>
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <sstream>
 
 namespace nf {
 #ifdef _DEBUG
@@ -39,4 +41,6 @@ std::exit(-1)
 #endif
 
 	const wchar_t* toWide(const char* in);
+	bool writeFile(const char* filename, const std::string& in);
+	std::string readFile(const char* filename);
 }

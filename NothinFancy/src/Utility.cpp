@@ -1,4 +1,3 @@
-//TODO: Debug logger
 //TODO: File IO functions
 #include <Windows.h>
 
@@ -47,6 +46,30 @@ namespace nf {
 		wchar_t* out = new wchar_t[length];
 		MultiByteToWideChar(CP_ACP, NULL, in, -1, out, length);
 		return out;
+	}
+
+	bool writeFile(const char* filename, const std::string& in) {
+		std::ofstream out;
+		out.open(filename);
+		if (!out) {
+			Error(("File \"" + (std::string)filename + (std::string)"\" could not be written!").c_str());
+			return false;
+		}
+		out << in;
+		out.close();
+		return true;
+	}
+
+	std::string readFile(const char* filename) {
+		std::ifstream in;
+		in.open(filename);
+		if (!in) {
+			Error("Cannot find file");
+			return NULL;
+		}
+		std::stringstream ss;
+		ss << in.rdbuf();
+		return ss.str();
 	}
 }
 

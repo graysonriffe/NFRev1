@@ -19,9 +19,10 @@ namespace nf {
 		void setWindowCursor(HCURSOR hCursor);
 		void addState(IGamestate* state, const char* stateName);
 		void addDefaultState(const char* stateName);
-		void changeState(const char* stateName);
 		void run();
 		void showWindow(bool show);
+		void changeState(const char* stateName);
+		void changeConfig(const Config& in);
 		const Config& getConfig() const;
 		int getFPS() const;
 		bool isInput(unsigned int code);
@@ -33,6 +34,7 @@ namespace nf {
 		void registerWindowClass();
 		void toggleFullscreen();
 		RECT getWindowRect() const;
+		void calculateNewWindowPos(int& x, int& y);
 
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 

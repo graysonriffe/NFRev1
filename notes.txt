@@ -17,11 +17,10 @@ Remember to use tasks (//TODO: )
 *Namespaced
 *Debug and log system
 *NatVis
-Video options
+Config changing
 *Alt-Enter
-File IO functions
-Options file (Executable directory)
-Input
+*File IO functions
+Input (mouse position)
 Audio
 *Game states
 Text rendering
