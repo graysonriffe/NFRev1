@@ -17,7 +17,7 @@ namespace nf {
 
 		void setWindowIcon(HANDLE hIcon);
 		void setWindowCursor(HCURSOR hCursor);
-		void addState(const char* stateName, IGamestate* state);
+		void addState(IGamestate* state, const char* stateName);
 		void addDefaultState(const char* stateName);
 		void changeState(const char* stateName);
 		void run();

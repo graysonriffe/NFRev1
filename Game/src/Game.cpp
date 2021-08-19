@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
 	// app.setWindowCursor(...);
 
 	MainState* test = new MainState;
-	app.addState("Main State", test);
+	app.addState(test, "Main State");
 	app.addDefaultState("Main State");
 
 	app.run();

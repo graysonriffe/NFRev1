@@ -34,7 +34,7 @@ namespace nf {
 		SetClassLongPtr(m_window, GCLP_HCURSOR, (LONG_PTR)hCursor);
 	}
 
-	void Application::addState(const char* stateName, IGamestate* state) {
+	void Application::addState(IGamestate* state, const char* stateName) {
 		if (m_states.find(stateName) == m_states.end()) {
 			m_states[stateName] = state;
 		}
@@ -142,6 +142,9 @@ namespace nf {
 			m_frameClock = std::chrono::steady_clock::now();
 		}
 		m_currentState->onExit();
+		ReleaseDC(m_window, m_hdc);
+		wglMakeCurrent(NULL, NULL);
+		wglDeleteContext(m_hglrc);
 	}
 
 	void Application::registerWindowClass() {
