@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="nf::Application">
+    <DisplayString>Nothin' Fancy Application ({m_currentConfig.title,sb})</DisplayString>
+    <Expand>
+      <Item Name="Config">m_currentConfig</Item>
+      <Item Name="Is Running">m_running</Item>
+      <Item Name="FPS">m_FPS</Item>
+      <Item Name="Game State">m_currentState</Item>
+    </Expand>
+  </Type>
+  <Type Name="nf::Config">
+    <DisplayString>Width = {width}, Height = {height}, Fullscreen = {fullscreen}</DisplayString>
+  </Type>
+</AutoVisualizer>

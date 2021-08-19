@@ -114,8 +114,8 @@ namespace nf {
 
 	const Config& Application::getConfig() const {
 		return m_currentConfig;
-	}//Test this
-
+	}
+	//TODO: Test this
 	int Application::getFPS() const {
 		return m_FPS;
 	}
