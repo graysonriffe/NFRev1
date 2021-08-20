@@ -61,7 +61,6 @@ namespace nf {
 	}
 
 	void Application::run() {
-		addIntroState();
 		showWindow(true);
 		m_running = true;
 		MSG msg = { };
@@ -111,6 +110,10 @@ namespace nf {
 		SetWindowPos(m_window, HWND_TOP, x, y, in.width, in.height, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 	}
 
+	const HWND& Application::getWindow() {
+		return m_window;
+	}
+
 	const Config& Application::getConfig() const {
 		return m_currentConfig;
 	}
@@ -128,20 +131,20 @@ namespace nf {
 		}
 	}
 
-	void Application::addIntroState() {
+	void Application::startIntroState() {
 		m_sIntro = new IntroGamestate;
 		m_sIntro->onEnter(this);
 		m_currentState = m_sIntro;
 	}
 
 	void Application::startMainThread() {
-		createOpenGLContext();
+		m_renderer = new Renderer(this);
+		startIntroState();
 		while (m_running) {
 			m_deltaTime = m_fpsDuration.count();
-			glClear(GL_COLOR_BUFFER_BIT);
 			m_currentState->update();
 			m_currentState->render();
-			SwapBuffers(m_hdc);
+			m_renderer->doFrame();
 			m_frames++;
 			m_fpsClock2 = std::chrono::steady_clock::now();
 			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
@@ -149,7 +152,7 @@ namespace nf {
 				m_fpsClock1 = std::chrono::steady_clock::now();
 				m_FPS = m_frames;
 				m_frames = 0;
-				Log(m_FPS);
+				Log("FPS: " + std::to_string(m_FPS));
 			}
 			m_fpsDuration = std::chrono::steady_clock::now() - m_frameClock;
 			while (m_fpsDuration.count() < m_minFrametime) {
@@ -158,9 +161,7 @@ namespace nf {
 			m_frameClock = std::chrono::steady_clock::now();
 		}
 		m_currentState->onExit();
-		ReleaseDC(m_window, m_hdc);
-		wglMakeCurrent(NULL, NULL);
-		wglDeleteContext(m_hglrc);
+		delete m_renderer;
 	}
 
 	void Application::registerWindowClass() {
@@ -281,52 +282,6 @@ namespace nf {
 		}
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
-
-	void Application::createOpenGLContext() {
-		m_hdc = GetDC(m_window);
-		PIXELFORMATDESCRIPTOR pfd = {
-			sizeof(PIXELFORMATDESCRIPTOR),
-			1,
-			PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
-			PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
-			32,                   // Colordepth of the framebuffer.
-			0, 0, 0, 0, 0, 0,
-			0,
-			0,
-			0,
-			0, 0, 0, 0,
-			24,                   // Number of bits for the depthbuffer
-			8,                    // Number of bits for the stencilbuffer
-			0,                    // Number of Aux buffers in the framebuffer.
-			PFD_MAIN_PLANE,
-			0,
-			0, 0, 0
-		};
-		int pf = ChoosePixelFormat(m_hdc, &pfd);
-		SetPixelFormat(m_hdc, pf, &pfd);
-		m_hglrc = wglCreateContext(m_hdc);
-		wglMakeCurrent(m_hdc, m_hglrc);
-		glewExperimental = GL_TRUE;
-		if (glewInit() != GLEW_OK) {
-			Error("Could not initialize GLEW");
-		}
-		const int attrib[] = {
-			WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-			WGL_CONTEXT_MINOR_VERSION_ARB, 3,
-			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-			0, 0
-		};
-		wglDeleteContext(m_hglrc);
-		m_hglrc = wglCreateContextAttribsARB(m_hdc, NULL, attrib);
-		wglMakeCurrent(m_hdc, m_hglrc);
-		wglSwapIntervalEXT(0);
-		Log("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
-		//TODO: Move default vertex array to Renderer
-		GLuint vao;
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
 	Application::~Application() {

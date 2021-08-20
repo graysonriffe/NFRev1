@@ -49,6 +49,19 @@ namespace nf {
 	}
 
 	bool writeFile(const char* filename, const std::string& in) {
+		std::string file(filename);
+		if (file.find('/') || file.find('\\')) {
+			int pos = file.find_last_of("/\\");
+			std::string temp = file.substr(0, pos);
+			std::wstring folders(temp.begin(), temp.end());
+			WCHAR exe[MAX_PATH];
+			GetModuleFileName(GetModuleHandle(NULL), exe, MAX_PATH);
+			std::wstring rootDir(exe);
+			pos = rootDir.find_last_of(L"/\\");
+			rootDir = rootDir.substr(0, pos + 1);
+			folders = rootDir + folders;
+			CreateDirectory(folders.c_str(), NULL);
+		}
 		std::ofstream out;
 		out.open(filename);
 		if (!out) {

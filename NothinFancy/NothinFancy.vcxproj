@@ -193,16 +193,24 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\IntroGamestate.cpp" />
+    <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="src\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Application.h" />
     <ClInclude Include="src\include\Config.h" />
     <ClInclude Include="src\include\IGamestate.h" />
+    <ClInclude Include="src\include\IndexBuffer.h" />
     <ClInclude Include="src\include\IntroGamestate.h" />
     <ClInclude Include="src\include\Input.h" />
     <ClInclude Include="src\include\NothinFancy.h" />
+    <ClInclude Include="src\include\Renderer.h" />
     <ClInclude Include="src\include\Utility.h" />
+    <ClInclude Include="src\include\VertexArray.h" />
+    <ClInclude Include="src\include\VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

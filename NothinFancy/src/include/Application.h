@@ -7,6 +7,7 @@
 #include "Config.h"
 #include "Utility.h"
 #include "IntroGamestate.h"
+#include "Renderer.h"
 
 namespace nf {
 	class Application {
@@ -22,6 +23,7 @@ namespace nf {
 		void run();
 		void showWindow(bool show);
 		void changeState(const char* stateName);
+		const HWND& getWindow();
 		void changeConfig(const Config& in);
 		const Config& getConfig() const;
 		int getFPS() const;
@@ -29,7 +31,7 @@ namespace nf {
 
 		~Application();
 	private:
-		void addIntroState();
+		void startIntroState();
 		void startMainThread();
 		void registerWindowClass();
 		void toggleFullscreen();
@@ -38,8 +40,6 @@ namespace nf {
 
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-		void createOpenGLContext();
-
 		Config m_currentConfig;
 		bool m_running;
 		HINSTANCE m_hInst;
@@ -47,8 +47,6 @@ namespace nf {
 		HWND m_window;
 		LONG m_defaultWindowStyle;
 		WINDOWPLACEMENT m_wndPlacement;
-		HDC m_hdc;
-		HGLRC m_hglrc;
 
 		std::chrono::steady_clock::time_point m_frameClock = std::chrono::steady_clock::now();
 		std::chrono::duration<double> m_fpsDuration;
@@ -70,5 +68,8 @@ namespace nf {
 
 		//Array of booleans that represent keyboard and mouse input minus the scrollwheel
 		bool m_input[164];
+
+		//Renderer object to use OpenGL to render the current state
+		Renderer* m_renderer;
 	};
 }
