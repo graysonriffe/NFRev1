@@ -234,6 +234,7 @@ namespace nf {
 		case WM_MENUCHAR: {
 			return MNC_CLOSE << 16;
 		}
+		//TODO: mouse position input
 		case WM_LBUTTONDOWN: {
 			app->m_input[1] = true;
 			return 0;
@@ -280,7 +281,6 @@ namespace nf {
 		}
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-		//TODO: Fill out events
 	}
 
 	void Application::createOpenGLContext() {
@@ -322,6 +322,7 @@ namespace nf {
 		wglMakeCurrent(m_hdc, m_hglrc);
 		wglSwapIntervalEXT(0);
 		Log("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
+		//TODO: Move default vertex array to Renderer
 		GLuint vao;
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);

@@ -49,6 +49,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="src\NatvisFile.natvis" />
+    <Natvis Include="NatvisFile.natvis" />
   </ItemGroup>
 </Project>

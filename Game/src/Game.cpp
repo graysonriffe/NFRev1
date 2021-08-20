@@ -4,7 +4,7 @@
 using namespace nf;
 
 int main(int argc, char* argv[]) {
-	Config conf = { 1280, 720, false, "Test"};
+	Config conf = { 1280, 720, false, "Example Game"};
 	Application app(conf);
 	//app.setWindowIcon(...);
 	// app.setWindowCursor(...);
