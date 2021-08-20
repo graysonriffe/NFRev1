@@ -55,12 +55,10 @@ namespace nf {
 
 		SwapBuffers(m_hdc);
 
-#ifdef _DEBUG
 		GLenum err = glGetError();
 		if (err != GL_NO_ERROR) {
 			Error(("OpenGL error " + std::to_string(err)).c_str());
 		}
-#endif
 	}
 
 	Renderer::~Renderer() {
