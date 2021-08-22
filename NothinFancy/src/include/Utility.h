@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <Windows.h>
 
 namespace nf {
 #ifdef _DEBUG

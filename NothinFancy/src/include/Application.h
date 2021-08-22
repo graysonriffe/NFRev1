@@ -8,6 +8,8 @@
 #include "Utility.h"
 #include "IntroGamestate.h"
 #include "Renderer.h"
+//TODO: Check #include consistency
+//TODO: Document ALL frontend functions
 
 namespace nf {
 	class Application {

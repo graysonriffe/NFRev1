@@ -56,7 +56,7 @@ namespace nf {
 			}
 		}
 		else {
-			Error("More than one default state defined");
+			Error("More than one default state defined!");
 		}
 	}
 
@@ -176,7 +176,7 @@ namespace nf {
 			RegisterClass(&wclass);
 		}
 		else {
-			Error("Cannot run two NF applications at once.");
+			Error("Cannot run two NF applications at once!");
 		}
 	}
 

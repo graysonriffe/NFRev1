@@ -15,6 +15,9 @@ Remember to use tasks (//TODO: )
 *Engine (Name?) "Nothin' Fancy"
 *Separate project
 *Namespaced
+Refactor NothinFancy.h to ONLY include stuff the frontend needs
+AND get rid of NFENGINE
+High CPU usage?
 *Debug and log system
 *NatVis
 *Config changing

@@ -30,7 +30,7 @@ namespace nf {
 		wglMakeCurrent(m_hdc, m_hglrc);
 		glewExperimental = GL_TRUE;
 		if (glewInit() != GLEW_OK) {
-			Error("Could not initialize GLEW");
+			Error("Could not initialize GLEW!");
 		}
 		const int attrib[] = {
 			WGL_CONTEXT_MAJOR_VERSION_ARB, 3,

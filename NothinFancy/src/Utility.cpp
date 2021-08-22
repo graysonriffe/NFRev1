@@ -77,7 +77,7 @@ namespace nf {
 		std::ifstream in;
 		in.open(filename);
 		if (!in) {
-			Error("Cannot find file");
+			Error(("File \"" + (std::string)filename + (std::string)"\" could not be read!").c_str());
 			return NULL;
 		}
 		std::stringstream ss;
