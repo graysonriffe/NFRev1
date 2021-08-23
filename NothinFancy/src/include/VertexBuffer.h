@@ -6,7 +6,7 @@
 namespace nf {
 	class VertexBuffer {
 	public:
-		VertexBuffer(const void* data, size_t size);
+		VertexBuffer(const void* data, const size_t size);
 
 		void bind() const;
 

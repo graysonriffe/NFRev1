@@ -9,6 +9,7 @@
 #include "IntroGamestate.h"
 #include "Renderer.h"
 //TODO: Check #include consistency
+//TODO: Separate #includes between headers and implementations
 //TODO: Document ALL frontend functions
 
 namespace nf {

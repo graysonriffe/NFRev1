@@ -12,7 +12,8 @@ namespace nf {
 
 	void Debug::LogImp(const std::string& in) {
 		std::chrono::duration<float> time = getCurrentTime();
-		std::printf("[%.4f] Debug: %s\n", time.count(), in.c_str());
+		std::printf("[%.4f] Debug: ", time.count());
+		std::cout << in << "\n";
 	}
 
 	void Debug::LogImp(int in) {
@@ -46,10 +47,10 @@ namespace nf {
 		MultiByteToWideChar(CP_ACP, NULL, in, -1, out, length);
 		return out;
 	}
-
+	//TODO: File encryption
 	bool writeFile(const char* filename, const std::string& in) {
 		std::string file(filename);
-		if (file.find('/') || file.find('\\')) {
+		if (file.find('/') != std::string::npos || file.find('\\') != std::string::npos) {
 			int pos = file.find_last_of("/\\");
 			std::string temp = file.substr(0, pos);
 			std::wstring folders(temp.begin(), temp.end());
@@ -71,7 +72,7 @@ namespace nf {
 		out.close();
 		return true;
 	}
-	//TODO: XOR encryption
+
 	std::string readFile(const char* filename) {
 		std::ifstream in;
 		in.open(filename);

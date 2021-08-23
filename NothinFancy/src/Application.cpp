@@ -159,7 +159,7 @@ namespace nf {
 				m_fpsClock1 = std::chrono::steady_clock::now();
 			}
 			std::this_thread::sleep_until(next_time);
-			m_deltaTime = (std::chrono::steady_clock::now() - start_time).count();
+			m_deltaTime = (double)(std::chrono::steady_clock::now() - start_time).count();
 			next_time += wait_time;
 		}
 		m_currentState->onExit();
