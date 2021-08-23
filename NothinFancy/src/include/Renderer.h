@@ -6,6 +6,7 @@
 
 namespace nf {
 	class Application;
+
 	class Renderer {
 	public:
 		Renderer(Application* app);

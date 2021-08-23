@@ -1,4 +1,3 @@
-//TODO: File IO functions
 #include <Windows.h>
 
 #include "Utility.h"
@@ -72,7 +71,7 @@ namespace nf {
 		out.close();
 		return true;
 	}
-
+	//TODO: XOR encryption
 	std::string readFile(const char* filename) {
 		std::ifstream in;
 		in.open(filename);

@@ -50,11 +50,10 @@ namespace nf {
 		LONG m_defaultWindowStyle;
 		WINDOWPLACEMENT m_wndPlacement;
 
-		std::chrono::steady_clock::time_point m_frameClock = std::chrono::steady_clock::now();
 		std::chrono::duration<double> m_fpsDuration;
 		double m_deltaTime;
-		std::chrono::steady_clock::time_point m_fpsClock1 = m_frameClock;
-		std::chrono::steady_clock::time_point m_fpsClock2 = m_frameClock;
+		std::chrono::steady_clock::time_point m_fpsClock1 = std::chrono::steady_clock::now();
+		std::chrono::steady_clock::time_point m_fpsClock2 = m_fpsClock1;
 		int m_frames;
 		const int m_targetFPS = 60;
 		const double m_minFrametime = 1.0 / m_targetFPS;

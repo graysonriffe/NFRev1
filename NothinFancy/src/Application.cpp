@@ -140,8 +140,11 @@ namespace nf {
 	void Application::startMainThread() {
 		m_renderer = new Renderer(this);
 		startIntroState();
+		std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+		const std::chrono::duration<double> wait_time = std::chrono::nanoseconds(1000000000 / 60);
+		auto next_time = start_time + wait_time;
 		while (m_running) {
-			m_deltaTime = m_fpsDuration.count();
+			start_time = std::chrono::steady_clock::now();
 			m_currentState->update();
 			m_currentState->render();
 			m_renderer->doFrame();
@@ -149,16 +152,14 @@ namespace nf {
 			m_fpsClock2 = std::chrono::steady_clock::now();
 			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
 			if (m_fpsDuration.count() >= 1.0) {
-				m_fpsClock1 = std::chrono::steady_clock::now();
 				m_FPS = m_frames;
 				m_frames = 0;
 				Log("FPS: " + std::to_string(m_FPS));
+				m_fpsClock1 = std::chrono::steady_clock::now();
 			}
-			m_fpsDuration = std::chrono::steady_clock::now() - m_frameClock;
-			while (m_fpsDuration.count() < m_minFrametime) {
-				m_fpsDuration = std::chrono::steady_clock::now() - m_frameClock;
-			}
-			m_frameClock = std::chrono::steady_clock::now();
+			std::this_thread::sleep_until(next_time);
+			m_deltaTime = (std::chrono::steady_clock::now() - start_time).count();
+			next_time += wait_time;
 		}
 		m_currentState->onExit();
 		delete m_renderer;
