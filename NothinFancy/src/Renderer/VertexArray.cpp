@@ -14,7 +14,8 @@ namespace nf {
 	VertexArray::VertexArray(const void* bufferData, size_t bufferSize) :
 		m_id(0),
 		m_vb(bufferData, bufferSize),
-		m_hasLayout(false)
+		m_hasLayout(false),
+		m_vertexStride(0)
 	{
 		glGenVertexArrays(1, &m_id);
 	}

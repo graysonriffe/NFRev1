@@ -43,9 +43,6 @@ namespace nf {
 		wglMakeCurrent(m_hdc, m_hglrc);
 		wglSwapIntervalEXT(0);
 		Log("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
-		GLuint vao;
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
