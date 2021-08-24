@@ -66,7 +66,7 @@ namespace nf {
 		showWindow(true);
 		m_running = true;
 		MSG msg = { };
-		std::thread mainThread(&Application::startMainThread, this);
+		std::thread mainThread(&Application::runMainGameThread, this);
 		while (m_running) {
 			while (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
 				TranslateMessage(&msg);
@@ -140,7 +140,7 @@ namespace nf {
 		m_currentState = m_sIntro;
 	}
 
-	void Application::startMainThread() {
+	void Application::runMainGameThread() {
 		m_renderer = new Renderer(this);
 		startIntroState();
 		std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
@@ -184,7 +184,7 @@ namespace nf {
 			Error("Cannot run two NF applications at once!");
 		}
 	}
-
+	//TODO: Test fullscreen graphcis
 	void Application::toggleFullscreen() {
 		DWORD wndStyle = GetWindowLong(m_window, GWL_STYLE);
 		if (wndStyle & WS_OVERLAPPEDWINDOW) {
@@ -231,8 +231,10 @@ namespace nf {
 		}
 		case WM_SYSKEYDOWN: {
 			if (GetKeyState(VK_RETURN) & 0x8000) {
-				app->m_currentConfig.fullscreen = !app->m_currentConfig.fullscreen;
-				app->toggleFullscreen();
+				if (!(lParam & (1 << 30))) {
+					app->m_currentConfig.fullscreen = !app->m_currentConfig.fullscreen;
+					app->toggleFullscreen();
+				}
 				return 0;
 			}
 			break;

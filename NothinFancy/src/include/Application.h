@@ -31,7 +31,7 @@ namespace nf {
 		~Application();
 	private:
 		void startIntroState();
-		void startMainThread();
+		void runMainGameThread();
 		void registerWindowClass();
 		void toggleFullscreen();
 		RECT getWindowRect() const;

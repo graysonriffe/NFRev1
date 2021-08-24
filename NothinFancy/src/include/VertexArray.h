@@ -4,13 +4,13 @@
 #include "VertexBuffer.h"
 
 namespace nf {
-	struct VertexBufferElement {
-		unsigned int type;
-		unsigned int count;
-		unsigned char normalized;
-	};
 
 	class VertexArray {
+		struct VertexBufferElement {
+			unsigned int type;
+			unsigned int count;
+			unsigned char normalized;
+		};
 	public:
 		VertexArray();
 

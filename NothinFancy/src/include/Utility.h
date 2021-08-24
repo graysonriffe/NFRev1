@@ -1,6 +1,7 @@
 #pragma once
 #include <chrono>
 #include <string>
+#include <Windows.h>
 
 namespace nf {
 #ifdef _DEBUG
