@@ -1,6 +1,10 @@
 #include "Renderer.h"
 
+#include "GL/glew.h"
+#include "GL\wglew.h"
+
 #include "Application.h"
+#include "Utility.h"
 
 namespace nf {
 	Renderer::Renderer(Application* app) {
@@ -54,7 +58,7 @@ namespace nf {
 
 		GLenum err = glGetError();
 		if (err != GL_NO_ERROR) {
-			Error(("OpenGL error " + std::to_string(err)).c_str());
+			Error("OpenGL error " + std::to_string(err));
 		}
 	}
 

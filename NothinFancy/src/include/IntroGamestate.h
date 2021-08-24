@@ -1,6 +1,5 @@
 #pragma once
 #include "IGamestate.h"
-#include "Utility.h"
 
 namespace nf {
 	class IntroGamestate : public IGamestate {
@@ -12,5 +11,6 @@ namespace nf {
 		void render() override;
 	private:
 		int counter;
+		//TODO: Flesh out intro gamestate
 	};
 }

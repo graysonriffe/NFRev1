@@ -1,8 +1,5 @@
 #pragma once
-#ifdef NFENGINE
-#include "GL/glew.h"
-#include "GL\wglew.h"
-#endif
+#include <Windows.h>
 
 namespace nf {
 	class Application;

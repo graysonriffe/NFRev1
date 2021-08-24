@@ -1,5 +1,9 @@
 #include "VertexBuffer.h"
 
+#include "GL/glew.h"
+
+#include "Utility.h"
+
 namespace nf {
 	VertexBuffer::VertexBuffer(const void* data, const size_t size) {
 		glGenBuffers(1, &m_id);

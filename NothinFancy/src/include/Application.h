@@ -1,15 +1,11 @@
 #pragma once
-#include <Windows.h>
 #include <chrono>
 #include <unordered_map>
-#include <vector>
+#include <Windows.h>
 
 #include "Config.h"
-#include "Utility.h"
 #include "IntroGamestate.h"
 #include "Renderer.h"
-//TODO: Check #include consistency
-//TODO: Separate #includes between headers and implementations
 //TODO: Document ALL frontend functions
 
 namespace nf {

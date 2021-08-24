@@ -1,5 +1,7 @@
 #include "IndexBuffer.h"
 
+#include "GL/glew.h"
+
 namespace nf {
 	IndexBuffer::IndexBuffer(const void* data, size_t count) {
 		m_count = count;

@@ -1,7 +1,4 @@
 #pragma once
-#ifdef NFENGINE
-#include "GL/glew.h"
-#endif
 
 namespace nf {
 	class VertexBuffer {

@@ -1,35 +1,32 @@
 #pragma once
-#ifdef NFENGINE
-#include "GL/glew.h"
-#endif
 #include <vector>
 
 #include "VertexBuffer.h"
-#include "Utility.h"
 
 namespace nf {
 	struct VertexBufferElement {
 		unsigned int type;
 		unsigned int count;
 		unsigned char normalized;
-
-		static unsigned int getSizeOfType(unsigned int type);
 	};
 
 	class VertexArray {
 	public:
-		VertexArray(const void* bufferData, size_t bufferSize);
+		VertexArray();
 
-		void bind();
+		void addBuffer(const void* data, const size_t size);
 		template<typename T>
 		void push(unsigned int count);
+		void finishBufferLayout();
+		void bind(unsigned int buffer = 1);
 
 		~VertexArray();
 	private:
 		unsigned int m_id;
-		VertexBuffer m_vb;
-		bool m_hasLayout;
-		std::vector<VertexBufferElement> m_layoutElements;
-		unsigned int m_vertexStride;
+		bool m_lastBufferHasLayout;
+		std::vector<VertexBuffer*> m_buffers;
+		std::vector<VertexBufferElement> m_lastBufferLayout;
+		unsigned int m_attribute;
+		unsigned int m_lastStride;
 	};
 }

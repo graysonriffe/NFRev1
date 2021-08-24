@@ -1,6 +1,10 @@
+#include "Utility.h"
+#include <thread>
+#include <iostream>
+#include <sstream>
+#include <fstream>
 #include <Windows.h>
 
-#include "Utility.h"
 #include "Config.h"
 
 namespace nf {
@@ -35,6 +39,16 @@ namespace nf {
 		CloseHandle(cmd);
 	}
 
+	void Debug::ErrorImp(const std::string& in, const char* filename, int line) {
+		std::chrono::duration<float> time = getCurrentTime();
+		HANDLE cmd = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(cmd, FOREGROUND_RED);
+		std::printf("[%.4f] Error (%s, %i): ", time.count(), filename, line);
+		std::cout << in << "\n";
+		SetConsoleTextAttribute(cmd, 7);
+		CloseHandle(cmd);
+	}
+
 	std::chrono::duration<float> Debug::getCurrentTime() {
 		std::chrono::steady_clock::time_point now = std::chrono::high_resolution_clock::now();
 		return now - m_initTime;
@@ -45,6 +59,13 @@ namespace nf {
 		int length = std::strlen(in) + 1;
 		wchar_t* out = new wchar_t[length];
 		MultiByteToWideChar(CP_ACP, NULL, in, -1, out, length);
+		return out;
+	}
+	const wchar_t* toWide(const std::string& in) {
+		const char* cstr = in.c_str();
+		int length = std::strlen(cstr) + 1;
+		wchar_t* out = new wchar_t[length];
+		MultiByteToWideChar(CP_ACP, NULL, cstr, -1, out, length);
 		return out;
 	}
 	//TODO: File encryption
@@ -65,7 +86,7 @@ namespace nf {
 		std::ofstream out;
 		out.open(filename);
 		if (!out) {
-			Error(("File \"" + (std::string)filename + (std::string)"\" could not be written!").c_str());
+			Error("File \"" + (std::string)filename + (std::string)"\" could not be written!");
 			return false;
 		}
 		out << in;
@@ -77,7 +98,7 @@ namespace nf {
 		std::ifstream in;
 		in.open(filename);
 		if (!in) {
-			Error(("File \"" + (std::string)filename + (std::string)"\" could not be read!").c_str());
+			Error("File \"" + (std::string)filename + (std::string)"\" could not be read!");
 			return NULL;
 		}
 		std::stringstream ss;

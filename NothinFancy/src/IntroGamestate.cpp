@@ -1,5 +1,7 @@
 #include "IntroGamestate.h"
+
 #include "Application.h"
+#include "Utility.h"
 
 namespace nf {
 	void IntroGamestate::onEnter(Application* app) {

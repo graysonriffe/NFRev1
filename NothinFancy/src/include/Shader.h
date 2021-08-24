@@ -1,9 +1,5 @@
 #pragma once
-#ifdef NFENGINE
-#include "GL/glew.h"
-#endif
-
-#include "Utility.h"
+#include <unordered_map>
 
 namespace nf {
 	class Shader {
@@ -11,10 +7,12 @@ namespace nf {
 		Shader(const char* vertexSource, const char* fragmentSource);
 
 		void bind();
+		void getUniformLocation(const char* uniformName);
 
 		~Shader();
 	private:
 		unsigned int m_id;
-		//Associated resource?
+		std::unordered_map<const char*, unsigned int> m_uniformLocations;
+		//TODO: Load from resource
 	};
 }

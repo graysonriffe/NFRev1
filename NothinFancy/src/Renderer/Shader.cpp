@@ -1,5 +1,9 @@
 #include "Shader.h"
 
+#include "GL/glew.h"
+
+#include "Utility.h"
+
 namespace nf {
 	Shader::Shader(const char* vertexSource, const char* fragmentSource) {
 		m_id = glCreateProgram();
@@ -19,7 +23,7 @@ namespace nf {
 				char* message = new char[length];
 				glGetShaderInfoLog(curr, length, &length, message);
 				message[length - 2] = 0;
-				Error(("OpenGL Error: " + (std::string)message).c_str());
+				Error("OpenGL Error: " + (std::string)message);
 			}
 		}
 		glAttachShader(m_id, vs);
@@ -33,7 +37,7 @@ namespace nf {
 			glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &length);
 			char* message = new char[length];
 			glGetProgramInfoLog(m_id, length, &length, message);
-			Error(("OpenGL Error: " + (std::string)message).c_str());
+			Error("OpenGL Error: " + (std::string)message);
 		}
 		glDeleteShader(vs);
 		glDeleteShader(fs);
@@ -41,6 +45,14 @@ namespace nf {
 
 	void Shader::bind() {
 		glUseProgram(m_id);
+	}
+	//TODO: Create overloaded setUniform function
+	void Shader::getUniformLocation(const char* uniformName) {
+		unsigned int loc = glGetUniformLocation(m_id, uniformName);
+		if (loc == -1) {
+			Error("Uniform \"" + (std::string)uniformName + "\" does not exist!");
+		}
+		m_uniformLocations[uniformName] = loc;
 	}
 
 	Shader::~Shader() {

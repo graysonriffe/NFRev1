@@ -1,8 +1,10 @@
 #include "Application.h"
-#ifdef NFENGINE
+
+#include <thread>
 #include "GL\glew.h"
 #include "GL\wglew.h"
-#endif
+
+#include "Utility.h"
 
 namespace nf {
 	DEBUGINIT;
@@ -41,7 +43,7 @@ namespace nf {
 			m_states[stateName] = state;
 		}
 		else {
-			Error(("State \"" + (std::string)stateName + (std::string)"\" already exists!").c_str());
+			Error("State \"" + (std::string)stateName + (std::string)"\" already exists!");
 		}
 	}
 
@@ -52,7 +54,7 @@ namespace nf {
 				m_defaultStateAdded = true;
 			}
 			else {
-				Error(("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!").c_str());
+				Error("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!");
 			}
 		}
 		else {
@@ -93,7 +95,7 @@ namespace nf {
 			m_currentState->onEnter(this);
 		}
 		else {
-			Error(("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!").c_str());
+			Error("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!");
 		}
 	}
 
@@ -157,6 +159,7 @@ namespace nf {
 				m_frames = 0;
 				Log("FPS: " + std::to_string(m_FPS));
 				m_fpsClock1 = std::chrono::steady_clock::now();
+				//TODO: Rework calculating FPS
 			}
 			std::this_thread::sleep_until(next_time);
 			m_deltaTime = (double)(std::chrono::steady_clock::now() - start_time).count();

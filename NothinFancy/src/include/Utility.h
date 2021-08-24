@@ -1,11 +1,6 @@
 #pragma once
 #include <chrono>
-#include <thread>
-#include <iostream>
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <Windows.h>
 
 namespace nf {
 #ifdef _DEBUG
@@ -33,6 +28,7 @@ __debugbreak();
 		static void LogImp(int in);
 		static void LogImp(double in);
 		static void ErrorImp(const char* in, const char* filename, int line);
+		static void ErrorImp(const std::string& in, const char* filename, int line);
 	};
 #else
 #define DEBUGINIT
@@ -42,6 +38,7 @@ std::exit(-1)
 #endif
 
 	const wchar_t* toWide(const char* in);
+	const wchar_t* toWide(const std::string& in);
 	bool writeFile(const char* filename, const std::string& in);
 	std::string readFile(const char* filename);
 }
