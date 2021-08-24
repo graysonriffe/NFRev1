@@ -193,6 +193,7 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\IntroGamestate.cpp" />
+    <ClCompile Include="src\Renderer\Drawable.cpp" />
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
@@ -203,6 +204,7 @@
   <ItemGroup>
     <ClInclude Include="src\include\Application.h" />
     <ClInclude Include="src\include\Config.h" />
+    <ClInclude Include="src\include\Drawable.h" />
     <ClInclude Include="src\include\IGamestate.h" />
     <ClInclude Include="src\include\IndexBuffer.h" />
     <ClInclude Include="src\include\IntroGamestate.h" />

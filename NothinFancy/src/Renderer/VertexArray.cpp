@@ -14,9 +14,8 @@ namespace nf {
 	}
 
 	void VertexArray::addBuffer(const void* data, const size_t size) {
-		if (!m_lastBufferHasLayout) {
+		if (!m_lastBufferHasLayout)
 			Error("Buffer added to vertex array has no layout!");
-		}
 		m_buffers.push_back(new VertexBuffer(data, size));
 		m_buffers.back()->bind();
 		m_lastBufferHasLayout = false;
@@ -25,9 +24,8 @@ namespace nf {
 
 	template<>
 	void VertexArray::push<float>(unsigned int count) {
-		if (m_lastBufferHasLayout) {
+		if (m_lastBufferHasLayout)
 			Error("Tried to modify a vertex array's buffer after the layout was final!");
-		}
 		m_lastBufferLayout.push_back({ GL_FLOAT, count, GL_FALSE });
 		m_lastStride += count * sizeof(GL_FLOAT);
 	}
@@ -45,12 +43,10 @@ namespace nf {
 	}
 
 	void VertexArray::bind(unsigned int buffer) {
-		if (m_buffers.empty()) {
+		if (m_buffers.empty())
 			Error("No buffers and layouts added to vertex array before being bound!");
-		}
-		if (!m_lastBufferHasLayout) {
+		if (!m_lastBufferHasLayout)
 			Error("Buffer added to vertex array has no layout!");
-		}
 		glBindVertexArray(m_id);
 	}
 

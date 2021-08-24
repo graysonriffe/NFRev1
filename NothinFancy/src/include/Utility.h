@@ -16,8 +16,8 @@ namespace nf {
 //Prints a nicely-formatted message complete with a timestamp
 #define Log(x) nf::Debug::LogImp(x)
 //Prints error message and breaks the debugger
-#define Error(x) nf::Debug::ErrorImp(x,__FILENAME__, __LINE__);\
-__debugbreak();
+#define Error(x) {nf::Debug::ErrorImp(x,__FILENAME__, __LINE__);\
+__debugbreak();}
 
 	class Debug {
 	private:
@@ -34,8 +34,8 @@ __debugbreak();
 #else
 #define DEBUGINIT
 #define Log(x)
-#define Error(x) MessageBox(FindWindow(L"NFClass", NULL), toWide(x), L"NF Engine Error", MB_OK | MB_ICONERROR);\
-std::exit(-1)
+#define Error(x) {MessageBox(FindWindow(L"NFClass", NULL), toWide(x), L"NF Engine Error", MB_OK | MB_ICONERROR);\
+std::exit(-1);}
 #endif
 
 	const wchar_t* toWide(const char* in);

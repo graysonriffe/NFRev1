@@ -49,9 +49,8 @@ namespace nf {
 	//TODO: Create overloaded setUniform function
 	void Shader::getUniformLocation(const char* uniformName) {
 		unsigned int loc = glGetUniformLocation(m_id, uniformName);
-		if (loc == -1) {
+		if (loc == -1)
 			Error("Uniform \"" + (std::string)uniformName + "\" does not exist!");
-		}
 		m_uniformLocations[uniformName] = loc;
 	}
 

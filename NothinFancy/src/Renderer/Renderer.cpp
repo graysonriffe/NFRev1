@@ -33,9 +33,8 @@ namespace nf {
 		m_hglrc = wglCreateContext(m_hdc);
 		wglMakeCurrent(m_hdc, m_hglrc);
 		glewExperimental = GL_TRUE;
-		if (glewInit() != GLEW_OK) {
+		if (glewInit() != GLEW_OK)
 			Error("Could not initialize GLEW!");
-		}
 		const int attrib[] = {
 			WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
 			WGL_CONTEXT_MINOR_VERSION_ARB, 3,
@@ -57,9 +56,8 @@ namespace nf {
 		SwapBuffers(m_hdc);
 
 		GLenum err = glGetError();
-		if (err != GL_NO_ERROR) {
+		if (err != GL_NO_ERROR)
 			Error("OpenGL error " + std::to_string(err));
-		}
 	}
 
 	Renderer::~Renderer() {

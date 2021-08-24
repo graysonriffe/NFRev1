@@ -84,10 +84,8 @@ namespace nf {
 		}
 		std::ofstream out;
 		out.open(filename);
-		if (!out) {
+		if (!out)
 			Error("File \"" + (std::string)filename + (std::string)"\" could not be written!");
-			return false;
-		}
 		out << in;
 		out.close();
 		return true;
@@ -96,10 +94,8 @@ namespace nf {
 	std::string readFile(const char* filename) {
 		std::ifstream in;
 		in.open(filename);
-		if (!in) {
+		if (!in)
 			Error("File \"" + (std::string)filename + (std::string)"\" could not be read!");
-			return NULL;
-		}
 		std::stringstream ss;
 		ss << in.rdbuf();
 		return ss.str();

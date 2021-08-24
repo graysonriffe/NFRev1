@@ -17,11 +17,11 @@ namespace nf {
 
 		void setWindowIcon(HANDLE hIcon);
 		void setWindowCursor(HCURSOR hCursor);
-		void addState(IGamestate* state, const char* stateName);
-		void addDefaultState(const char* stateName);
+		void addState(IGamestate* state, const std::string& stateName);
+		void addDefaultState(const std::string& stateName);
 		void run();
+		void changeState(const std::string& stateName);
 		void showWindow(bool show);
-		void changeState(const char* stateName);
 		const HWND& getWindow();
 		void changeConfig(const Config& in);
 		const Config& getConfig() const;
@@ -30,12 +30,13 @@ namespace nf {
 
 		~Application();
 	private:
-		void startIntroState();
-		void runMainGameThread();
 		void registerWindowClass();
-		void toggleFullscreen();
 		RECT getWindowRect() const;
 		void calculateNewWindowPos(int& x, int& y);
+		void toggleFullscreen();
+		void runMainGameThread();
+		void startIntroState();
+		void doStateChange();
 
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -56,13 +57,15 @@ namespace nf {
 		const double m_minFrametime = 1.0 / m_targetFPS;
 		int m_FPS;
 
-		//Inactive states states to potentially be active during the Application's lifetime
+		//Inactive states to potentially be active during the Application's lifetime
 		//Mapped to const char* to be referenced later in the frontend
-		std::unordered_map<const char*, IGamestate*> m_states;
+		std::unordered_map<std::string, IGamestate*> m_states;
 		IntroGamestate* m_sIntro;
 		IGamestate* m_DefaultState;
-		bool m_defaultStateAdded = false;
+		bool m_defaultStateAdded;
 		IGamestate* m_currentState;
+		bool m_stateChange;
+		std::string m_nextState;
 
 		//Array of booleans that represent keyboard and mouse input minus the scrollwheel
 		bool m_input[164];
