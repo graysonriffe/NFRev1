@@ -1,18 +1,22 @@
 #include "MainState.h"
 
-void MainState::onEnter(Application* app) {
+MainState::MainState(Application* app) :
+	Gamestate(app)
+{
+}
+
+void MainState::onEnter() {
 	Log("MainState onEnter!");
-	m_app = app;
+}
+
+void MainState::update(double deltaTime) {
+
+}
+
+void MainState::render() {
+
 }
 
 void MainState::onExit() {
 	Log("MainState onExit!");
-}
-
-void MainState::update() {
-	Log("MainState update!");
-}
-
-void MainState::render() {
-	Log("MainState render!");
 }

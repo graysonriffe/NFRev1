@@ -40,7 +40,11 @@ namespace nf {
 		SetClassLongPtr(m_window, GCLP_HCURSOR, (LONG_PTR)hCursor);
 	}
 
-	void Application::addState(IGamestate* state,const std::string& stateName) {
+	Renderer* Application::getRenderer() const {
+		return m_renderer;
+	}
+
+	void Application::addState(Gamestate* state,const std::string& stateName) {
 		if (m_states.find(stateName) == m_states.end()) {
 			m_states[stateName] = state;
 		}
@@ -188,9 +192,10 @@ namespace nf {
 		std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
 		const std::chrono::duration<double> wait_time = std::chrono::nanoseconds(1000000000 / 60);
 		auto next_time = start_time + wait_time;
+		m_deltaTime = 0.0167;
 		while (m_running) {
 			start_time = std::chrono::steady_clock::now();
-			m_currentState->update();
+			m_currentState->update(m_deltaTime);
 			m_currentState->render();
 			m_renderer->doFrame();
 			m_frames++;
@@ -214,8 +219,8 @@ namespace nf {
 	}
 
 	void Application::startIntroState() {
-		m_sIntro = new IntroGamestate;
-		m_sIntro->onEnter(this);
+		m_sIntro = new IntroGamestate(this);
+		m_sIntro->onEnter();
 		m_currentState = m_sIntro;
 	}
 
@@ -223,7 +228,7 @@ namespace nf {
 		m_stateChange = false;
 		m_currentState->onExit();
 		m_currentState = m_states[m_nextState];
-		m_currentState->onEnter(this);
+		m_currentState->onEnter();
 	}
 
 	LRESULT CALLBACK Application::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -297,8 +302,8 @@ namespace nf {
 	Application::~Application() {
 		Log("Exiting NF application");
 
-		for (std::pair<std::string, IGamestate*> state : m_states) {
-			IGamestate* curr = state.second;
+		for (std::pair<std::string, Gamestate*> state : m_states) {
+			Gamestate* curr = state.second;
 			delete curr;
 		}
 	}

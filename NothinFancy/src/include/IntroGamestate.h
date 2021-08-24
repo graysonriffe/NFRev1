@@ -1,16 +1,19 @@
 #pragma once
-#include "IGamestate.h"
+#include "Gamestate.h"
 
 namespace nf {
-	class IntroGamestate : public IGamestate {
+	class IntroGamestate : public Gamestate {
 	public:
-		void onEnter(Application* app) override;
-		void onExit() override;
+		IntroGamestate(Application* app);
 
-		void update() override;
+		void onEnter() override;
+
+		void update(double deltaTime) override;
 		void render() override;
+
+		void onExit() override;
 	private:
-		int counter;
+		int m_counter;
 		//TODO: Flesh out intro gamestate
 	};
 }

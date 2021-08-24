@@ -46,12 +46,30 @@ namespace nf {
 		wglMakeCurrent(m_hdc, m_hglrc);
 		wglSwapIntervalEXT(0);
 		Log("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+	void Renderer::render(const Drawable& in) {
+		//TODO: Check identity
 	}
 
 	void Renderer::doFrame() {
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		for (Drawable* draw : m_lGame) {
+			Drawable& curr = *draw;
+
+		}
+
+		for (Drawable* draw : m_lUI) {
+			Drawable& curr = *draw;
+
+		}
 
 		SwapBuffers(m_hdc);
 

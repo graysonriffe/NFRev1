@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
 	//app.setWindowIcon(...);
 	// app.setWindowCursor(...);
 
-	MainState* test = new MainState;
+	MainState* test = new MainState(&app);
 	app.addState(test, "Main State");
 	app.addDefaultState("Main State");
 

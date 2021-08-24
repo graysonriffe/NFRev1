@@ -42,6 +42,9 @@
     <ClCompile Include="src\Renderer\Drawable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gamestate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Config.h">
@@ -56,7 +59,7 @@
     <ClInclude Include="src\include\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\IGamestate.h">
+    <ClInclude Include="src\include\Gamestate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\include\IntroGamestate.h">

@@ -4,25 +4,29 @@
 #include "Utility.h"
 
 namespace nf {
-	void IntroGamestate::onEnter(Application* app) {
+	IntroGamestate::IntroGamestate(Application* app) :
+		Gamestate(app),
+		m_counter(0)
+	{
+	}
+
+	void IntroGamestate::onEnter() {
 		Log("Intro onEnter!");
-		m_app = app;
-		counter = 0;
+		m_counter = 0;
+	}
+
+
+	void IntroGamestate::update(double deltaTime) {
+		if (m_counter >= 120) {
+			m_app->changeState("Main State");
+		}
+		m_counter++;
+	}
+
+	void IntroGamestate::render() {
 	}
 
 	void IntroGamestate::onExit() {
 		Log("Intro onExit!");
-	}
-
-	void IntroGamestate::update() {
-		Log("Intro update!");
-		if (counter >= 120) {
-			m_app->changeState("Main State");
-		}
-		counter++;
-	}
-
-	void IntroGamestate::render() {
-		Log("Intro render!");
 	}
 }

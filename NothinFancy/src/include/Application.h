@@ -17,7 +17,8 @@ namespace nf {
 
 		void setWindowIcon(HANDLE hIcon);
 		void setWindowCursor(HCURSOR hCursor);
-		void addState(IGamestate* state, const std::string& stateName);
+		Renderer* getRenderer() const;
+		void addState(Gamestate* state, const std::string& stateName);
 		void addDefaultState(const std::string& stateName);
 		void run();
 		void changeState(const std::string& stateName);
@@ -59,11 +60,11 @@ namespace nf {
 
 		//Inactive states to potentially be active during the Application's lifetime
 		//Mapped to const char* to be referenced later in the frontend
-		std::unordered_map<std::string, IGamestate*> m_states;
-		IntroGamestate* m_sIntro;
-		IGamestate* m_DefaultState;
+		std::unordered_map<std::string, Gamestate*> m_states;
+		Gamestate* m_sIntro;
+		Gamestate* m_DefaultState;
 		bool m_defaultStateAdded;
-		IGamestate* m_currentState;
+		Gamestate* m_currentState;
 		bool m_stateChange;
 		std::string m_nextState;
 
