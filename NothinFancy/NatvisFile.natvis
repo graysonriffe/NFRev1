@@ -10,6 +10,6 @@
     </Expand>
   </Type>
   <Type Name="nf::Config">
-    <DisplayString>Width = {width}, Height = {height}, Fullscreen = {fullscreen}</DisplayString>
+    <DisplayString>Width = {width}, Height = {height}, Fullscreen = {fullscreen}, Title = {title,sb}</DisplayString>
   </Type>
 </AutoVisualizer>

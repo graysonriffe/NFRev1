@@ -11,8 +11,9 @@ namespace nf {
 
 	Application::Application(Config& config) :
 		m_currentConfig(config),
-		m_wndPlacement{ sizeof(m_wndPlacement) },
 		m_running(false),
+		m_altWidth(1280),
+		m_altHeight(720),
 		m_defaultStateAdded(false),
 		m_stateChange(false)
 	{
@@ -44,7 +45,7 @@ namespace nf {
 		return m_renderer;
 	}
 
-	void Application::addState(Gamestate* state,const std::string& stateName) {
+	void Application::addState(Gamestate* state, const std::string& stateName) {
 		if (m_states.find(stateName) == m_states.end()) {
 			m_states[stateName] = state;
 		}
@@ -101,19 +102,19 @@ namespace nf {
 	const HWND& Application::getWindow() {
 		return m_window;
 	}
-
+	//TODO: Throughly test this
 	void Application::changeConfig(const Config& in) {
 		SetWindowText(m_window, toWide(in.title));
-		if (in.fullscreen != m_currentConfig.fullscreen) {
-			m_currentConfig = in;
+		bool temp = m_currentConfig.fullscreen;
+		m_currentConfig = in;
+		if (in.fullscreen != temp)
 			toggleFullscreen();
-		}
 		if (m_currentConfig.fullscreen)
 			return;
-		m_currentConfig = in;
 		int x = 0, y = 0;
 		calculateNewWindowPos(x, y);
-		SetWindowPos(m_window, HWND_TOP, x, y, in.width, in.height, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+		RECT size = getWindowRect();
+		SetWindowPos(m_window, HWND_TOP, x, y, size.right, size.bottom, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 	}
 
 	const Config& Application::getConfig() const {
@@ -169,20 +170,20 @@ namespace nf {
 		x = monX - (m_currentConfig.width / 2);
 		y = monY - (m_currentConfig.height / 2);
 	}
-	//TODO: Test fullscreen graphcis
+	//TODO: Test fullscreen graphics
 	void Application::toggleFullscreen() {
 		DWORD wndStyle = GetWindowLong(m_window, GWL_STYLE);
 		if (wndStyle & WS_OVERLAPPEDWINDOW) {
-			GetWindowPlacement(m_window, &m_wndPlacement);
 			MONITORINFO mi = { sizeof(mi) };
 			GetMonitorInfo(MonitorFromWindow(m_window, MONITOR_DEFAULTTOPRIMARY), &mi);
 			SetWindowLong(m_window, GWL_STYLE, wndStyle & ~WS_OVERLAPPEDWINDOW);
-			SetWindowPos(m_window, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+			m_currentConfig.width = mi.rcMonitor.right - mi.rcMonitor.left;
+			m_currentConfig.height = mi.rcMonitor.bottom - mi.rcMonitor.top;
+			SetWindowPos(m_window, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, m_currentConfig.width, m_currentConfig.height, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 		}
 		else {
-			SetWindowLong(m_window, GWL_STYLE, m_defaultWindowStyle);
-			SetWindowPlacement(m_window, &m_wndPlacement);
-			SetWindowPos(m_window, NULL, 0, 0, m_currentConfig.width, m_currentConfig.height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+			SetWindowLong(m_window, GWL_STYLE, wndStyle | WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX);
+			SetWindowPos(m_window, HWND_TOP, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE);
 		}
 	}
 
@@ -230,7 +231,7 @@ namespace nf {
 		m_currentState = m_states[m_nextState];
 		m_currentState->onEnter();
 	}
-
+	//TODO: mouse position input
 	LRESULT CALLBACK Application::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		Application* app = (Application*)GetProp(hWnd, L"App");
 		switch (uMsg) {
@@ -240,8 +241,14 @@ namespace nf {
 		case WM_SYSKEYDOWN: {
 			if (GetKeyState(VK_RETURN) & 0x8000) {
 				if (!(lParam & (1 << 30))) {
-					app->m_currentConfig.fullscreen = !app->m_currentConfig.fullscreen;
-					app->toggleFullscreen();
+					if (!app->m_currentConfig.fullscreen) {
+						app->m_altWidth = app->m_currentConfig.width;
+						app->m_altHeight = app->m_currentConfig.height;
+					}
+					app->changeConfig({ app->m_currentConfig.width, app->m_currentConfig.height, !app->m_currentConfig.fullscreen, app->m_currentConfig.title });
+					if (!app->m_currentConfig.fullscreen) {
+						app->changeConfig({ app->m_altWidth, app->m_altHeight, app->m_currentConfig.fullscreen, app->m_currentConfig.title });
+					}
 				}
 				return 0;
 			}
@@ -250,7 +257,6 @@ namespace nf {
 		case WM_MENUCHAR: {
 			return MNC_CLOSE << 16;
 		}
-		//TODO: mouse position input
 		case WM_LBUTTONDOWN: {
 			app->m_input[1] = true;
 			return 0;

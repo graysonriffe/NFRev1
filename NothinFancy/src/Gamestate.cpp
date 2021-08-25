@@ -6,7 +6,6 @@
 namespace nf {
 	Gamestate::Gamestate(Application* app) {
 		m_app = app;
-		m_renderer = m_app->getRenderer();
 	}
 
 	void Gamestate::onEnter() {

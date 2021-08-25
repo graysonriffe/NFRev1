@@ -11,7 +11,7 @@ namespace nf {
 	public:
 		Renderer(Application* app);
 
-		void render(const Drawable& in);
+		void render(Drawable* in);
 
 		void doFrame();
 

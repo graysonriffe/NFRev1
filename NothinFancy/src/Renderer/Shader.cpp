@@ -44,7 +44,10 @@ namespace nf {
 	}
 
 	void Shader::bind() {
-		glUseProgram(m_id);
+		if (m_id != Shader::current) {
+			glUseProgram(m_id);
+			Shader::current = m_id;
+		}
 	}
 	//TODO: Create overloaded setUniform function
 	void Shader::getUniformLocation(const char* uniformName) {
@@ -57,4 +60,6 @@ namespace nf {
 	Shader::~Shader() {
 		glDeleteProgram(m_id);
 	}
+
+	unsigned int Shader::current;
 }

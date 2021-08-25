@@ -47,7 +47,7 @@ namespace nf {
 		LPCWSTR m_wclassName;
 		HWND m_window;
 		LONG m_defaultWindowStyle;
-		WINDOWPLACEMENT m_wndPlacement;
+		int m_altWidth, m_altHeight;
 
 		std::chrono::duration<double> m_fpsDuration;
 		double m_deltaTime;

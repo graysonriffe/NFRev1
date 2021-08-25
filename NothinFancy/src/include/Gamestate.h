@@ -18,7 +18,6 @@ namespace nf {
 		virtual void onExit();
 	protected:
 		Application* m_app;
-		Renderer* m_renderer;
 		//Resource identifier?
 	};
 }

@@ -53,8 +53,13 @@ namespace nf {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	void Renderer::render(const Drawable& in) {
-		//TODO: Check identity
+	void Renderer::render(Drawable* in) {
+		if (in == nullptr)
+			Error("Drawable object tried to render before being constructed!");
+		if (in->identity() == Drawable::DrawableType::NF_UI)
+			m_lUI.push_back(in);
+		else
+			m_lGame.push_back(in);
 	}
 
 	void Renderer::doFrame() {
@@ -63,7 +68,8 @@ namespace nf {
 
 		for (Drawable* draw : m_lGame) {
 			Drawable& curr = *draw;
-
+			curr.bind();
+			glDrawElements(GL_TRIANGLES, curr.getIndexCount(), GL_UNSIGNED_INT, nullptr);
 		}
 
 		for (Drawable* draw : m_lUI) {

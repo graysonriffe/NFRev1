@@ -10,11 +10,10 @@ void MainState::onEnter() {
 }
 
 void MainState::update(double deltaTime) {
-
 }
 
 void MainState::render() {
-
+	static Renderer& renderer = *m_app->getRenderer();
 }
 
 void MainState::onExit() {

@@ -9,6 +9,8 @@ namespace nf {
 		void bind();
 		void getUniformLocation(const char* uniformName);
 
+		static unsigned int current;
+
 		~Shader();
 	private:
 		unsigned int m_id;
