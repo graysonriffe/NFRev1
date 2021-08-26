@@ -3,7 +3,7 @@
 
 class MainState : public nf::Gamestate {
 public:
-	MainState(Application* app);
+	MainState(nf::Application* app);
 
 	void onEnter() override;
 

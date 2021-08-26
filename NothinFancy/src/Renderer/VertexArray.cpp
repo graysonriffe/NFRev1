@@ -42,7 +42,7 @@ namespace nf {
 		m_lastStride = 0;
 	}
 
-	void VertexArray::bind(unsigned int buffer) {
+	void VertexArray::bind() {
 		if (m_buffers.empty())
 			Error("No buffers and layouts added to vertex array before being bound!");
 		if (!m_lastBufferHasLayout)

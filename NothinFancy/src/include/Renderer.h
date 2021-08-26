@@ -2,7 +2,7 @@
 #include <vector>
 #include <Windows.h>
 
-#include "Drawable.h"
+#include "Model.h"
 
 namespace nf {
 	class Application;
@@ -11,7 +11,7 @@ namespace nf {
 	public:
 		Renderer(Application* app);
 
-		void render(Drawable* in);
+		void render(Drawable& in);
 
 		void doFrame();
 
@@ -24,5 +24,8 @@ namespace nf {
 
 		std::vector<Drawable*> m_lGame;
 		std::vector<Drawable*> m_lUI;
+		const char* m_defaultVertex;
+		const char* m_defaultFragment;
+		Shader* m_defaultShader;
 	};
 }

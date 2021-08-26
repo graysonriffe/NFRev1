@@ -9,17 +9,17 @@ namespace nf {
 		enum class DrawableType {
 			NF_NONE, NF_GAME, NF_UI
 		};
-		Drawable(const char* vertexShader, const char* fragmentShader, const void* vertexBuffer, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount);
+		//TODO: Construct using Shader code and data from obj
+		Drawable();
 
-		unsigned int getIndexCount();
-		void bind();
 		virtual DrawableType identity();
+		virtual void bind();
+		unsigned int getIndexCount();
 
 		~Drawable();
 	protected:
-		//TODO: Add VAO, Shader, index buffer, etc.
-		Shader m_shader;
-		VertexArray m_vao;
-		IndexBuffer m_ib;
+		VertexArray* m_vao;
+		IndexBuffer* m_ib;
+		Shader* m_shader;
 	};
 }

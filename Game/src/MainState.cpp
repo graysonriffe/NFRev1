@@ -1,6 +1,6 @@
 #include "MainState.h"
 
-MainState::MainState(Application* app) :
+MainState::MainState(nf::Application* app) :
 	Gamestate(app)
 {
 }
@@ -13,7 +13,7 @@ void MainState::update(double deltaTime) {
 }
 
 void MainState::render() {
-	static Renderer& renderer = *m_app->getRenderer();
+	static nf::Renderer& renderer = *m_app->getRenderer();
 }
 
 void MainState::onExit() {

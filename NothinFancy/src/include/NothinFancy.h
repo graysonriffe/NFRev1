@@ -3,5 +3,3 @@
 #include "Application.h"
 #include "Input.h"
 #include "Utility.h"
-
-using namespace nf;

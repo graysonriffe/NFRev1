@@ -15,6 +15,5 @@ namespace nf {
 	private:
 		unsigned int m_id;
 		std::unordered_map<const char*, unsigned int> m_uniformLocations;
-		//TODO: Load from resource
 	};
 }

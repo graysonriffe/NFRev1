@@ -5,6 +5,7 @@
 
 #include "Application.h"
 #include "Utility.h"
+#include "resource.h"
 
 namespace nf {
 	Renderer::Renderer(Application* app) {
@@ -51,15 +52,21 @@ namespace nf {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+		Win32Res vs(IDR_DEFAULTVERTEX);
+		m_defaultVertex = (const char*)vs.ptr;
+		Win32Res fs(IDR_DEFAULTFRAGMENT);
+		m_defaultFragment = (const char*)fs.ptr;
+		m_defaultShader = new Shader(m_defaultVertex, m_defaultFragment);
 	}
 
-	void Renderer::render(Drawable* in) {
-		if (in == nullptr)
+	void Renderer::render(Drawable& in) {
+		if (&in == nullptr)
 			Error("Drawable object tried to render before being constructed!");
-		if (in->identity() == Drawable::DrawableType::NF_UI)
-			m_lUI.push_back(in);
+		if (in.identity() == Drawable::DrawableType::NF_UI)
+			m_lUI.push_back(&in);
 		else
-			m_lGame.push_back(in);
+			m_lGame.push_back(&in);
 	}
 
 	void Renderer::doFrame() {
@@ -67,8 +74,10 @@ namespace nf {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for (Drawable* draw : m_lGame) {
-			Drawable& curr = *draw;
+			Model& curr = (Model&)*draw;
 			curr.bind();
+			if (!curr.hasCustomShader())
+				m_defaultShader->bind();
 			glDrawElements(GL_TRIANGLES, curr.getIndexCount(), GL_UNSIGNED_INT, nullptr);
 		}
 

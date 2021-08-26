@@ -38,8 +38,15 @@ __debugbreak();}
 std::exit(-1);}
 #endif
 
+	struct Win32Res {
+		Win32Res(int id);
+		void* ptr;
+		size_t size;
+	};
+
 	const wchar_t* toWide(const char* in);
 	const wchar_t* toWide(const std::string& in);
 	bool writeFile(const char* filename, const std::string& in);
 	std::string readFile(const char* filename);
+
 }

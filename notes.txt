@@ -16,14 +16,16 @@ Remember to use tasks (//TODO: )
 *Separate project
 *Namespaced
 Refactor NothinFancy.h to ONLY include stuff the frontend needs
-AND get rid of NFENGINE
-High CPU usage?
+*AND get rid of NFENGINE
+*High CPU usage?
 *Debug and log system
 *NatVis
 *Config changing
 *Alt-Enter
 *File IO functions
 *Keyboard and mouse click input
+Separate Model and UIElement from Drawable
+Entity and Camera classes
 Mouse position input
 Audio
 *Game states

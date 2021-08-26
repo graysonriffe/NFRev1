@@ -18,7 +18,7 @@ namespace nf {
 		template<typename T>
 		void push(unsigned int count);
 		void finishBufferLayout();
-		void bind(unsigned int buffer = 1);
+		void bind();
 
 		~VertexArray();
 	private:
