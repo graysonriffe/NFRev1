@@ -8,7 +8,7 @@ public:
 	void onEnter() override;
 
 	void update(double deltaTime) override;
-	void render() override;
+	void render(nf::Renderer& renderer) override;
 
 	void onExit() override;
 private:

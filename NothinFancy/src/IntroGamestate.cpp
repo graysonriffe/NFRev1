@@ -23,7 +23,7 @@ namespace nf {
 		m_counter++;
 	}
 
-	void IntroGamestate::render() {
+	void IntroGamestate::render(Renderer& renderer) {
 	}
 
 	void IntroGamestate::onExit() {

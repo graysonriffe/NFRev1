@@ -1,8 +1,6 @@
 #include "Application.h"
 
 #include <thread>
-#include "GL\glew.h"
-#include "GL\wglew.h"
 
 #include "Utility.h"
 
@@ -197,7 +195,7 @@ namespace nf {
 		while (m_running) {
 			start_time = std::chrono::steady_clock::now();
 			m_currentState->update(m_deltaTime);
-			m_currentState->render();
+			m_currentState->render(*m_renderer);
 			m_renderer->doFrame();
 			m_frames++;
 			if (m_stateChange)
@@ -205,11 +203,10 @@ namespace nf {
 			m_fpsClock2 = std::chrono::steady_clock::now();
 			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
 			if (m_fpsDuration.count() >= 1.0) {
-				m_FPS = m_frames;
+				m_FPS = m_frames - 1;
 				m_frames = 0;
 				Log("FPS: " + std::to_string(m_FPS));
 				m_fpsClock1 = std::chrono::steady_clock::now();
-				//TODO: Rework calculating FPS
 			}
 			std::this_thread::sleep_until(next_time);
 			m_deltaTime = (double)(std::chrono::steady_clock::now() - start_time).count();

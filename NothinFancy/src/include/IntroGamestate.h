@@ -9,7 +9,7 @@ namespace nf {
 		void onEnter() override;
 
 		void update(double deltaTime) override;
-		void render() override;
+		void render(Renderer& renderer) override;
 
 		void onExit() override;
 	private:

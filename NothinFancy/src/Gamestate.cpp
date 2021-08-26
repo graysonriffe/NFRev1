@@ -16,7 +16,7 @@ namespace nf {
 
 	}
 
-	void Gamestate::render() {
+	void Gamestate::render(Renderer& renderer) {
 
 	}
 

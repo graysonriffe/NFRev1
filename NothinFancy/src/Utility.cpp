@@ -81,8 +81,8 @@ namespace nf {
 		MultiByteToWideChar(CP_ACP, NULL, cstr, -1, out, length);
 		return out;
 	}
-	//TODO: File encryption
-	bool writeFile(const char* filename, const std::string& in) {
+
+	bool writeFile(const char* filename, const std::string& in, bool encrypted) {
 		std::string file(filename);
 		if (file.find('/') != std::string::npos || file.find('\\') != std::string::npos) {
 			int pos = file.find_last_of("/\\");
@@ -100,19 +100,29 @@ namespace nf {
 		out.open(filename);
 		if (!out)
 			Error("File \"" + (std::string)filename + (std::string)"\" could not be written!");
-		out << in;
+		std::string write(in);
+		if (encrypted) {
+			for (unsigned int i = 0; i < write.size(); i++)
+				write[i] = write[i] + 100;
+		}
+		out << write;
 		out.close();
 		return true;
 	}
 
-	std::string readFile(const char* filename) {
+	std::string readFile(const char* filename, bool encrypted) {
 		std::ifstream in;
 		in.open(filename);
 		if (!in)
 			Error("File \"" + (std::string)filename + (std::string)"\" could not be read!");
 		std::stringstream ss;
 		ss << in.rdbuf();
-		return ss.str();
+		std::string read(ss.str());
+		if (encrypted) {
+			for (unsigned int i = 0; i < read.size(); i++)
+				read[i] = read[i] - 100;
+		}
+		return read;
 	}
 }
 

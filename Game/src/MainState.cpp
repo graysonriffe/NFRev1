@@ -12,8 +12,7 @@ void MainState::onEnter() {
 void MainState::update(double deltaTime) {
 }
 
-void MainState::render() {
-	static nf::Renderer& renderer = *m_app->getRenderer();
+void MainState::render(nf::Renderer& renderer) {
 }
 
 void MainState::onExit() {

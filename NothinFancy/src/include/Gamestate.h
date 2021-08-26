@@ -13,7 +13,7 @@ namespace nf {
 		virtual void onEnter();
 
 		virtual void update(double deltaTime);
-		virtual void render();
+		virtual void render(Renderer& renderer);
 
 		virtual void onExit();
 	protected:
