@@ -2,7 +2,7 @@
 #include <vector>
 #include <Windows.h>
 
-#include "Model.h"
+#include "Entity.h"
 
 namespace nf {
 	class Application;
@@ -11,7 +11,8 @@ namespace nf {
 	public:
 		Renderer(Application* app);
 
-		void render(Drawable& in);
+		void render(Entity& in);
+		//TODO: Create second render function for UIElements
 
 		void doFrame();
 
@@ -22,10 +23,8 @@ namespace nf {
 		HDC m_hdc;
 		HGLRC m_hglrc;
 
-		std::vector<Drawable*> m_lGame;
+		std::vector<Entity*> m_lGame;
 		std::vector<Drawable*> m_lUI;
-		const char* m_defaultVertex;
-		const char* m_defaultFragment;
 		Shader* m_defaultShader;
 	};
 }

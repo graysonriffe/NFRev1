@@ -211,6 +211,7 @@ namespace nf {
 			std::this_thread::sleep_until(next_time);
 			m_deltaTime = (double)(std::chrono::steady_clock::now() - start_time).count();
 			next_time += wait_time;
+			//TODO: Redo FPS AGAIN like how I did it in PongClone
 		}
 		m_currentState->onExit();
 		delete m_renderer;

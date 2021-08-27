@@ -1,4 +1,9 @@
 #pragma once
+#ifdef NFENGINE
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#endif
+
 #include "Drawable.h"
 
 namespace nf {
@@ -6,10 +11,8 @@ namespace nf {
 	public:
 		Model();
 
-		void create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount, const char* vertexShader = nullptr, const char* fragmentShader = nullptr);
-		DrawableType identity() override;
+		void create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount);
 		void bind() override;
-		bool hasCustomShader();
 
 		~Model();
 	private:

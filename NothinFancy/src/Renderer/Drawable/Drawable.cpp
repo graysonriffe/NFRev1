@@ -4,11 +4,7 @@
 
 namespace nf {
 	Drawable::Drawable() {
-		Log("Drawable constructor");
-	}
 
-	Drawable::DrawableType Drawable::identity() {
-		return DrawableType::NF_NONE;
 	}
 
 	void Drawable::bind() {
@@ -22,6 +18,5 @@ namespace nf {
 	Drawable::~Drawable() {
 		delete m_vao;
 		delete m_ib;
-		delete m_shader;
 	}
 }

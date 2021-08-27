@@ -54,37 +54,36 @@ namespace nf {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		Win32Res vs(IDR_DEFAULTVERTEX);
-		m_defaultVertex = (const char*)vs.ptr;
+		const char* defaultVertex = (const char*)vs.ptr;
 		Win32Res fs(IDR_DEFAULTFRAGMENT);
-		m_defaultFragment = (const char*)fs.ptr;
-		m_defaultShader = new Shader(m_defaultVertex, m_defaultFragment);
+		const char* defaultFragment = (const char*)fs.ptr;
+		if (defaultVertex == nullptr || defaultFragment == nullptr)
+			Error("Default engine resources not found! Please link nf.res to your application!");
+		m_defaultShader = new Shader(defaultVertex, defaultFragment);
 	}
 
-	void Renderer::render(Drawable& in) {
+	void Renderer::render(Entity& in) {
 		if (&in == nullptr)
-			Error("Drawable object tried to render before being constructed!");
-		if (in.identity() == Drawable::DrawableType::NF_UI)
-			m_lUI.push_back(&in);
-		else
-			m_lGame.push_back(&in);
+			Error("Tried to render Entity before being created!");
+		m_lGame.push_back(&in);
 	}
 
 	void Renderer::doFrame() {
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		for (Drawable* draw : m_lGame) {
-			Model& curr = (Model&)*draw;
-			curr.bind();
-			if (!curr.hasCustomShader())
-				m_defaultShader->bind();
-			glDrawElements(GL_TRIANGLES, curr.getIndexCount(), GL_UNSIGNED_INT, nullptr);
+		for (Entity* draw : m_lGame) {
+			Entity& curr = *draw;
+			curr.bind(m_defaultShader);
+			glDrawElements(GL_TRIANGLES, curr.getModel()->getIndexCount(), GL_UNSIGNED_INT, nullptr);
 		}
+		m_lGame.clear();
 
 		for (Drawable* draw : m_lUI) {
 			Drawable& curr = *draw;
 
 		}
+		m_lUI.clear();
 
 		SwapBuffers(m_hdc);
 

@@ -15,7 +15,7 @@ Remember to use tasks (//TODO: )
 *Engine (Name?) "Nothin' Fancy"
 *Separate project
 *Namespaced
-Refactor NothinFancy.h to ONLY include stuff the frontend needs
+Refactor NothinFancy.h to ONLY include stuff the frontend needs (Does deleteing uneeded public funcitons do anything?)
 *AND get rid of NFENGINE
 *High CPU usage?
 *Debug and log system
@@ -24,6 +24,7 @@ Refactor NothinFancy.h to ONLY include stuff the frontend needs
 *Alt-Enter
 *File IO functions
 *Keyboard and mouse click input
+Check for memory leaks in deconstructors
 Separate Model and UIElement from Drawable
 Entity and Camera classes
 Mouse position input
