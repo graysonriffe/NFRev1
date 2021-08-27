@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <Windows.h>
+#include "glm/glm.hpp"
 
 #include "Entity.h"
 
@@ -26,5 +27,7 @@ namespace nf {
 		std::vector<Entity*> m_lGame;
 		std::vector<Drawable*> m_lUI;
 		Shader* m_defaultShader;
+
+		glm::mat4 proj;
 	};
 }

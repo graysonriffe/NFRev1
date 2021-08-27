@@ -23,7 +23,8 @@ namespace nf {
 		Entity();
 
 		void create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount);
-		void setLocation(float x, float y, float z);
+		//TODO: Do this using loaded assets somehow
+		void setPosition(float x, float y, float z);
 		void setRotation(float x, float y, float z);
 		void setScale(float x);
 		void setScale(float x, float y, float z);

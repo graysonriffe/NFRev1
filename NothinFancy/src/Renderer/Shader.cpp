@@ -51,7 +51,7 @@ namespace nf {
 	}
 
 	void Shader::setUniform(const char* name, glm::mat4& data) {
-		if (m_uniformLocations.find(name) != m_uniformLocations.end())
+		if (m_uniformLocations.find(name) == m_uniformLocations.end())
 			getUniformLocation(name);
 		glUniformMatrix4fv(m_uniformLocations[name], 1, GL_FALSE, glm::value_ptr(data));
 	}

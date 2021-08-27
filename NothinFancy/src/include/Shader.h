@@ -12,7 +12,6 @@ namespace nf {
 
 		void bind();
 		void setUniform(const char* name, glm::mat4& data);
-
 		static unsigned int current;
 
 		~Shader();

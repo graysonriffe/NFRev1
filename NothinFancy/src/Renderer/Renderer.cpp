@@ -70,11 +70,13 @@ namespace nf {
 
 	void Renderer::doFrame() {
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
+		proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 100.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for (Entity* draw : m_lGame) {
 			Entity& curr = *draw;
 			curr.bind(m_defaultShader);
+			m_defaultShader->setUniform("proj", proj);
 			glDrawElements(GL_TRIANGLES, curr.getModel()->getIndexCount(), GL_UNSIGNED_INT, nullptr);
 		}
 		m_lGame.clear();

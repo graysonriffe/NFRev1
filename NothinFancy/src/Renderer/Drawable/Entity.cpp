@@ -2,6 +2,7 @@
 
 namespace nf {
 	Entity::Entity() :
+		m_model(nullptr),
 		m_position(0.0),
 		m_rotation(0.0),
 		m_scale(1.0)
@@ -14,7 +15,7 @@ namespace nf {
 		m_model->create(vertexBufferData, vertexBufferSize, indexBufferData, indexBufferCount);
 	}
 
-	void Entity::setLocation(float x, float y, float z) {
+	void Entity::setPosition(float x, float y, float z) {
 		m_position = { x, y, z };
 	}
 
