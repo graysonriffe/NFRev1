@@ -44,10 +44,7 @@ namespace nf {
 	}
 
 	void Shader::bind() {
-		if (m_id != Shader::current) {
-			glUseProgram(m_id);
-			Shader::current = m_id;
-		}
+		glUseProgram(m_id);
 	}
 
 	void Shader::setUniform(const char* name, glm::mat4& data) {
@@ -66,6 +63,4 @@ namespace nf {
 	Shader::~Shader() {
 		glDeleteProgram(m_id);
 	}
-
-	unsigned int Shader::current;
 }

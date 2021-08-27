@@ -11,7 +11,7 @@ namespace nf {
 	}
 
 	void IndexBuffer::bind() const {
-		glBindBuffer(GL_ARRAY_BUFFER, m_id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 	}
 
 	unsigned int IndexBuffer::getCount() {

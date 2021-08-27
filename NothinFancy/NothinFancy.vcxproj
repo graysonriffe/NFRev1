@@ -216,6 +216,7 @@
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Renderer\Texture.cpp" />
     <ClCompile Include="src\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\Utility.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="src\include\NothinFancy.h" />
     <ClInclude Include="src\include\Renderer.h" />
     <ClInclude Include="src\include\Shader.h" />
+    <ClInclude Include="src\include\Texture.h" />
     <ClInclude Include="src\include\Utility.h" />
     <ClInclude Include="src\include\VertexArray.h" />
     <ClInclude Include="src\include\VertexBuffer.h" />
