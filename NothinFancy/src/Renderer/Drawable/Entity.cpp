@@ -47,7 +47,6 @@ namespace nf {
 		model = glm::rotate(model, glm::radians(m_rotation.y), glm::vec3(0.0, 1.0, 0.0));
 		model = glm::rotate(model, glm::radians(m_rotation.z), glm::vec3(0.0, 0.0, 1.0));
 		model = glm::scale(model, glm::vec3(m_scale.x, m_scale.y, m_scale.z));
-		//TODO: fill out model matrix
 		shader->setUniform("model", model);
 	}
 
