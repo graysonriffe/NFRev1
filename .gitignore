@@ -3,4 +3,4 @@ bin/
 int/
 dep/
 *aps
-*res
+*.res
