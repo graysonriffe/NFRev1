@@ -17,7 +17,7 @@ namespace nf {
 		unsigned char* texture = stbi_load(textureName, &width, &height, &nChannels, 0);
 		//TODO: Load from memory
 		if (!texture)
-			Error("Texture failed to load from memory!");
+			Error("Texture \"" + (std::string)textureName + "\" failed to load from memory!");
 		glBindTexture(GL_TEXTURE_2D, m_id);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

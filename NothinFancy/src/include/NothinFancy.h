@@ -131,5 +131,6 @@ namespace nf {
 		Renderer* m_renderer;
 	};
 }
+#include "Assets.h"
 #include "Input.h"
 #include "Utility.h"

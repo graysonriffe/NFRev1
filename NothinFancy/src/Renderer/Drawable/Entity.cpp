@@ -13,6 +13,7 @@ namespace nf {
 	void Entity::create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount, const void* textureCoordinatesBufferData, size_t textureCoordinatesBufferSize, const char* textureName) {
 		m_model = new Model;
 		m_model->create(vertexBufferData, vertexBufferSize, indexBufferData, indexBufferCount, textureCoordinatesBufferData, textureCoordinatesBufferSize, textureName);
+		//TODO: Replace this with getting the information from the AGeometry and ATexture structs
 	}
 
 	void Entity::setPosition(float x, float y, float z) {
