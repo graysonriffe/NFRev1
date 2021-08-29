@@ -201,4 +201,10 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Target Name="AfterClean">
+    <ItemGroup>
+      <_delete Include="$(OutDir)**\*"/>
+    </ItemGroup>
+    <Delete Files="@(_delete)" />
+  </Target>
 </Project>
