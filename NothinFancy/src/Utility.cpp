@@ -35,7 +35,7 @@ namespace nf {
 		SetConsoleTextAttribute(cmd, FOREGROUND_RED);
 		std::printf("[%.4f] Error (%s, %i): %s\n", time.count(), filename, line, in);
 		SetConsoleTextAttribute(cmd, 7);
-		CloseHandle(cmd);
+		FindClose(cmd);
 	}
 
 	void Debug::ErrorImp(const std::string& in, const char* filename, int line) {
@@ -45,7 +45,7 @@ namespace nf {
 		std::printf("[%.4f] Error (%s, %i): ", time.count(), filename, line);
 		std::cout << in << "\n";
 		SetConsoleTextAttribute(cmd, 7);
-		CloseHandle(cmd);
+		FindClose(cmd);
 	}
 
 	std::chrono::duration<float> Debug::getCurrentTime() {
@@ -82,11 +82,10 @@ namespace nf {
 		return out;
 	}
 
-	bool writeFile(const char* filename, const std::string& in, bool encrypted) {
-		std::string file(filename);
-		if (file.find('/') != std::string::npos || file.find('\\') != std::string::npos) {
-			int pos = file.find_last_of("/\\");
-			std::string temp = file.substr(0, pos);
+	void writeFile(const std::string& filename, const std::string& in, bool encrypted) {
+		if (filename.find('/') != std::string::npos || filename.find('\\') != std::string::npos) {
+			int pos = filename.find_last_of("/\\");
+			std::string temp = filename.substr(0, pos);
 			std::wstring folders(temp.begin(), temp.end());
 			WCHAR exe[MAX_PATH];
 			GetModuleFileName(GetModuleHandle(NULL), exe, MAX_PATH);
@@ -104,21 +103,23 @@ namespace nf {
 		if (encrypted) {
 			for (unsigned int i = 0; i < write.size(); i++)
 				write[i] = write[i] + 100;
+			write.insert(0, "NFEF");
 		}
 		out << write;
 		out.close();
-		return true;
 	}
 
-	std::string readFile(const char* filename, bool encrypted) {
+	std::string readFile(const std::string& filename) {
 		std::ifstream in;
-		in.open(filename);
+		in.open(filename, std::ios::binary);
+		//TODO: Test this change
 		if (!in)
 			Error("File \"" + (std::string)filename + (std::string)"\" could not be read!");
 		std::stringstream ss;
 		ss << in.rdbuf();
 		std::string read(ss.str());
-		if (encrypted) {
+		if (read.size() > 4 && read.substr(0, 4) == "NFEF" ){
+			read = read.substr(4);
 			for (unsigned int i = 0; i < read.size(); i++)
 				read[i] = read[i] - 100;
 		}

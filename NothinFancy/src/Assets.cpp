@@ -23,7 +23,7 @@ namespace nf {
 
 	void AssetPack::load(const char* packName) {
 		std::string path = "assets/" + (std::string)packName + ".nfpack";
-		std::string contents = readFile(path.c_str(), true);
+		std::string contents = readFile(path);
 	}
 
 	AssetPack::~AssetPack() {

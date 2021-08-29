@@ -46,7 +46,7 @@ std::exit(-1);}
 
 	const wchar_t* toWide(const char* in);
 	const wchar_t* toWide(const std::string& in);
-	bool writeFile(const char* filename, const std::string& in, bool encrypted = false);
-	std::string readFile(const char* filename, bool encrypted = false);
+	void writeFile(const std::string& filename, const std::string& in, bool encrypted = false);
+	std::string readFile(const std::string& filename);
 
 }
