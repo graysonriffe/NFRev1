@@ -109,7 +109,7 @@
       <AdditionalDependencies>nf.res;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)NFPackCreator\bin\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; copy "$(SolutionDir)NFPackCreator\bin\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>
+      <Command>cd "$(SolutionDir)NFPackCreator\bin\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; move "$(SolutionDir)NFPackCreator\bin\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,7 +135,7 @@
       <AdditionalDependencies>nf.res;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)NFPackCreator\bin\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; copy "$(SolutionDir)NFPackCreator\bin\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>
+      <Command>cd "$(SolutionDir)NFPackCreator\bin\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; move "$(SolutionDir)NFPackCreator\bin\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -157,7 +157,7 @@
       <AdditionalDependencies>nf.res;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)NFPackCreator\bin\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; copy "$(SolutionDir)NFPackCreator\bin\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>
+      <Command>cd "$(SolutionDir)NFPackCreator\bin\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; move "$(SolutionDir)NFPackCreator\bin\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -183,7 +183,7 @@
       <AdditionalDependencies>nf.res;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)NFPackCreator\bin\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; copy "$(SolutionDir)NFPackCreator\bin\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>
+      <Command>cd "$(SolutionDir)NFPackCreator\bin\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; move "$(SolutionDir)NFPackCreator\bin\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -203,7 +203,7 @@
   </ImportGroup>
   <Target Name="AfterClean">
     <ItemGroup>
-      <_delete Include="$(OutDir)**\*"/>
+      <_delete Include="$(OutDir)**\*" />
     </ItemGroup>
     <Delete Files="@(_delete)" />
   </Target>

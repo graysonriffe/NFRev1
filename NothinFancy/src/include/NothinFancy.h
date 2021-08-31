@@ -7,6 +7,7 @@
 
 #include "Config.h"
 #include "IntroGamestate.h"
+#include "Assets.h"
 
 namespace nf {
 	class Drawable;
@@ -15,19 +16,19 @@ namespace nf {
 
 	class Entity {
 		struct Vec3 {
-			Vec3(float x1) : x(x1), y(x1), z(x1) {}
-			Vec3(float x1, float y1, float z1) : x(x1), y(y1), z(z1) {}
-			float x, y, z;
+			Vec3(double x1) : x(x1), y(x1), z(x1) {}
+			Vec3(double x1, double y1, double z1) : x(x1), y(y1), z(z1) {}
+			double x, y, z;
 		};
 	public:
 		Entity();
 
-		void create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount, const void* textureCoordinatesBufferData = nullptr, size_t textureCoordinatesBufferSize = 0, const char* textureName = nullptr);
-		//TODO: Do this using loaded assets somehow
-		void setPosition(float x, float y, float z);
-		void setRotation(float x, float y, float z);
-		void setScale(float x);
-		void setScale(float x, float y, float z);
+		void create(Asset* modelAsset, Asset* textureAsset = nullptr);
+
+		void setPosition(double x, double y, double z);
+		void setRotation(double x, double y, double z);
+		void setScale(double x);
+		void setScale(double x, double y, double z);
 
 		void bind(Shader* shader);
 		Model* getModel() const;
@@ -131,6 +132,5 @@ namespace nf {
 		Renderer* m_renderer;
 	};
 }
-#include "Assets.h"
 #include "Input.h"
 #include "Utility.h"

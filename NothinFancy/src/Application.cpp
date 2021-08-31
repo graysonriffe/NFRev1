@@ -144,7 +144,7 @@ namespace nf {
 			RegisterClass(&wclass);
 		}
 		else
-			Error("Cannot run two NF applications at once!");
+			Error("Cannot run multiple NF applications concurrently!");
 	}
 
 	RECT Application::getWindowRect() const {

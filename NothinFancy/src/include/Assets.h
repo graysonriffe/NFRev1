@@ -1,21 +1,25 @@
 #pragma once
 #include <unordered_map>
-#include <vector>
 
 namespace nf {
+	class Model;
+
 	struct Asset {
 		virtual ~Asset();
 	};
 
-	struct AGeometry : Asset {
-		const float* m_vertexBufferData;
-		const unsigned int* m_indexBufferData;
-		const float* m_textureCoordinatesBufferData;
-		~AGeometry() override;
+	struct AModel : Asset {
+		char* data;
+		bool alreadyLoaded;
+		Model* loadedModel;
+
+		~AModel() override;
 	};
 
 	struct ATexture : Asset {
-		const void* m_data;
+		unsigned char* data;
+		size_t size;
+
 		~ATexture() override;
 	};
 
@@ -24,6 +28,8 @@ namespace nf {
 		AssetPack();
 
 		void load(const char* packName);
+		Asset* operator[](const char* in);
+		Asset* operator[](std::string& in);
 
 		~AssetPack();
 	private:

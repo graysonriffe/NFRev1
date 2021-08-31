@@ -33,7 +33,7 @@ void Success(const std::string& in) {
 
 std::string readFile(const std::string& filename) {
 	std::ifstream in;
-	in.open(filename);
+	in.open(filename, std::ios::binary);
 	if (!in)
 		Error("File \"" + (std::string)filename + (std::string)"\" could not be read!");
 	std::stringstream ss;
@@ -49,13 +49,15 @@ std::string readFile(const std::string& filename) {
 
 void writeFile(const std::string& filename, const std::string& in, bool encrypted) {
 	std::ofstream out;
-	out.open(filename);
+	out.open(filename, std::ios::binary);
 	if (!out)
 		Error("File \"" + (std::string)filename + (std::string)"\" could not be written!");
 	std::string write(in);
 	if (encrypted) {
-		for (unsigned int i = 0; i < write.size(); i++)
-			write[i] = write[i] + 100;
+		for (unsigned int i = 0; i < write.size(); i++) {
+			char temp = write[i] + 100;
+			write[i] = temp;
+		}
 		write.insert(0, "NFEF");
 	}
 	out << write;
@@ -82,7 +84,7 @@ int main(int argc, char* argv[]) {
 			continue;
 		std::string filename = currDir.path().filename().string().append(".nfpack");
 		Log("Creating pack \"" + filename + (std::string)"\"");
-		std::ifstream in;
+		std::string currFileContents;
 		std::stringstream out;
 		unsigned int fileCount = 0;
 		for (const auto& curr : std::filesystem::recursive_directory_iterator(currDir)) {
@@ -93,15 +95,12 @@ int main(int argc, char* argv[]) {
 				Error("File \"" + relative.string() + (std::string)"\" is not of supported type!");
 			Log("Current file: " + relative.string());
 
-			in.open(curr.path(), std::ios::binary);
-			if (!in)
-				Error("Couldn't open \"" + relative.string() + (std::string)"\"!");
+			currFileContents = readFile(curr.path().string());
 			if (out.rdbuf()->in_avail() != 0)
 				out << "\n";
 			out << "#NFASSET " + curr.path().filename().string();
 			out << "\n";
-			out << in.rdbuf();
-			in.close();
+			out << currFileContents;
 			fileCount++;
 		}
 		if (fileCount == 0) {
@@ -114,6 +113,8 @@ int main(int argc, char* argv[]) {
 	}
 	if (dirCount > 0)
 		Log("Wrote " + std::to_string(dirCount) + (std::string)" asset pack(s).");
+	else
+		Log("No directories found!");
 	Log("Done");
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 	return 0;
