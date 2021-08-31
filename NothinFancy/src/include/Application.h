@@ -35,6 +35,7 @@ namespace nf {
 		RECT getWindowRect() const;
 		void calculateNewWindowPos(int& x, int& y);
 		void toggleFullscreen();
+		void updateInput();
 		void runMainGameThread();
 		void startIntroState();
 		void doStateChange();

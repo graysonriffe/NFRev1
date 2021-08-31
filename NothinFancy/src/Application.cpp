@@ -78,6 +78,7 @@ namespace nf {
 					break;
 				}
 			}
+			updateInput();
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 		mainThread.join();
@@ -185,33 +186,40 @@ namespace nf {
 		}
 	}
 
+	void Application::updateInput() {
+		for (unsigned int i = 0; i < 164; i++) {
+			if (GetFocus() == m_window)
+				m_input[i] = GetKeyState(i) & 0x8000;
+			else
+				m_input[i] = false;
+		}
+	}
+
 	void Application::runMainGameThread() {
 		m_renderer = new Renderer(this);
 		startIntroState();
-		std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
-		const std::chrono::duration<double> wait_time = std::chrono::nanoseconds(1000000000 / 60);
-		auto next_time = start_time + wait_time;
-		m_deltaTime = 0.0167;
+		std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
+		std::chrono::steady_clock::time_point lastFrame = std::chrono::steady_clock::now();
 		while (m_running) {
-			start_time = std::chrono::steady_clock::now();
-			m_currentState->update(m_deltaTime);
-			m_currentState->render(*m_renderer);
-			m_renderer->doFrame();
-			m_frames++;
-			if (m_stateChange)
-				doStateChange();
+			currentTime = std::chrono::steady_clock::now();
+			m_deltaTime = std::chrono::duration<double>(currentTime - lastFrame).count();
+			if (m_deltaTime >= m_minFrametime) {
+				lastFrame = std::chrono::steady_clock::now();
+				m_currentState->update(m_deltaTime);
+				m_currentState->render(*m_renderer);
+				m_renderer->doFrame();
+				m_frames++;
+				if (m_stateChange)
+					doStateChange();
+			}
 			m_fpsClock2 = std::chrono::steady_clock::now();
 			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
 			if (m_fpsDuration.count() >= 1.0) {
-				m_FPS = m_frames - 1;
+				m_FPS = m_frames;
 				m_frames = 0;
 				Log("FPS: " + std::to_string(m_FPS));
 				m_fpsClock1 = std::chrono::steady_clock::now();
 			}
-			std::this_thread::sleep_until(next_time);
-			m_deltaTime = (double)(std::chrono::steady_clock::now() - start_time).count();
-			next_time += wait_time;
-			//TODO: Redo FPS AGAIN like how I did it in PongClone
 		}
 		m_currentState->onExit();
 		delete m_renderer;
@@ -254,42 +262,6 @@ namespace nf {
 		}
 		case WM_MENUCHAR: {
 			return MNC_CLOSE << 16;
-		}
-		case WM_LBUTTONDOWN: {
-			app->m_input[1] = true;
-			return 0;
-		}
-		case WM_LBUTTONUP: {
-			app->m_input[1] = false;
-			return 0;
-		}
-		case WM_RBUTTONDOWN: {
-			app->m_input[2] = true;
-			return 0;
-		}
-		case WM_RBUTTONUP: {
-			app->m_input[2] = false;
-			return 0;
-		}
-		case WM_MBUTTONDOWN: {
-			app->m_input[4] = true;
-			return 0;
-		}
-		case WM_MBUTTONUP: {
-			app->m_input[4] = false;
-			return 0;
-		}
-		case WM_KEYDOWN: {
-			if (wParam < 164 && !(lParam & (1 << 30))) {
-				app->m_input[wParam] = true;
-			}
-			break;
-		}
-		case WM_KEYUP: {
-			if (wParam < 164) {
-				app->m_input[wParam] = false;
-			}
-			break;
 		}
 		case WM_CLOSE: {
 			DestroyWindow(hWnd);
