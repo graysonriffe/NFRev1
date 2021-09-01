@@ -11,10 +11,10 @@ namespace nf {
 		glGenTextures(1, &m_id);
 	}
 
-	void Texture::create(const unsigned char* textureData, size_t textureSize) {
+	void Texture::create(const char* textureData, size_t textureSize) {
 		int width, height, nChannels;
 		stbi_set_flip_vertically_on_load(true);
-		unsigned char* texture = stbi_load_from_memory(textureData, textureSize, &width, &height, &nChannels, 0);
+		unsigned char* texture = stbi_load_from_memory((unsigned char*)textureData, textureSize, &width, &height, &nChannels, 0);
 		if (!texture)
 			Error("Texture failed to load from memory!");
 		glBindTexture(GL_TEXTURE_2D, m_id);

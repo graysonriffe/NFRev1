@@ -24,6 +24,8 @@ namespace nf {
 		HDC m_hdc;
 		HGLRC m_hglrc;
 
+		AssetPack baseAP;
+
 		std::vector<Entity*> m_lGame;
 		std::vector<Drawable*> m_lUI;
 		Shader* m_defaultShader;

@@ -10,7 +10,7 @@ namespace nf {
 	Model::Model() {
 	}
 
-	void Model::create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount, const void* textureCoordinatesBufferData, size_t textureCoordinatesBufferSize, const unsigned char* textureData, size_t textureSize) {
+	void Model::create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount, const void* textureCoordinatesBufferData, size_t textureCoordinatesBufferSize, const char* textureData, size_t textureSize) {
 		m_vao = new VertexArray;
 		m_vao->addBuffer(vertexBufferData, vertexBufferSize);
 		m_vao->push<float>(3);

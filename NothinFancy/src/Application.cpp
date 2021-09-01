@@ -137,6 +137,8 @@ namespace nf {
 
 	void Application::trackMouse(bool track) {
 		m_trackingMouse = track;
+		if (m_trackingMouse == true)
+			m_mouseTrackFirst = true;
 	}
 
 	void Application::getMouseDiff(int& x, int& y) {
@@ -183,7 +185,7 @@ namespace nf {
 		x = monX - (m_currentConfig.width / 2);
 		y = monY - (m_currentConfig.height / 2);
 	}
-	//TODO: Test fullscreen graphics
+
 	void Application::toggleFullscreen() {
 		DWORD wndStyle = GetWindowLong(m_window, GWL_STYLE);
 		if (wndStyle & WS_OVERLAPPEDWINDOW) {
@@ -223,15 +225,14 @@ namespace nf {
 				m_mouseY = 0;
 
 			if (m_trackingMouse) {
-				static bool first = true;
 				int middleX = m_currentConfig.width / 2;
 				int middleY = m_currentConfig.height / 2;
 				m_mouseDiffX += m_mouseX - middleX;
 				m_mouseDiffY += middleY - m_mouseY;
-				if (first) {
+				if (m_mouseTrackFirst) {
 					m_mouseDiffX = 0;
 					m_mouseDiffY = 0;
-					first = false;
+					m_mouseTrackFirst = false;
 				}
 				POINT middle = { middleX, middleY };
 				ClientToScreen(m_window, &middle);
@@ -286,7 +287,7 @@ namespace nf {
 		m_currentState = m_states[m_nextState];
 		m_currentState->onEnter();
 	}
-	//TODO: mouse position input
+
 	LRESULT CALLBACK Application::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		Application* app = (Application*)GetProp(hWnd, L"App");
 		switch (uMsg) {

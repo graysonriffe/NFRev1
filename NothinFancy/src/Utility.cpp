@@ -53,20 +53,6 @@ namespace nf {
 	}
 #endif
 
-	Win32Res::Win32Res(int id) :
-		ptr(nullptr),
-		size(0)
-	{
-		HRSRC src = FindResource(NULL, MAKEINTRESOURCE(id), RT_RCDATA);
-		if (src) {
-			HGLOBAL temp = LoadResource(NULL, src);
-			if (temp) {
-				ptr = LockResource(temp);
-				size = (size_t)SizeofResource(NULL, src);
-			}
-		}
-	}
-
 	const wchar_t* toWide(const char* in) {
 		int length = std::strlen(in) + 1;
 		wchar_t* out = new wchar_t[length];

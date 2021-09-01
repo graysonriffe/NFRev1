@@ -5,11 +5,12 @@ namespace nf {
 	class Model;
 
 	struct Asset {
+		char* data;
+
 		virtual ~Asset();
 	};
 
 	struct AModel : Asset {
-		char* data;
 		bool alreadyLoaded;
 		Model* loadedModel;
 
@@ -17,10 +18,13 @@ namespace nf {
 	};
 
 	struct ATexture : Asset {
-		unsigned char* data;
 		size_t size;
 
 		~ATexture() override;
+	};
+
+	struct AShader : Asset {
+		~AShader() override;
 	};
 
 	class AssetPack {
@@ -34,5 +38,16 @@ namespace nf {
 		~AssetPack();
 	private:
 		std::unordered_map<std::string, Asset*> m_assets;
+	};
+
+	struct BaseAssets {
+		static AModel* cube;
+		static AModel* plane;
+		static AModel* sphere;
+		static AModel* cone;
+		static AModel* cylinder;
+		static AModel* torus;
+
+		static ATexture* logo;
 	};
 }

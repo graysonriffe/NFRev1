@@ -26,17 +26,18 @@ Refactor NothinFancy.h to ONLY include stuff the frontend needs (Does deleteing 
 *Keyboard and mouse click input
 Check for memory leaks in deconstructors
 Separate Model and UIElement from Drawable
-Entity and Camera classes
-Mouse position input
+*Entity and Camera classes
+*Mouse position input
 Audio
 *Game states
 Text rendering
 UI elements
-Resource system and custom format
-Read model objs and animations (Is this realistic?)
+*Resource system and custom format
+*Read model objs
+And animations (Is this realistic?)
 Layered batch renderer
 Lighting? (Or is this part of the game's shaders?)
 Multithreading and async tasks (For audio and loading?)
 
-Figure out format for storing resources OUTSIDE of exe (compressed format?)
-And separate tool to write those?
+*Figure out format for storing resources OUTSIDE of exe (compressed format?)
+*And separate tool to write those?

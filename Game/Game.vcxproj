@@ -105,8 +105,6 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>$(ProjectDir)dep\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>nf.res;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)NFPackCreator\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; move "$(SolutionDir)NFPackCreator\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>
@@ -131,8 +129,6 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>$(ProjectDir)dep\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>nf.res;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)NFPackCreator\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; move "$(SolutionDir)NFPackCreator\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>
@@ -153,8 +149,6 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>$(ProjectDir)dep\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>nf.res;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)NFPackCreator\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; move "$(SolutionDir)NFPackCreator\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>
@@ -179,8 +173,6 @@
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>$(ProjectDir)dep\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>nf.res;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)NFPackCreator\AssetBuild" &amp;&amp; "$(SolutionDir)NFPackCreator\bin\Win32$(Configuration)\NFPackCreator.exe" &amp;&amp; del "$(OutDir)assets\" /Q /S &amp;&amp; move "$(SolutionDir)NFPackCreator\AssetBuild\*.nfpack" "$(OutDir)assets\"</Command>

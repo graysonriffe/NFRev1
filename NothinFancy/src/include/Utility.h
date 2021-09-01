@@ -39,19 +39,24 @@ __debugbreak();}
 std::exit(-1);}
 #endif
 
-	//TODO: Delete this after moving everything to base.nfpack
-	struct Win32Res {
-		Win32Res(int id);
-		void* ptr;
-		size_t size;
-	};
-
 	struct Vec3 {
-		Vec3() {}
+		Vec3() : x(0.0), y(0.0), z(0.0) {}
 		Vec3(double x1) : x(x1), y(x1), z(x1) {}
 		Vec3(double x1, double y1, double z1) : x(x1), y(y1), z(z1) {}
 		Vec3 operator*(const double scalar) {
 			return Vec3(x * scalar, y * scalar, z * scalar);
+		}
+		Vec3& operator+=(const Vec3& rhs) {
+			this->x += rhs.x;
+			this->y += rhs.y;
+			this->z += rhs.z;
+			return *this;
+		}
+		Vec3& operator-=(const Vec3& rhs) {
+			this->x -= rhs.x;
+			this->y -= rhs.y;
+			this->z -= rhs.z;
+			return *this;
 		}
 		double x, y, z;
 	};

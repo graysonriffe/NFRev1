@@ -14,7 +14,7 @@ namespace nf {
 
 	void Entity::create(Asset* modelAsset, Asset* textureAsset) {
 		AModel& model = *(AModel*)modelAsset;
-		if (model.alreadyLoaded) {
+		if (model.alreadyLoaded && textureAsset == nullptr) {
 			m_model = model.loadedModel;
 			return;
 		}

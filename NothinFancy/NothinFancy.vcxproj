@@ -112,10 +112,7 @@
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
-    <PostBuildEvent>
-      <Command>copy "$(IntDir)$(ProjectName).res" "$(SolutionDir)Game\dep\nf.res"</Command>
-      <Message>Copying default NF resources</Message>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -143,10 +140,7 @@
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
-    <PostBuildEvent>
-      <Command>copy "$(IntDir)$(ProjectName).res" "$(SolutionDir)Game\dep\nf.res"</Command>
-      <Message>Copying default NF resources</Message>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -170,10 +164,7 @@
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
-    <PostBuildEvent>
-      <Command>copy "$(IntDir)$(ProjectName).res" "$(SolutionDir)Game\dep\nf.res"</Command>
-      <Message>Copying default NF resources</Message>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -201,10 +192,7 @@
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
-    <PostBuildEvent>
-      <Command>copy "$(IntDir)$(ProjectName).res" "$(SolutionDir)Game\dep\nf.res"</Command>
-      <Message>Copying default NF resources</Message>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
@@ -227,7 +215,6 @@
     <ClInclude Include="src\include\Assets.h" />
     <ClInclude Include="src\include\Camera.h" />
     <ClInclude Include="src\include\Entity.h" />
-    <ClInclude Include="src\include\resource.h" />
     <ClInclude Include="src\include\Application.h" />
     <ClInclude Include="src\include\Config.h" />
     <ClInclude Include="src\include\Drawable.h" />
@@ -250,9 +237,6 @@
   <ItemGroup>
     <None Include="res\defaultShader\fragment.shader" />
     <None Include="res\defaultShader\vertex.shader" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="NothinFancy.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,17 +7,26 @@
 
 namespace nf {
 	Camera::Camera(Application* app) :
-		m_app(app)
+		m_app(app),
+		m_type(Type::NF_CAMERA_UI),
+		m_position(0.0),
+		m_front(0.0, 0.0, -1.0),
+		m_yaw(-90.0f),
+		m_pitch(0.0)
 	{
-		m_type = Type::NF_CAMERA_UI;
+
 	}
 
 	void Camera::setType(Type cameraType) {
-		m_type = cameraType;
-		if (m_type == Type::NF_CAMERA_FIRST_PERSON || m_type == Type::NF_CAMERA_ORBIT)
-			m_app->trackMouse(true);
-		else
-			m_app->trackMouse(false);
+		if (cameraType != m_type) {
+			m_type = cameraType;
+			if (m_type == Type::NF_CAMERA_FIRST_PERSON || m_type == Type::NF_CAMERA_ORBIT)
+				m_app->trackMouse(true);
+			else
+				m_app->trackMouse(false);
+			m_yaw = -90.0f;
+			m_pitch = 0.0f;
+		}
 	}
 
 	Camera::Type Camera::getType() const {
@@ -26,24 +35,26 @@ namespace nf {
 
 	void Camera::moveForward(double speed) {
 		Vec3 temp = m_front * speed;
-		m_position = { m_position.x + temp.x, m_position.y + temp.y, m_position.z + temp.z };
+		m_position += temp;
 	}
 
 	void Camera::moveBackward(double speed) {
 		Vec3 temp = m_front * speed;
-		m_position = { m_position.x - temp.x, m_position.y - temp.y, m_position.z - temp.z };
+		m_position -= temp;
 	}
 
 	void Camera::moveRight(double speed) {
 		glm::vec3 front = { m_front.x, m_front.y, m_front.z };
 		glm::vec3 temp = glm::normalize(glm::cross(front, glm::vec3(0.0, 1.0, 0.0))) * (float)speed;
-		m_position = { m_position.x + temp.x, m_position.y + temp.y, m_position.z + temp.z };
+		Vec3 move = { temp.x, temp.y, temp.z };
+		m_position += move;
 	}
 
 	void Camera::moveLeft(double speed) {
 		glm::vec3 front = { m_front.x, m_front.y, m_front.z };
 		glm::vec3 temp = glm::normalize(glm::cross(front, glm::vec3(0.0, 1.0, 0.0))) * (float)speed;
-		m_position = { m_position.x - temp.x, m_position.y - temp.y, m_position.z - temp.z };
+		Vec3 move = { temp.x, temp.y, temp.z };
+		m_position -= move;
 	}
 
 	void Camera::setPosition(double x, double y, double z) {
@@ -68,18 +79,16 @@ namespace nf {
 				m_app->getMouseDiff(mouseDiffx, mouseDiffy);
 				float mouseX = (float)mouseDiffx * 0.1f;
 				float mouseY = (float)mouseDiffy * 0.1f;
-				static float yaw = -90.0f;
-				static float pitch = 0.0f;
-				yaw += mouseX;
-				pitch += mouseY;
-				if (pitch > 89.0f)
-					pitch = 89.0f;
-				if (pitch < -89.0f)
-					pitch = -89.0f;
+				m_yaw += mouseX;
+				m_pitch += mouseY;
+				if (m_pitch > 89.0f)
+					m_pitch = 89.0f;
+				if (m_pitch < -89.0f)
+					m_pitch = -89.0f;
 				glm::vec3 rotation;
-				rotation.x = std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch));
-				rotation.y = std::sin(glm::radians(pitch));
-				rotation.z = std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch));
+				rotation.x = std::cos(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
+				rotation.y = std::sin(glm::radians(m_pitch));
+				rotation.z = std::sin(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
 				rotation = glm::normalize(rotation);
 				m_front = { rotation.x, rotation.y, rotation.z };
 				glm::vec3 position(m_position.x, m_position.y, m_position.z);

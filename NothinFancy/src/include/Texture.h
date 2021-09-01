@@ -5,7 +5,7 @@ namespace nf {
 	public:
 		Texture();
 
-		void create(const unsigned char* textureData, size_t textureSize);
+		void create(const char* textureData, size_t textureSize);
 		void bind();
 
 		~Texture();

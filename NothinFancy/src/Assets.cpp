@@ -16,6 +16,10 @@ namespace nf {
 		delete[] data;
 	}
 
+	AShader::~AShader() {
+
+	}
+
 	AssetPack::AssetPack() {
 
 	}
@@ -55,10 +59,18 @@ namespace nf {
 			}
 			if (extension == "png") {
 				ATexture* texture = new ATexture;
-				texture->data = new unsigned char[assetSize];
+				texture->data = new char[assetSize];
 				std::memcpy(texture->data, &assetContents[0], assetSize);
 				texture->size = assetSize;
 				m_assets[assetName] = texture;
+				continue;
+			}
+			if (extension == "shader") {
+				AShader* shader = new AShader;
+				shader->data = new char[assetSize + 1];
+				std::memcpy(shader->data, &assetContents[0], assetSize);
+				shader->data[assetSize] = '\0';
+				m_assets[assetName] = shader;
 				continue;
 			}
 			Error("Invalid asset extention in pack \"" + (std::string)packName + (std::string)"\"!");
@@ -81,4 +93,11 @@ namespace nf {
 			delete curr.second;
 		}
 	}
+
+	AModel* BaseAssets::cube;
+	AModel* BaseAssets::plane;
+	AModel* BaseAssets::sphere;
+	AModel* BaseAssets::cone;
+	AModel* BaseAssets::cylinder;
+	AModel* BaseAssets::torus;
 }

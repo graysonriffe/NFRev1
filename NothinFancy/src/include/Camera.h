@@ -34,5 +34,7 @@ namespace nf {
 
 		Vec3 m_position;
 		Vec3 m_front;
+		float m_yaw;
+		float m_pitch;
 	};
 }

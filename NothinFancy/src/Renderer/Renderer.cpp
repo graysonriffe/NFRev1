@@ -6,7 +6,6 @@
 
 #include "Application.h"
 #include "Utility.h"
-#include "resource.h"
 
 namespace nf {
 	Renderer::Renderer(Application* app) {
@@ -55,19 +54,24 @@ namespace nf {
 		glEnable(GL_CULL_FACE);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		Win32Res vs(IDR_DEFAULTVERTEX);
-		const char* defaultVertex = (const char*)vs.ptr;
-		Win32Res fs(IDR_DEFAULTFRAGMENT);
-		const char* defaultFragment = (const char*)fs.ptr;
-		if (defaultVertex == nullptr || defaultFragment == nullptr)
-			Error("Default engine resources not found! Please link nf.res to your application!");
+		baseAP.load("base.nfpack");
+		const char* defaultVertex = baseAP["defaultVertex.shader"]->data;
+		const char* defaultFragment = baseAP["defaultFragment.shader"]->data;
 		m_defaultShader = new Shader(defaultVertex, defaultFragment);
+
+		BaseAssets::cube = (AModel*)baseAP["cube.obj"];
+		BaseAssets::plane = (AModel*)baseAP["plane.obj"];
+		BaseAssets::sphere = (AModel*)baseAP["sphere.obj"];
+		BaseAssets::cone = (AModel*)baseAP["cone.obj"];
+		BaseAssets::cylinder = (AModel*)baseAP["cylinder.obj"];
+		BaseAssets::torus = (AModel*)baseAP["torus.obj"];
 	}
 
 	void Renderer::render(Entity& in) {
 		if (&in == nullptr)
 			Error("Tried to render Entity before being created!");
 		m_lGame.push_back(&in);
+		//TODO: Sort transparent objects by distance; Farthest first
 	}
 
 	void Renderer::doFrame(Camera* camera) {

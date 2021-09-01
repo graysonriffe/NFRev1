@@ -132,6 +132,7 @@ namespace nf {
 		bool m_input[164];
 		int m_mouseX, m_mouseY;
 		bool m_trackingMouse;
+		bool m_mouseTrackFirst;
 		int m_mouseDiffX, m_mouseDiffY;
 
 		//Renderer object to use OpenGL to render the current state
