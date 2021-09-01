@@ -1,9 +1,7 @@
 #pragma once
 #include <unordered_map>
-#ifdef NFENGINE
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#endif
 
 namespace nf {
 	class Shader {

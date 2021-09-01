@@ -1,13 +1,9 @@
 #pragma once
-#ifdef NFENGINE
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#endif
-
 #include "Drawable.h"
-#include "Texture.h"
 
 namespace nf {
+	class Drawable;
+	class Texture;
 	class Model : public Drawable {
 	public:
 		Model();

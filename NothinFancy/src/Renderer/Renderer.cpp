@@ -2,6 +2,7 @@
 
 #include "GL/glew.h"
 #include "GL\wglew.h"
+#include "glm/glm.hpp"
 
 #include "Application.h"
 #include "Utility.h"
@@ -51,6 +52,7 @@ namespace nf {
 		glDepthFunc(GL_LESS);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_CULL_FACE);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		Win32Res vs(IDR_DEFAULTVERTEX);
@@ -68,15 +70,17 @@ namespace nf {
 		m_lGame.push_back(&in);
 	}
 
-	void Renderer::doFrame() {
+	void Renderer::doFrame(Camera* camera) {
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
-		proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 100000.0f);
+		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 100000.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for (Entity* draw : m_lGame) {
 			Entity& curr = *draw;
 			curr.bind(m_defaultShader);
 			m_defaultShader->setUniform("proj", proj);
+			camera->bind(m_defaultShader);
+			//TODO: Clean this up a bit
 			glDrawElements(GL_TRIANGLES, curr.getModel()->getIndexCount(), GL_UNSIGNED_INT, nullptr);
 		}
 		m_lGame.clear();

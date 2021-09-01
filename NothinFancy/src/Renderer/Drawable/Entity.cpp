@@ -2,8 +2,6 @@
 
 #include<vector>
 
-#include "Utility.h"
-
 namespace nf {
 	Entity::Entity() :
 		m_model(nullptr),
@@ -39,8 +37,16 @@ namespace nf {
 		m_position = { x, y, z };
 	}
 
+	void Entity::setPosition(const Vec3& position) {
+		m_position = position;
+	}
+
 	void Entity::setRotation(double x, double y, double z) {
 		m_rotation = { x, y, z };
+	}
+
+	void Entity::setRotation(const Vec3& rotation) {
+		m_rotation = rotation;
 	}
 
 	void Entity::setScale(double x) {
@@ -49,6 +55,10 @@ namespace nf {
 
 	void Entity::setScale(double x, double y, double z) {
 		m_scale = { x, y, z };
+	}
+
+	void Entity::setScale(const Vec3& scale) {
+		m_scale = scale;
 	}
 
 	void Entity::bind(Shader* shader) {

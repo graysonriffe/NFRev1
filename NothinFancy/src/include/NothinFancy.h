@@ -6,6 +6,7 @@
 #include <Windows.h>
 
 #include "Config.h"
+#include "Utility.h"
 #include "IntroGamestate.h"
 #include "Assets.h"
 
@@ -15,20 +16,18 @@ namespace nf {
 	class Model;
 
 	class Entity {
-		struct Vec3 {
-			Vec3(double x1) : x(x1), y(x1), z(x1) {}
-			Vec3(double x1, double y1, double z1) : x(x1), y(y1), z(z1) {}
-			double x, y, z;
-		};
 	public:
 		Entity();
 
 		void create(Asset* modelAsset, Asset* textureAsset = nullptr);
 
 		void setPosition(double x, double y, double z);
+		void setPosition(const Vec3& position);
 		void setRotation(double x, double y, double z);
+		void setRotation(const Vec3& rotation);
 		void setScale(double x);
 		void setScale(double x, double y, double z);
+		void setScale(const Vec3& scale);
 
 		void bind(Shader* shader);
 		Model* getModel() const;
@@ -49,8 +48,9 @@ namespace nf {
 		Renderer(Application* app);
 
 		void render(Entity& in);
+		//TODO: Create second render function for UIElements
 
-		void doFrame();
+		void doFrame(Camera* camera);
 
 		~Renderer();
 	private:
@@ -59,10 +59,8 @@ namespace nf {
 		HDC m_hdc;
 		HGLRC m_hglrc;
 
-		std::vector<Drawable*> m_lGame;
+		std::vector<Entity*> m_lGame;
 		std::vector<Drawable*> m_lUI;
-		const char* m_defaultVertex;
-		const char* m_defaultFragment;
 		Shader* m_defaultShader;
 	};
 
@@ -85,13 +83,17 @@ namespace nf {
 		const Config& getConfig() const;
 		int getFPS() const;
 		bool isInput(unsigned int code);
+		void trackMouse(bool track);
+		void getMouseDiff(int& x, int& y);
 
+		void quit();
 		~Application();
 	private:
 		void registerWindowClass();
 		RECT getWindowRect() const;
 		void calculateNewWindowPos(int& x, int& y);
 		void toggleFullscreen();
+		void updateInput();
 		void runMainGameThread();
 		void startIntroState();
 		void doStateChange();
@@ -100,6 +102,7 @@ namespace nf {
 
 		Config m_currentConfig;
 		bool m_running;
+		bool m_quit;
 		HINSTANCE m_hInst;
 		LPCWSTR m_wclassName;
 		HWND m_window;
@@ -127,10 +130,12 @@ namespace nf {
 
 		//Array of booleans that represent keyboard and mouse input minus the scrollwheel
 		bool m_input[164];
+		int m_mouseX, m_mouseY;
+		bool m_trackingMouse;
+		int m_mouseDiffX, m_mouseDiffY;
 
 		//Renderer object to use OpenGL to render the current state
 		Renderer* m_renderer;
 	};
 }
 #include "Input.h"
-#include "Utility.h"

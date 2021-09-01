@@ -4,7 +4,9 @@
 #include "Utility.h"
 
 namespace nf {
-	Gamestate::Gamestate(Application* app) {
+	Gamestate::Gamestate(Application* app) :
+		m_camera(app)
+	{
 		m_app = app;
 	}
 
@@ -14,6 +16,10 @@ namespace nf {
 
 	void Gamestate::update(double deltaTime) {
 
+	}
+
+	Camera* Gamestate::getCamera() {
+		return &m_camera;
 	}
 
 	void Gamestate::render(Renderer& renderer) {

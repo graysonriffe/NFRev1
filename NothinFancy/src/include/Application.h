@@ -28,7 +28,10 @@ namespace nf {
 		const Config& getConfig() const;
 		int getFPS() const;
 		bool isInput(unsigned int code);
+		void trackMouse(bool track);
+		void getMouseDiff(int& x, int& y);
 
+		void quit();
 		~Application();
 	private:
 		void registerWindowClass();
@@ -44,6 +47,7 @@ namespace nf {
 
 		Config m_currentConfig;
 		bool m_running;
+		bool m_quit;
 		HINSTANCE m_hInst;
 		LPCWSTR m_wclassName;
 		HWND m_window;
@@ -71,6 +75,9 @@ namespace nf {
 
 		//Array of booleans that represent keyboard and mouse input minus the scrollwheel
 		bool m_input[164];
+		int m_mouseX, m_mouseY;
+		bool m_trackingMouse;
+		int m_mouseDiffX, m_mouseDiffY;
 
 		//Renderer object to use OpenGL to render the current state
 		Renderer* m_renderer;

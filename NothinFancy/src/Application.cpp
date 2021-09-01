@@ -70,6 +70,8 @@ namespace nf {
 		MSG msg = { };
 		std::thread mainThread(&Application::runMainGameThread, this);
 		while (m_running) {
+			if (m_quit)
+				PostMessage(m_window, WM_CLOSE, NULL, NULL);
 			while (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
@@ -133,6 +135,18 @@ namespace nf {
 		}
 	}
 
+	void Application::trackMouse(bool track) {
+		m_trackingMouse = track;
+	}
+
+	void Application::getMouseDiff(int& x, int& y) {
+		x = m_mouseDiffX;
+		y = m_mouseDiffY;
+		m_mouseDiffX = 0;
+		m_mouseDiffY = 0;
+		//TODO: Replace with atomic?
+	}
+
 	void Application::registerWindowClass() {
 		if (!FindWindow(L"NFClass", NULL)) {
 			m_wclassName = L"NFClass";
@@ -193,6 +207,41 @@ namespace nf {
 			else
 				m_input[i] = false;
 		}
+		POINT mouse;
+		GetCursorPos(&mouse);
+		ScreenToClient(m_window, &mouse);
+		if (GetFocus() == m_window) {
+			m_mouseX = mouse.x;
+			m_mouseY = mouse.y;
+			if (m_mouseX > m_currentConfig.width)
+				m_mouseX = m_currentConfig.width;
+			if (m_mouseX < 0)
+				m_mouseX = 0;
+			if (m_mouseY > m_currentConfig.height)
+				m_mouseY = m_currentConfig.height;
+			if (m_mouseY < 0)
+				m_mouseY = 0;
+
+			if (m_trackingMouse) {
+				static bool first = true;
+				int middleX = m_currentConfig.width / 2;
+				int middleY = m_currentConfig.height / 2;
+				m_mouseDiffX += m_mouseX - middleX;
+				m_mouseDiffY += middleY - m_mouseY;
+				if (first) {
+					m_mouseDiffX = 0;
+					m_mouseDiffY = 0;
+					first = false;
+				}
+				POINT middle = { middleX, middleY };
+				ClientToScreen(m_window, &middle);
+				SetCursorPos(middle.x, middle.y);
+			}
+		}
+	}
+
+	void Application::quit() {
+		m_quit = true;
 	}
 
 	void Application::runMainGameThread() {
@@ -207,7 +256,7 @@ namespace nf {
 				lastFrame = std::chrono::steady_clock::now();
 				m_currentState->update(m_deltaTime);
 				m_currentState->render(*m_renderer);
-				m_renderer->doFrame();
+				m_renderer->doFrame(m_currentState->getCamera());
 				m_frames++;
 				if (m_stateChange)
 					doStateChange();
@@ -262,6 +311,15 @@ namespace nf {
 		}
 		case WM_MENUCHAR: {
 			return MNC_CLOSE << 16;
+		}
+		case WM_SETCURSOR: {
+			if (LOWORD(lParam) != HTCLIENT)
+				break;
+			if (app->m_trackingMouse && LOWORD(lParam) == HTCLIENT && GetFocus() == hWnd) {
+				SetCursor(NULL);
+				return 0;
+			}
+			break;
 		}
 		case WM_CLOSE: {
 			DestroyWindow(hWnd);

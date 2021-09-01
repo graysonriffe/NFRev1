@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
 #include <Windows.h>
-#include "glm/glm.hpp"
 
 #include "Entity.h"
+#include "Camera.h"
 
 namespace nf {
 	class Application;
@@ -15,7 +15,7 @@ namespace nf {
 		void render(Entity& in);
 		//TODO: Create second render function for UIElements
 
-		void doFrame();
+		void doFrame(Camera* camera);
 
 		~Renderer();
 	private:
@@ -27,7 +27,5 @@ namespace nf {
 		std::vector<Entity*> m_lGame;
 		std::vector<Drawable*> m_lUI;
 		Shader* m_defaultShader;
-
-		glm::mat4 proj;
 	};
 }

@@ -1,6 +1,10 @@
 #include "Model.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "Utility.h"
+#include "Texture.h"
 
 namespace nf {
 	Model::Model() {

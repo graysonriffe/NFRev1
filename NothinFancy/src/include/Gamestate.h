@@ -1,4 +1,5 @@
 #pragma once
+#include "Camera.h"
 
 namespace nf {
 	class Application;
@@ -13,11 +14,12 @@ namespace nf {
 		virtual void onEnter();
 
 		virtual void update(double deltaTime);
+		Camera* getCamera();
 		virtual void render(Renderer& renderer);
 
 		virtual void onExit();
 	protected:
 		Application* m_app;
-		//Resource identifier?
+		Camera m_camera;
 	};
 }
