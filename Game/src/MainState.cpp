@@ -9,7 +9,7 @@ MainState::MainState(nf::Application* app) :
 void MainState::onEnter() {
 	Log("MainState onEnter!");
 
-	}
+}
 
 void MainState::update(double deltaTime) {
 

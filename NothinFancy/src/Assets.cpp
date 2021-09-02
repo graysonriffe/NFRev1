@@ -5,15 +5,15 @@
 
 namespace nf {
 	Asset::~Asset() {
-
+		delete[] data;
 	}
 
 	AModel::~AModel() {
-		delete[] data;
+
 	}
 
 	ATexture::~ATexture() {
-		delete[] data;
+
 	}
 
 	AShader::~AShader() {

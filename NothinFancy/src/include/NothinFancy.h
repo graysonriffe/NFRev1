@@ -10,6 +10,7 @@
 #include "IntroGamestate.h"
 #include "Assets.h"
 #include "Text.h"
+#include "UITexture.h"
 #include "Input.h"
 
 namespace nf {

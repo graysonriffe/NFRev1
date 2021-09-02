@@ -32,5 +32,6 @@ namespace nf {
 		std::vector<UIElement*> m_lUI;
 		Shader* m_entityShader;
 		Shader* m_textShader;
+		Shader* m_uiTextureShader;
 	};
 }

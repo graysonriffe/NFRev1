@@ -3,15 +3,17 @@
 
 namespace nf {
 	class Model;
+	class Texture;
+	struct Font;
 
 	struct Asset {
 		char* data;
+		bool alreadyLoaded = false;
 
 		virtual ~Asset();
 	};
 
 	struct AModel : Asset {
-		bool alreadyLoaded;
 		Model* loadedModel;
 
 		~AModel() override;
@@ -19,6 +21,7 @@ namespace nf {
 
 	struct ATexture : Asset {
 		size_t size;
+		Texture* loadedTexture;
 
 		~ATexture() override;
 	};
@@ -29,6 +32,7 @@ namespace nf {
 
 	struct AFont : Asset {
 		size_t size;
+		Font* loadedFont;
 
 		~AFont() override;
 	};

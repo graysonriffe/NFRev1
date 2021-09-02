@@ -12,21 +12,25 @@ namespace nf {
 	}
 
 	void Texture::create(const char* textureData, size_t textureSize) {
-		int width, height, nChannels;
+		int nChannels;
 		stbi_set_flip_vertically_on_load(true);
-		unsigned char* texture = stbi_load_from_memory((unsigned char*)textureData, textureSize, &width, &height, &nChannels, 0);
+		unsigned char* texture = stbi_load_from_memory((unsigned char*)textureData, textureSize, &m_x, &m_y, &nChannels, 0);
 		if (!texture)
 			Error("Texture failed to load from memory!");
 		glBindTexture(GL_TEXTURE_2D, m_id);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_x, m_y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(texture);
 	}
 
 	void Texture::bind() {
 		glBindTexture(GL_TEXTURE_2D, m_id);
+	}
+
+	Vec2 Texture::getDimensions() {
+		return { (float)m_x, (float)m_y };
 	}
 
 	Texture::~Texture() {

@@ -205,6 +205,7 @@
     <ClCompile Include="src\Renderer\Drawable\Model.cpp" />
     <ClCompile Include="src\Renderer\Drawable\Text.cpp" />
     <ClCompile Include="src\Renderer\Drawable\UIElement.cpp" />
+    <ClCompile Include="src\Renderer\Drawable\UITexture.cpp" />
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="src\include\Text.h" />
     <ClInclude Include="src\include\Texture.h" />
     <ClInclude Include="src\include\UIElement.h" />
+    <ClInclude Include="src\include\UITexture.h" />
     <ClInclude Include="src\include\Utility.h" />
     <ClInclude Include="src\include\VertexArray.h" />
     <ClInclude Include="src\include\VertexBuffer.h" />

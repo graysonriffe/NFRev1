@@ -1,11 +1,11 @@
 #version 330 core
 
-out vec4 color;
+in vec2 texCoord;
 
 uniform sampler2D text;
 uniform vec3 textColor;
 
-in vec2 texCoord;
+out vec4 color;
 
 void main() {
 	vec4 temp = vec4(1.0, 1.0, 1.0, texture(text, texCoord).r);

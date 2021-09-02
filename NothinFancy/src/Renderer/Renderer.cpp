@@ -49,7 +49,6 @@ namespace nf {
 		wglMakeCurrent(m_hdc, m_hglrc);
 		wglSwapIntervalEXT(0);
 		Log("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
-		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -64,6 +63,9 @@ namespace nf {
 		const char* textVertex = baseAP["textVertex.shader"]->data;
 		const char* textFragment = baseAP["textFragment.shader"]->data;
 		m_textShader = new Shader(textVertex, textFragment);
+		const char* uiTextureVertex = baseAP["uiTextureVertex.shader"]->data;
+		const char* uiTextureFragment = baseAP["uiTextureFragment.shader"]->data;
+		m_uiTextureShader = new Shader(uiTextureVertex, uiTextureFragment);
 
 		BaseAssets::cube = (AModel*)baseAP["cube.obj"];
 		BaseAssets::plane = (AModel*)baseAP["plane.obj"];
@@ -91,6 +93,7 @@ namespace nf {
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glEnable(GL_DEPTH_TEST);
 		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 100000.0f);
 		for (Entity* draw : m_lGame) {
 			Entity& curr = *draw;
@@ -102,6 +105,7 @@ namespace nf {
 		}
 		m_lGame.clear();
 
+		glDisable(GL_DEPTH_TEST);
 		proj = glm::ortho(0.0f, (float)m_app->getConfig().width, 0.0f, (float)m_app->getConfig().height);
 		for (UIElement* draw : m_lUI) {
 			UIElement& curr = *draw;
@@ -111,7 +115,11 @@ namespace nf {
 				curr.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
 				continue;
 			}
-			//TODO: Add else if for UI texture
+			if (curr.identity() == "texture") {
+				m_uiTextureShader->bind();
+				m_uiTextureShader->setUniform("proj", proj);
+				curr.render(m_uiTextureShader, m_app->getConfig().width, m_app->getConfig().height);
+			}
 		}
 		m_lUI.clear();
 
@@ -123,6 +131,9 @@ namespace nf {
 	}
 
 	Renderer::~Renderer() {
+		delete m_entityShader;
+		delete m_textShader;
+		delete m_uiTextureShader;
 		ReleaseDC(m_app->getWindow(), m_hdc);
 		wglMakeCurrent(NULL, NULL);
 		wglDeleteContext(m_hglrc);

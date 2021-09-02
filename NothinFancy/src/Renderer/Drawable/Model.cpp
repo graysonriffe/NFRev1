@@ -13,17 +13,22 @@ namespace nf {
 
 	}
 
-	void Model::create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount, const void* textureCoordinatesBufferData, size_t textureCoordinatesBufferSize, const char* textureData, size_t textureSize) {
+	void Model::create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount, const void* textureCoordinatesBufferData, size_t textureCoordinatesBufferSize, ATexture* texture) {
 		m_vao = new VertexArray;
 		m_vao->addBuffer(vertexBufferData, vertexBufferSize);
 		m_vao->push<float>(3);
 		m_vao->finishBufferLayout();
-		if (textureCoordinatesBufferData && textureCoordinatesBufferSize && textureData) {
-			m_vao->addBuffer(textureCoordinatesBufferData, textureCoordinatesBufferSize);
-			m_vao->push<float>(2);
-			m_vao->finishBufferLayout();
+		m_vao->addBuffer(textureCoordinatesBufferData, textureCoordinatesBufferSize);
+		m_vao->push<float>(2);
+		m_vao->finishBufferLayout();
+		if (texture->alreadyLoaded) {
+			m_texture = texture->loadedTexture;
+		}
+		else {
 			m_texture = new Texture;
-			m_texture->create(textureData, textureSize);
+			m_texture->create(texture->data, texture->size);
+			texture->alreadyLoaded = true;
+			texture->loadedTexture = m_texture;
 		}
 		m_ib = new IndexBuffer(indexBufferData, indexBufferCount);
 	}

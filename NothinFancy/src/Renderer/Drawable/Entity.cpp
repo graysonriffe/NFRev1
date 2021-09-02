@@ -30,7 +30,7 @@ namespace nf {
 		size_t ibCount = 0;
 		std::vector<float> tc;
 		parseOBJ(obj, vb, ib, ibCount, tc);
-		m_model->create(&vb[0], vb.size() * sizeof(float), &ib[0], ibCount, &tc[0], tc.size() * sizeof(float), texture.data, texture.size);
+		m_model->create(&vb[0], vb.size() * sizeof(float), &ib[0], ibCount, &tc[0], tc.size() * sizeof(float), &texture);
 		model.alreadyLoaded = true;
 		model.loadedModel = m_model;
 	}
@@ -52,7 +52,7 @@ namespace nf {
 	}
 
 	void Entity::setScale(double x) {
-		m_rotation = { x, x, x };
+		m_scale = { x, x, x };
 	}
 
 	void Entity::setScale(double x, double y, double z) {
