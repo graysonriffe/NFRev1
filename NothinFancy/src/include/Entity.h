@@ -4,6 +4,8 @@
 #include "Utility.h"
 
 namespace nf {
+	class Shader;
+
 	class Entity {
 	public:
 		Entity();

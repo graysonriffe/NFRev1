@@ -10,6 +10,7 @@ namespace nf {
 
 		void bind();
 		void setUniform(const char* name, glm::mat4& data);
+		void setUniform(const char* name, glm::vec3& data);
 
 		~Shader();
 	private:

@@ -5,6 +5,8 @@
 #include "glm/glm.hpp"
 
 #include "Application.h"
+#include "Shader.h"
+#include "UIElement.h"
 #include "Utility.h"
 
 namespace nf {
@@ -52,12 +54,16 @@ namespace nf {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_CULL_FACE);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		baseAP.load("base.nfpack");
-		const char* defaultVertex = baseAP["defaultVertex.shader"]->data;
-		const char* defaultFragment = baseAP["defaultFragment.shader"]->data;
-		m_defaultShader = new Shader(defaultVertex, defaultFragment);
+		const char* entityVertex = baseAP["entityVertex.shader"]->data;
+		const char* entityFragment = baseAP["entityFragment.shader"]->data;
+		m_entityShader = new Shader(entityVertex, entityFragment);
+		const char* textVertex = baseAP["textVertex.shader"]->data;
+		const char* textFragment = baseAP["textFragment.shader"]->data;
+		m_textShader = new Shader(textVertex, textFragment);
 
 		BaseAssets::cube = (AModel*)baseAP["cube.obj"];
 		BaseAssets::plane = (AModel*)baseAP["plane.obj"];
@@ -65,6 +71,7 @@ namespace nf {
 		BaseAssets::cone = (AModel*)baseAP["cone.obj"];
 		BaseAssets::cylinder = (AModel*)baseAP["cylinder.obj"];
 		BaseAssets::torus = (AModel*)baseAP["torus.obj"];
+		BaseAssets::defaultFont = (AFont*)baseAP["default.ttf"];
 	}
 
 	void Renderer::render(Entity& in) {
@@ -73,25 +80,38 @@ namespace nf {
 		m_lGame.push_back(&in);
 		//TODO: Sort transparent objects by distance; Farthest first
 	}
+	void Renderer::render(UIElement& in) {
+		if (&in == nullptr)
+			Error("Tried to render Entity before being created!");
+		m_lUI.push_back(&in);
+		//TODO: Sort transparent objects by distance; Farthest first
+	}
 
 	void Renderer::doFrame(Camera* camera) {
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
-		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 100000.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 100000.0f);
 		for (Entity* draw : m_lGame) {
 			Entity& curr = *draw;
-			curr.bind(m_defaultShader);
-			m_defaultShader->setUniform("proj", proj);
-			camera->bind(m_defaultShader);
+			curr.bind(m_entityShader);
+			m_entityShader->setUniform("proj", proj);
+			camera->bind(m_entityShader);
 			//TODO: Clean this up a bit
 			glDrawElements(GL_TRIANGLES, curr.getModel()->getIndexCount(), GL_UNSIGNED_INT, nullptr);
 		}
 		m_lGame.clear();
 
-		for (Drawable* draw : m_lUI) {
-			Drawable& curr = *draw;
-
+		proj = glm::ortho(0.0f, (float)m_app->getConfig().width, 0.0f, (float)m_app->getConfig().height);
+		for (UIElement* draw : m_lUI) {
+			UIElement& curr = *draw;
+			if (curr.identity() == "text") {
+				m_textShader->bind();
+				m_textShader->setUniform("proj", proj);
+				curr.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
+				continue;
+			}
+			//TODO: Add else if for UI texture
 		}
 		m_lUI.clear();
 

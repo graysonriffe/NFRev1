@@ -27,6 +27,12 @@ namespace nf {
 		~AShader() override;
 	};
 
+	struct AFont : Asset {
+		size_t size;
+
+		~AFont() override;
+	};
+
 	class AssetPack {
 	public:
 		AssetPack();
@@ -48,6 +54,8 @@ namespace nf {
 		static AModel* cylinder;
 		static AModel* torus;
 
-		static ATexture* logo;
+		static AFont* defaultFont;
+
+		//static ATexture* logo;
 	};
 }

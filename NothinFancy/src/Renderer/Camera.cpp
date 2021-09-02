@@ -24,8 +24,6 @@ namespace nf {
 				m_app->trackMouse(true);
 			else
 				m_app->trackMouse(false);
-			m_yaw = -90.0f;
-			m_pitch = 0.0f;
 		}
 	}
 

@@ -7,7 +7,10 @@
 #include "Texture.h"
 
 namespace nf {
-	Model::Model() {
+	Model::Model() :
+		m_texture(nullptr)
+	{
+
 	}
 
 	void Model::create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount, const void* textureCoordinatesBufferData, size_t textureCoordinatesBufferSize, const char* textureData, size_t textureSize) {

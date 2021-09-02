@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	std::set<std::string> extensions;
-	extensions.insert({ "obj", "png", "shader" });
+	extensions.insert({ "obj", "png", "shader", "ttf" });
 
 	unsigned int dirCount = 0;
 	const std::filesystem::path workingDir = std::filesystem::current_path();

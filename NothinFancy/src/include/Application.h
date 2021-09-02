@@ -52,7 +52,7 @@ namespace nf {
 		LPCWSTR m_wclassName;
 		HWND m_window;
 		LONG m_defaultWindowStyle;
-		int m_altWidth, m_altHeight;
+		unsigned int m_altWidth, m_altHeight;
 
 		std::chrono::duration<double> m_fpsDuration;
 		double m_deltaTime;
@@ -75,7 +75,7 @@ namespace nf {
 
 		//Array of booleans that represent keyboard and mouse input minus the scrollwheel
 		bool m_input[164];
-		int m_mouseX, m_mouseY;
+		unsigned int m_mouseX, m_mouseY;
 		bool m_trackingMouse;
 		bool m_mouseTrackFirst;
 		int m_mouseDiffX, m_mouseDiffY;

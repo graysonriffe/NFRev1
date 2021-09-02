@@ -19,6 +19,7 @@ namespace nf {
 		void push(unsigned int count);
 		void finishBufferLayout();
 		void bind();
+		void setBufferData(unsigned int buffer, const void* data, const size_t dataSize);
 
 		~VertexArray();
 	private:

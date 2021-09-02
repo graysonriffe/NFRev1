@@ -20,6 +20,10 @@ namespace nf {
 
 	}
 
+	AFont::~AFont() {
+
+	}
+
 	AssetPack::AssetPack() {
 
 	}
@@ -73,6 +77,14 @@ namespace nf {
 				m_assets[assetName] = shader;
 				continue;
 			}
+			if (extension == "ttf") {
+				AFont* font = new AFont;
+				font->data = new char[assetSize];
+				std::memcpy(font->data, &assetContents[0], assetSize);
+				font->size = assetSize;
+				m_assets[assetName] = font;
+				continue;
+			}
 			Error("Invalid asset extention in pack \"" + (std::string)packName + (std::string)"\"!");
 		}
 	}
@@ -100,4 +112,6 @@ namespace nf {
 	AModel* BaseAssets::cone;
 	AModel* BaseAssets::cylinder;
 	AModel* BaseAssets::torus;
+
+	AFont* BaseAssets::defaultFont;
 }

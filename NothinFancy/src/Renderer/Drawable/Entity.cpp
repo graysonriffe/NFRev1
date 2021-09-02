@@ -2,6 +2,8 @@
 
 #include<vector>
 
+#include "Shader.h"
+
 namespace nf {
 	Entity::Entity() :
 		m_model(nullptr),

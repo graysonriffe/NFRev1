@@ -50,6 +50,12 @@ namespace nf {
 		glBindVertexArray(m_id);
 	}
 
+	void VertexArray::setBufferData(unsigned int buffer, const void* data, const size_t dataSize) {
+		bind();
+		m_buffers[buffer]->bind();
+		glBufferData(GL_ARRAY_BUFFER, dataSize, data, GL_STATIC_DRAW);
+	}
+
 	VertexArray::~VertexArray() {
 		for (VertexBuffer* curr : m_buffers) {
 			delete curr;

@@ -7,12 +7,14 @@
 
 namespace nf {
 	class Application;
+	class UIElement;
 
 	class Renderer {
 	public:
 		Renderer(Application* app);
 
 		void render(Entity& in);
+		void render(UIElement& in);
 		//TODO: Create second render function for UIElements
 
 		void doFrame(Camera* camera);
@@ -27,7 +29,8 @@ namespace nf {
 		AssetPack baseAP;
 
 		std::vector<Entity*> m_lGame;
-		std::vector<Drawable*> m_lUI;
-		Shader* m_defaultShader;
+		std::vector<UIElement*> m_lUI;
+		Shader* m_entityShader;
+		Shader* m_textShader;
 	};
 }

@@ -38,7 +38,25 @@ __debugbreak();}
 #define Error(x) {MessageBox(FindWindow(L"NFClass", NULL), toWide(x), L"NF Engine Error", MB_OK | MB_ICONERROR);\
 std::exit(-1);}
 #endif
-
+	struct Vec2 {
+		Vec2() : x(0.0), y(0.0) {}
+		Vec2(double x1) : x(x1), y(x1) {}
+		Vec2(double x1, double y1) : x(x1), y(y1) {}
+		Vec2 operator*(const double scalar) {
+			return Vec2(x * scalar, y * scalar);
+		}
+		Vec2& operator+=(const Vec2& rhs) {
+			this->x += rhs.x;
+			this->y += rhs.y;
+			return *this;
+		}
+		Vec2& operator-=(const Vec2& rhs) {
+			this->x -= rhs.x;
+			this->y -= rhs.y;
+			return *this;
+		}
+		double x, y;
+	};
 	struct Vec3 {
 		Vec3() : x(0.0), y(0.0), z(0.0) {}
 		Vec3(double x1) : x(x1), y(x1), z(x1) {}

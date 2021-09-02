@@ -52,6 +52,11 @@ namespace nf {
 			getUniformLocation(name);
 		glUniformMatrix4fv(m_uniformLocations[name], 1, GL_FALSE, glm::value_ptr(data));
 	}
+	void Shader::setUniform(const char* name, glm::vec3& data) {
+		if (m_uniformLocations.find(name) == m_uniformLocations.end())
+			getUniformLocation(name);
+		glUniform3fv(m_uniformLocations[name], 1, glm::value_ptr(data));
+	}
 
 	void Shader::getUniformLocation(const char* uniformName) {
 		unsigned int loc = glGetUniformLocation(m_id, uniformName);

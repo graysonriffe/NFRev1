@@ -3,8 +3,8 @@
 namespace nf {
 	struct Config {
 	public:
-		int width;
-		int height;
+		unsigned int width;
+		unsigned int height;
 		bool fullscreen;
 		const char* title;
 	};
