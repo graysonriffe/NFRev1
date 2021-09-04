@@ -13,6 +13,7 @@ namespace nf {
 	}
 
 	void UITexture::create(Asset* texture, const Vec2& position, double scale) {
+		m_constructed = true;
 		ATexture* tex = (ATexture*)texture;
 		m_position = position;
 		m_scale = (float)scale;

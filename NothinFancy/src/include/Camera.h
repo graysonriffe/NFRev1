@@ -8,10 +8,10 @@ namespace nf {
 	class Camera {
 	public:
 		enum class Type {
-			NF_CAMERA_UI,
-			NF_CAMERA_FIRST_PERSON,
-			NF_CAMERA_ORBIT,
-			NF_CAMERA_FIXED
+			UI,
+			FIRST_PERSON,
+			ORBIT,
+			FIXED
 		};
 		Camera(Application* app);
 
@@ -24,6 +24,7 @@ namespace nf {
 		void moveLeft(double speed);
 		void setPosition(double x, double y, double z);
 		void setPosition(const Vec3& position);
+		const Vec3& getPosition();
 
 		void bind(Shader* shader);
 

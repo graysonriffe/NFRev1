@@ -4,6 +4,7 @@
 #include <sstream>
 #include <fstream>
 #include <map>
+#include "glm/glm.hpp"
 
 #include "Config.h"
 
@@ -111,13 +112,13 @@ namespace nf {
 		return read;
 	}
 
-	void parseOBJ(std::string& in, std::vector<float>& vbOut, std::vector<unsigned int>& ibOut, size_t& ibCountOut, std::vector<float>& tcOut) {
+	void parseOBJ(std::string& in, std::vector<float>& vbOut, std::vector<unsigned int>& ibOut, size_t& ibCountOut, std::vector<float>& tcOut, std::vector<float>& vnOut) {
 		std::string file = in;
-		std::vector<float> vbRaw, tcRaw;
-		std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
-		std::vector<float> tempVertices;
-		std::vector<float> tempTC;
+		std::vector<float> vbRaw, tcRaw, vnRaw;
+		std::vector<unsigned int> vertexIndices, uvIndices, vnIndices;
+		std::vector<float> tempVertices, tempTC, tempVN;
 
+		bool tcPresent = false, vnPresent = false;
 		while (true) {
 			char line[500];
 			int remove = 0;
@@ -133,41 +134,66 @@ namespace nf {
 				tempVertices.push_back(z);
 			}
 			else if (std::strcmp(line, "vt") == 0) {
+				tcPresent = true;
 				float u = 0.0, v = 0.0;
 				sscanf_s(file.c_str(), "\nvt %f %f\n", &u, &v);
 				remove = 18;
 				tempTC.push_back(u);
 				tempTC.push_back(v);
 			}
+			if (std::strcmp(line, "vn") == 0) {
+				vnPresent = true;
+				float x = 0.0, y = 0.0, z = 0.0;
+				sscanf_s(file.c_str(), "\nvn %f %f %f\n", &x, &y, &z);
+				remove = 20;
+				tempVN.push_back(x);
+				tempVN.push_back(y);
+				tempVN.push_back(z);
+			}
 			else if (std::strcmp(line, "f") == 0) {
-				unsigned int vertexIndex[3], uvIndex[3];
-				sscanf_s(file.c_str(), "\nf %d/%d %d/%d %d/%d\n", &vertexIndex[0], &uvIndex[0], &vertexIndex[1], &uvIndex[1], &vertexIndex[2], &uvIndex[2]);
-				remove = 12;
+				unsigned int vertexIndex[3], uvIndex[3], vnIndex[3];
+				sscanf_s(file.c_str(), "\nf %d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &vnIndex[0], &vertexIndex[1], &uvIndex[1], &vnIndex[1], &vertexIndex[2], &uvIndex[2], &vnIndex[2]);
+				remove = 15;
 				vertexIndices.push_back(vertexIndex[0]);
 				vertexIndices.push_back(vertexIndex[1]);
 				vertexIndices.push_back(vertexIndex[2]);
 				uvIndices.push_back(uvIndex[0]);
 				uvIndices.push_back(uvIndex[1]);
 				uvIndices.push_back(uvIndex[2]);
+				vnIndices.push_back(vnIndex[0]);
+				vnIndices.push_back(vnIndex[1]);
+				vnIndices.push_back(vnIndex[2]);
 			}
 
 			unsigned int pos = file.find(line) + strlen(line) + remove;
 			file = file.substr(pos);
 		}
 
+		if (!tcPresent)
+			Error("No texture coordinates found in model!");
+		if (!vnPresent)
+			Error("No normals found in model!");
+
 		for (unsigned int i = 0; i < vertexIndices.size(); i++) {
 			unsigned int vertexIndex = vertexIndices[i];
 			unsigned int uvIndex = uvIndices[i];
+			unsigned int vnIndex = vnIndices[i];
 			float vertexX = tempVertices[(vertexIndex - 1) * 3];
 			float vertexY = tempVertices[(vertexIndex - 1) * 3 + 1];
 			float vertexZ = tempVertices[(vertexIndex - 1) * 3 + 2];
 			float vertexU = tempTC[(uvIndex - 1) * 2];
 			float vertexV = tempTC[(uvIndex - 1) * 2 + 1];
+			float vnX = tempVN[(vnIndex - 1) * 3];
+			float vnY = tempVN[(vnIndex - 1) * 3 + 1];
+			float vnZ = tempVN[(vnIndex - 1) * 3 + 2];
 			vbRaw.push_back(vertexX);
 			vbRaw.push_back(vertexY);
 			vbRaw.push_back(vertexZ);
 			tcRaw.push_back(vertexU);
 			tcRaw.push_back(vertexV);
+			vnRaw.push_back(vnX);
+			vnRaw.push_back(vnY);
+			vnRaw.push_back(vnZ);
 		}
 
 		struct Vertex {
@@ -178,13 +204,17 @@ namespace nf {
 			float u;
 			float v;
 
+			float vnX;
+			float vnY;
+			float vnZ;
+
 			bool operator<(const Vertex other) const {
 				return std::memcmp((void*)this, (void*)&other, sizeof(Vertex)) > 0;
 			}
 		};
 		std::map<Vertex, unsigned int> vertexMap;
 		for (unsigned int i = 0; i * 3 < vbRaw.size(); i++) {
-			Vertex curr = { vbRaw[(i * 3)], vbRaw[(i * 3) + 1], vbRaw[(i * 3) + 2], tcRaw[(i * 2)], tcRaw[(i * 2) + 1] };
+			Vertex curr = { vbRaw[(i * 3)], vbRaw[(i * 3) + 1], vbRaw[(i * 3) + 2], tcRaw[(i * 2)], tcRaw[(i * 2) + 1], vnRaw[(i * 3)], vnRaw[(i * 3) + 1], vnRaw[(i * 3) + 2] };
 			bool found = false;
 			found = vertexMap.find(curr) != vertexMap.end();
 			if (found) {
@@ -198,6 +228,9 @@ namespace nf {
 				vbOut.push_back(curr.z);
 				tcOut.push_back(curr.u);
 				tcOut.push_back(curr.v);
+				vnOut.push_back(curr.vnX);
+				vnOut.push_back(curr.vnY);
+				vnOut.push_back(curr.vnZ);
 				unsigned int index = (vbOut.size() / 3) - 1;
 				ibOut.push_back(index);
 				vertexMap[curr] = index;

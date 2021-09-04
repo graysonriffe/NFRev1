@@ -47,19 +47,29 @@ namespace nf {
 		glUseProgram(m_id);
 	}
 
-	void Shader::setUniform(const char* name, glm::mat4& data) {
+	void Shader::setUniform(const std::string& name, glm::mat4& data) {
 		if (m_uniformLocations.find(name) == m_uniformLocations.end())
 			getUniformLocation(name);
 		glUniformMatrix4fv(m_uniformLocations[name], 1, GL_FALSE, glm::value_ptr(data));
 	}
-	void Shader::setUniform(const char* name, glm::vec3& data) {
+	void Shader::setUniform(const std::string& name, glm::vec3& data) {
 		if (m_uniformLocations.find(name) == m_uniformLocations.end())
 			getUniformLocation(name);
 		glUniform3fv(m_uniformLocations[name], 1, glm::value_ptr(data));
 	}
+	void Shader::setUniform(const std::string& name, int data) {
+		if (m_uniformLocations.find(name) == m_uniformLocations.end())
+			getUniformLocation(name);
+		glUniform1i(m_uniformLocations[name], data);
+	}
+	void Shader::setUniform(const std::string& name, float data) {
+		if (m_uniformLocations.find(name) == m_uniformLocations.end())
+			getUniformLocation(name);
+		glUniform1f(m_uniformLocations[name], data);
+	}
 
-	void Shader::getUniformLocation(const char* uniformName) {
-		unsigned int loc = glGetUniformLocation(m_id, uniformName);
+	void Shader::getUniformLocation(const std::string& uniformName) {
+		unsigned int loc = glGetUniformLocation(m_id, uniformName.c_str());
 		if (loc == -1)
 			Error("Uniform \"" + (std::string)uniformName + "\" does not exist!");
 		m_uniformLocations[uniformName] = loc;

@@ -10,7 +10,7 @@ namespace nf {
 	public:
 		Model();
 
-		void create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount, const void* textureCoordinates, size_t textureCoordinatesBufferSize, ATexture* texture);
+		void create(const void* vertexBufferData, const size_t vertexBufferSize, const void* indexBufferData, size_t indexBufferCount, const void* textureCoordinatesBufferData, size_t textureCoordinatesBufferSize, const void* normalsBufferData, size_t normalsBufferSize, ATexture* texture);
 		void bind() override;
 
 		~Model();

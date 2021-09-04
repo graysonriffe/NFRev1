@@ -13,6 +13,7 @@ namespace nf {
 	}
 
 	void Text::create(const std::string& string, const Vec2& position, const Vec3& color, unsigned int size, Asset* font) {
+		m_constructed = true;
 		m_string = string;
 		m_position = position;
 		m_color = color;

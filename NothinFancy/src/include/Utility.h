@@ -84,5 +84,5 @@ std::exit(-1);}
 	void writeFile(const std::string& filename, const std::string& in, bool encrypted = false);
 	std::string readFile(const std::string& filename);
 
-	void parseOBJ(std::string& in, std::vector<float>& vbOut, std::vector<unsigned int>& ibOut, size_t& ibCountOut, std::vector<float>& tcOut);
+	void parseOBJ(std::string& in, std::vector<float>& vbOut, std::vector<unsigned int>& ibOut, size_t& ibCountOut, std::vector<float>& tcOut, std::vector<float>& vnOut);
 }

@@ -8,7 +8,7 @@
 namespace nf {
 	Camera::Camera(Application* app) :
 		m_app(app),
-		m_type(Type::NF_CAMERA_UI),
+		m_type(Type::UI),
 		m_position(0.0),
 		m_front(0.0, 0.0, -1.0),
 		m_yaw(-90.0f),
@@ -20,7 +20,7 @@ namespace nf {
 	void Camera::setType(Type cameraType) {
 		if (cameraType != m_type) {
 			m_type = cameraType;
-			if (m_type == Type::NF_CAMERA_FIRST_PERSON || m_type == Type::NF_CAMERA_ORBIT)
+			if (m_type == Type::FIRST_PERSON || m_type == Type::ORBIT)
 				m_app->trackMouse(true);
 			else
 				m_app->trackMouse(false);
@@ -63,15 +63,19 @@ namespace nf {
 		m_position = position;
 	}
 
+	const Vec3& Camera::getPosition() {
+		return m_position;
+	}
+
 	void Camera::bind(Shader* shader) {
 		glm::mat4 view;
 
 		switch (m_type) {
-			case Type::NF_CAMERA_UI: {
+			case Type::UI: {
 				view = glm::mat4(1.0);
 				break;
 			}
-			case Type::NF_CAMERA_FIRST_PERSON: {
+			case Type::FIRST_PERSON: {
 				int mouseDiffx = 0;
 				int mouseDiffy = 0;
 				m_app->getMouseDiff(mouseDiffx, mouseDiffy);
@@ -94,16 +98,17 @@ namespace nf {
 				view = glm::lookAt(position, position + rotation, up);
 				break;
 			}
-			case Type::NF_CAMERA_ORBIT: {
+			case Type::ORBIT: {
 
 				break;
 			}
-			case Type::NF_CAMERA_FIXED: {
+			case Type::FIXED: {
 
 				break;
 			}
 		}
-
+		glm::vec3 pos(m_position.x, m_position.y, m_position.z);
+		shader->setUniform("camera.pos", pos);
 		shader->setUniform("view", view);
 	}
 

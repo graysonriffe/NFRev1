@@ -21,4 +21,6 @@ void MainState::render(nf::Renderer& renderer) {
 
 void MainState::onExit() {
 	Log("MainState onExit!");
+
+
 }

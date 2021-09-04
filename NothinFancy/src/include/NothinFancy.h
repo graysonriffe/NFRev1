@@ -9,6 +9,7 @@
 #include "Utility.h"
 #include "IntroGamestate.h"
 #include "Assets.h"
+#include "Light.h"
 #include "Text.h"
 #include "UITexture.h"
 #include "Input.h"
@@ -52,6 +53,7 @@ namespace nf {
 
 		void render(Entity& in);
 		void render(UIElement& in);
+		void render(Light& in);
 
 		void doFrame(Camera* camera);
 
@@ -62,12 +64,14 @@ namespace nf {
 		HDC m_hdc;
 		HGLRC m_hglrc;
 
-		AssetPack baseAP;
+		AssetPack m_baseAP;
 
+		std::vector<Light*> m_lights;
 		std::vector<Entity*> m_lGame;
 		std::vector<UIElement*> m_lUI;
 		Shader* m_entityShader;
 		Shader* m_textShader;
+		Shader* m_uiTextureShader;
 	};
 
 	class Application {

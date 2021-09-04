@@ -20,7 +20,7 @@ namespace nf {
 		glBindTexture(GL_TEXTURE_2D, m_id);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_x, m_y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, nChannels == 3 ? GL_RGB : GL_RGBA, m_x, m_y, 0, nChannels == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, texture);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(texture);
 	}

@@ -6,7 +6,10 @@
 
 #include "Application.h"
 #include "Shader.h"
+#include "Light.h"
+#include "Entity.h"
 #include "UIElement.h"
+#include "Camera.h"
 #include "Utility.h"
 
 namespace nf {
@@ -56,55 +59,68 @@ namespace nf {
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		baseAP.load("base.nfpack");
-		const char* entityVertex = baseAP["entityVertex.shader"]->data;
-		const char* entityFragment = baseAP["entityFragment.shader"]->data;
+		m_baseAP.load("base.nfpack");
+		const char* entityVertex = m_baseAP["entityVertex.shader"]->data;
+		const char* entityFragment = m_baseAP["entityFragment.shader"]->data;
 		m_entityShader = new Shader(entityVertex, entityFragment);
-		const char* textVertex = baseAP["textVertex.shader"]->data;
-		const char* textFragment = baseAP["textFragment.shader"]->data;
+		const char* textVertex = m_baseAP["textVertex.shader"]->data;
+		const char* textFragment = m_baseAP["textFragment.shader"]->data;
 		m_textShader = new Shader(textVertex, textFragment);
-		const char* uiTextureVertex = baseAP["uiTextureVertex.shader"]->data;
-		const char* uiTextureFragment = baseAP["uiTextureFragment.shader"]->data;
+		const char* uiTextureVertex = m_baseAP["uiTextureVertex.shader"]->data;
+		const char* uiTextureFragment = m_baseAP["uiTextureFragment.shader"]->data;
 		m_uiTextureShader = new Shader(uiTextureVertex, uiTextureFragment);
 
-		BaseAssets::cube = (AModel*)baseAP["cube.obj"];
-		BaseAssets::plane = (AModel*)baseAP["plane.obj"];
-		BaseAssets::sphere = (AModel*)baseAP["sphere.obj"];
-		BaseAssets::cone = (AModel*)baseAP["cone.obj"];
-		BaseAssets::cylinder = (AModel*)baseAP["cylinder.obj"];
-		BaseAssets::torus = (AModel*)baseAP["torus.obj"];
-		BaseAssets::defaultFont = (AFont*)baseAP["default.ttf"];
+		BaseAssets::cube = (AModel*)m_baseAP["cube.obj"];
+		BaseAssets::plane = (AModel*)m_baseAP["plane.obj"];
+		BaseAssets::sphere = (AModel*)m_baseAP["sphere.obj"];
+		BaseAssets::cone = (AModel*)m_baseAP["cone.obj"];
+		BaseAssets::cylinder = (AModel*)m_baseAP["cylinder.obj"];
+		BaseAssets::torus = (AModel*)m_baseAP["torus.obj"];
+		BaseAssets::defaultFont = (AFont*)m_baseAP["default.ttf"];
 	}
 
 	void Renderer::render(Entity& in) {
-		if (&in == nullptr)
+		if (in.getModel() == nullptr)
 			Error("Tried to render Entity before being created!");
 		m_lGame.push_back(&in);
 		//TODO: Sort transparent objects by distance; Farthest first
 	}
 	void Renderer::render(UIElement& in) {
-		if (&in == nullptr)
-			Error("Tried to render Entity before being created!");
+		if (in.isConstructed() == false)
+			Error("Tried to render a UI element before being created!");
 		m_lUI.push_back(&in);
-		//TODO: Sort transparent objects by distance; Farthest first
+	}
+	void Renderer::render(Light& in) {
+		if (in.isConstructed() == false)
+			Error("Tried to render a light before being created!");
+		m_lights.push_back(&in);
 	}
 
 	void Renderer::doFrame(Camera* camera) {
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glEnable(GL_DEPTH_TEST);
+		//Draw Entities (3D models)
 		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 100000.0f);
+		m_entityShader->bind();
+		m_entityShader->setUniform("proj", proj);
 		for (Entity* draw : m_lGame) {
 			Entity& curr = *draw;
 			curr.bind(m_entityShader);
-			m_entityShader->setUniform("proj", proj);
 			camera->bind(m_entityShader);
 			//TODO: Clean this up a bit
+			m_entityShader->setUniform("numberOfLights", (int)m_lights.size() + 1);
+			for (unsigned int i = 0; i < m_lights.size(); i++) {
+				m_lights[i]->bind(m_entityShader, i);
+			}
+			//TODO: Bind and draw every material here
+			m_entityShader->setUniform("material.shininess", 1.0f);
 			glDrawElements(GL_TRIANGLES, curr.getModel()->getIndexCount(), GL_UNSIGNED_INT, nullptr);
 		}
 		m_lGame.clear();
+		m_lights.clear();
 
+		//Draw UI elements
 		glDisable(GL_DEPTH_TEST);
 		proj = glm::ortho(0.0f, (float)m_app->getConfig().width, 0.0f, (float)m_app->getConfig().height);
 		for (UIElement* draw : m_lUI) {
@@ -122,6 +138,7 @@ namespace nf {
 			}
 		}
 		m_lUI.clear();
+		glEnable(GL_DEPTH_TEST);
 
 		SwapBuffers(m_hdc);
 

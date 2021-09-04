@@ -2,12 +2,15 @@
 #include <vector>
 #include <Windows.h>
 
-#include "Entity.h"
-#include "Camera.h"
+#include "Assets.h"
 
 namespace nf {
 	class Application;
+	class Shader;
+	class Entity;
 	class UIElement;
+	class Light;
+	class Camera;
 
 	class Renderer {
 	public:
@@ -15,7 +18,7 @@ namespace nf {
 
 		void render(Entity& in);
 		void render(UIElement& in);
-		//TODO: Create second render function for UIElements
+		void render(Light& in);
 
 		void doFrame(Camera* camera);
 
@@ -26,8 +29,9 @@ namespace nf {
 		HDC m_hdc;
 		HGLRC m_hglrc;
 
-		AssetPack baseAP;
+		AssetPack m_baseAP;
 
+		std::vector<Light*> m_lights;
 		std::vector<Entity*> m_lGame;
 		std::vector<UIElement*> m_lUI;
 		Shader* m_entityShader;

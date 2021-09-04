@@ -24,6 +24,10 @@ namespace nf {
 		m_centeredY = y;
 	}
 
+	bool UIElement::isConstructed() {
+		return m_constructed;
+	}
+
 	void UIElement::render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight) {
 
 	}

@@ -9,14 +9,16 @@ namespace nf {
 		Shader(const char* vertexSource, const char* fragmentSource);
 
 		void bind();
-		void setUniform(const char* name, glm::mat4& data);
-		void setUniform(const char* name, glm::vec3& data);
+		void setUniform(const std::string& name, glm::mat4& data);
+		void setUniform(const std::string& name, glm::vec3& data);
+		void setUniform(const std::string& name, int data);
+		void setUniform(const std::string& name, float data);
 
 		~Shader();
 	private:
-		void getUniformLocation(const char* uniformName);
+		void getUniformLocation(const std::string& uniformName);
 
 		unsigned int m_id;
-		std::unordered_map<const char*, unsigned int> m_uniformLocations;
+		std::unordered_map<std::string, unsigned int> m_uniformLocations;
 	};
 }

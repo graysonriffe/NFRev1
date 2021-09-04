@@ -202,6 +202,7 @@
     <ClCompile Include="src\Renderer\Camera.cpp" />
     <ClCompile Include="src\Renderer\Drawable\Drawable.cpp" />
     <ClCompile Include="src\Renderer\Drawable\Entity.cpp" />
+    <ClCompile Include="src\Renderer\Drawable\Light.cpp" />
     <ClCompile Include="src\Renderer\Drawable\Model.cpp" />
     <ClCompile Include="src\Renderer\Drawable\Text.cpp" />
     <ClCompile Include="src\Renderer\Drawable\UIElement.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="src\include\IndexBuffer.h" />
     <ClInclude Include="src\include\IntroGamestate.h" />
     <ClInclude Include="src\include\Input.h" />
+    <ClInclude Include="src\include\Light.h" />
     <ClInclude Include="src\include\Model.h" />
     <ClInclude Include="src\include\NothinFancy.h" />
     <ClInclude Include="src\include\Renderer.h" />

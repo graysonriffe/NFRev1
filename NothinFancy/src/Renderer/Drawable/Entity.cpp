@@ -29,8 +29,9 @@ namespace nf {
 		std::vector<unsigned int> ib;
 		size_t ibCount = 0;
 		std::vector<float> tc;
-		parseOBJ(obj, vb, ib, ibCount, tc);
-		m_model->create(&vb[0], vb.size() * sizeof(float), &ib[0], ibCount, &tc[0], tc.size() * sizeof(float), &texture);
+		std::vector<float> vn;
+		parseOBJ(obj, vb, ib, ibCount, tc, vn);
+		m_model->create(&vb[0], vb.size() * sizeof(float), &ib[0], ibCount, &vn[0], vn.size() * sizeof(float), &tc[0], tc.size() * sizeof(float), &texture);
 		model.alreadyLoaded = true;
 		model.loadedModel = m_model;
 	}
