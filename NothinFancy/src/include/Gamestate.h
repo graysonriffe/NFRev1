@@ -19,7 +19,7 @@ namespace nf {
 
 		virtual void onExit();
 	protected:
-		Application* m_app;
-		Camera m_camera;
+		Application* app;
+		Camera camera;
 	};
 }

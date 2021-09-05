@@ -18,7 +18,7 @@ namespace nf {
 
 	void IntroGamestate::update(double deltaTime) {
 		if (m_counter >= 120) {
-			m_app->changeState("Main State");
+			app->changeState("Main State");
 		}
 		m_counter++;
 	}

@@ -67,6 +67,10 @@ namespace nf {
 		return m_position;
 	}
 
+	const Vec3& Camera::getRotation() {
+		return m_front;
+	}
+
 	void Camera::bind(Shader* shader) {
 		glm::mat4 view;
 

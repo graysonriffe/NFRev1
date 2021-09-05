@@ -25,6 +25,7 @@ namespace nf {
 		void setPosition(double x, double y, double z);
 		void setPosition(const Vec3& position);
 		const Vec3& getPosition();
+		const Vec3& getRotation();
 
 		void bind(Shader* shader);
 

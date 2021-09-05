@@ -8,15 +8,15 @@ namespace nf {
 	public:
 		enum class Type {
 			DIRECTIONAL,
-			POINT,
-			SPOTLIGHT
+			POINT
 		};
 		Light();
 
-		void create(const Vec3& position, const Vec3& color, Type type = Type::POINT, float strength = 1.0f);
+		void create(const Vec3& position, const Vec3& color, float strength = 1.0f, Type type = Type::POINT);
 		bool isConstructed();
 		void setPosition(const Vec3& position);
 		void setColor(const Vec3& color);
+		void setStrength(double strength);
 
 		void bind(Shader* shader, unsigned int lightNumber);
 

@@ -5,9 +5,9 @@
 
 namespace nf {
 	Gamestate::Gamestate(Application* app) :
-		m_camera(app)
+		camera(app)
 	{
-		m_app = app;
+		this->app = app;
 	}
 
 	void Gamestate::onEnter() {
@@ -19,7 +19,7 @@ namespace nf {
 	}
 
 	Camera* Gamestate::getCamera() {
-		return &m_camera;
+		return &camera;
 	}
 
 	void Gamestate::render(Renderer& renderer) {

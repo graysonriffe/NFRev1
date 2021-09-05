@@ -14,17 +14,11 @@ struct Material {
 };
 
 struct Light {
-	//Directional = 1, Point = 2, Spotlight = 3
+	//Directional = 1, Point = 2
 	int type;
 	vec3 pos;
-	vec3 direction;
 	vec3 color;
-
-	float falloffConstant;
-	float falloffLinear;
-	float falloffQuad;
-
-	float cutoff;
+	float strength;
 };
 
 uniform sampler2D modelTexture;
@@ -48,18 +42,37 @@ void main() {
 			break;
 		}
 
-		vec3 norm = normalize(normals);
-		vec3 lightDir = normalize(light[i].pos - fragPos);
-		float diff = max(dot(norm, lightDir), 0.0);
-		vec3 diffuse = light[i].color * (diff * texColor.rgb);
+		if (light[i].type == 1) {
+			vec3 lightDir = normalize(-light[i].pos);
+			vec3 norm = normalize(normals);
+			float diff = max(dot(norm, lightDir), 0.0);
+			vec3 diffuse = light[i].color * (diff * texColor.rgb) * light[i].strength;
 
-		vec3 viewDir = normalize(camera.pos - fragPos);
-		vec3 reflectDir = reflect(-lightDir, norm);
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess * 32.0f);
-		vec3 specular = light[i].color * spec;
+			vec3 viewDir = normalize(camera.pos - fragPos);
+			vec3 reflectDir = reflect(-lightDir, norm);
+			float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess * 32.0f);
+			vec3 specular = light[i].color * spec * light[i].strength;
 
-		color += (ambient + diffuse + specular);
+			color += (ambient + diffuse + specular);
+			continue;
+		}
+		if (light[i].type == 2) {
+			vec3 lightDir = normalize(light[i].pos - fragPos);
+			vec3 norm = normalize(normals);
+			float diff = max(dot(norm, lightDir), 0.0);
+			vec3 diffuse = light[i].color * (diff * texColor.rgb) * light[i].strength;
+
+			vec3 viewDir = normalize(camera.pos - fragPos);
+			vec3 reflectDir = reflect(-lightDir, norm);
+			float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess * 32.0f);
+			vec3 specular = light[i].color * spec * (light[i].strength) / 8.0f;
+
+			float length = length(light[i].pos - fragPos);
+			float att = clamp(10.0 / length, 0.0, 1.0) * light[i].strength;
+
+			color += ((ambient + diffuse + specular) * att);
+			continue;
+		}
 	}
-
 	outColor = vec4(color, texColor.a);
 }
