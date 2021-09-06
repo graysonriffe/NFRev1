@@ -8,28 +8,34 @@
 #include "Shader.h"
 
 namespace nf {
-	Text::Text() {
+	Text::Text() :
+		m_font(nullptr),
+		m_scale(1.0f),
+		m_opacity(1.0f)
+	{
 
 	}
 
-	void Text::create(const std::string& string, const Vec2& position, const Vec3& color, unsigned int size, Asset* font) {
+	void Text::create(const std::string& string, const Vec2& position, const Vec3& color, double opacity, double scale, Asset* font) {
 		m_constructed = true;
 		m_string = string;
 		m_position = position;
 		m_color = color;
-		FT_Library ft;
-		if (FT_Init_FreeType(&ft))
-			Error("Could not initialize FreeType!");
-		FT_Face face;
+		m_scale = (float)scale;
+		m_opacity = (float)opacity;
 		AFont& newFont = *(AFont*)font;
 		if (newFont.alreadyLoaded) {
 			m_font = newFont.loadedFont;
 		}
 		else {
 			m_font = new Font;
+			FT_Library ft;
+			if (FT_Init_FreeType(&ft))
+				Error("Could not initialize FreeType!");
+			FT_Face face;
 			if (FT_New_Memory_Face(ft, (const unsigned char*)newFont.data, newFont.size, 0, &face))
 				Error("Could not load font!");
-			FT_Set_Pixel_Sizes(face, 0, size);
+			FT_Set_Pixel_Sizes(face, 0, 160);
 			for (unsigned char c = 0; c < 128; c++) {
 				FT_Load_Char(face, c, FT_LOAD_RENDER);
 				unsigned int tex;
@@ -61,6 +67,18 @@ namespace nf {
 		m_string = string;
 	}
 
+	void Text::setColor(const Vec3& color) {
+		m_color = color;
+	}
+
+	void Text::setScale(double scale) {
+		m_scale = (float)scale;
+	}
+
+	void Text::setOpacity(double opacity) {
+		m_opacity = (float)opacity;
+	}
+
 	const char* Text::identity() {
 		return "text";
 	}
@@ -75,9 +93,9 @@ namespace nf {
 			float textHeight = 0.0f;
 			for (si = m_string.begin(); si != m_string.end(); si++) {
 				Character& c = m_font->m_characters[*si];
-				textWidth += (c.advance >> 6) * scale;
+				textWidth += (c.advance >> 6) * scale * m_scale;
 				if (c.size.y >= textHeight)
-					textHeight = (float)c.size.y * scale;
+					textHeight = (float)c.size.y * scale * m_scale;
 			}
 			if (m_centeredX)
 				currX = ((float)windowWidth - textWidth) / 2;
@@ -86,12 +104,13 @@ namespace nf {
 		}
 		glm::vec3 color = { m_color.x, m_color.y, m_color.z };
 		shader->setUniform("textColor", color);
+		shader->setUniform("opacity", m_opacity);
 		for (si = m_string.begin(); si != m_string.end(); si++) {
 			Character& c = m_font->m_characters[*si];
-			float x = currX + (float)c.bearing.x * scale;
-			float y = currY - float(c.size.y - c.bearing.y) * scale;
-			float w = (float)c.size.x * scale;
-			float h = (float)c.size.y * scale;
+			float x = currX + (float)c.bearing.x * scale * m_scale;
+			float y = currY - float(c.size.y - c.bearing.y) * scale * m_scale;
+			float w = (float)c.size.x * scale * m_scale;
+			float h = (float)c.size.y * scale * m_scale;
 			float vb[3][4] = {
 				x, y + h,
 				x, y,
@@ -112,7 +131,7 @@ namespace nf {
 			m_vao->setBufferData(0, vb, sizeof(vb));
 			m_vao->setBufferData(1, tc, sizeof(tc));
 			glDrawArrays(GL_TRIANGLES, 0, 6);
-			currX += (c.advance >> 6) * scale;
+			currX += (c.advance >> 6) * scale * m_scale;
 		}
 	}
 

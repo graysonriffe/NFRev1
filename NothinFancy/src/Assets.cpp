@@ -116,7 +116,7 @@ namespace nf {
 					curr->numImages++;
 
 					if (curr->numImages == 6) {
-						m_assets[cmName] = curr;
+						m_assets[cmName + (std::string)".cm"] = curr;
 					}
 
 					cubemapCount++;
@@ -174,6 +174,8 @@ namespace nf {
 	AModel* BaseAssets::cone;
 	AModel* BaseAssets::cylinder;
 	AModel* BaseAssets::torus;
+
+	ATexture* BaseAssets::logo;
 
 	AFont* BaseAssets::defaultFont;
 }

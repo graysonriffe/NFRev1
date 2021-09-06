@@ -7,39 +7,39 @@ namespace nf {
 	struct Font;
 
 	struct Asset {
-		char* data;
+		char* data = nullptr;
 		bool alreadyLoaded = false;
 		virtual ~Asset();
 	};
 
 	struct AModel : Asset {
-		Model* loadedModel;
+		Model* loadedModel = nullptr;
 
 		~AModel() override;
 	};
 
 	struct ATexture : Asset {
-		size_t size;
-		Texture* loadedTexture;
+		size_t size = 0;
+		Texture* loadedTexture = nullptr;
 
 		~ATexture() override;
 	};
 
 	struct ACubemap : Asset {
-		char* frontData;
-		size_t frontSize;
-		char* backData;
-		size_t backSize;
-		char* topData;
-		size_t topSize;
-		char* bottomData;
-		size_t bottomSize;
-		char* leftData;
-		size_t leftSize;
-		char* rightData;
-		size_t rightSize;
+		char* frontData = nullptr;
+		size_t frontSize = 0;
+		char* backData = nullptr;
+		size_t backSize = 0;
+		char* topData = nullptr;
+		size_t topSize = 0;
+		char* bottomData = nullptr;
+		size_t bottomSize = 0;
+		char* leftData = nullptr;
+		size_t leftSize = 0;
+		char* rightData = nullptr;
+		size_t rightSize = 0;
 
-		unsigned int numImages;
+		unsigned int numImages = 0;
 
 		~ACubemap();
 	};
@@ -49,8 +49,8 @@ namespace nf {
 	};
 
 	struct AFont : Asset {
-		size_t size;
-		Font* loadedFont;
+		size_t size = 0;
+		Font* loadedFont = nullptr;
 
 		~AFont() override;
 	};
@@ -76,8 +76,9 @@ namespace nf {
 		static AModel* cylinder;
 		static AModel* torus;
 
+		static ATexture* logo;
+
 		static AFont* defaultFont;
 
-		//static ATexture* logo;
 	};
 }

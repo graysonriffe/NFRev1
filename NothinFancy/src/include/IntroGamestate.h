@@ -1,5 +1,7 @@
 #pragma once
 #include "Gamestate.h"
+#include "UITexture.h"
+#include "Text.h"
 
 namespace nf {
 	class IntroGamestate : public Gamestate {
@@ -14,6 +16,7 @@ namespace nf {
 		void onExit() override;
 	private:
 		int m_counter;
-		//TODO: Flesh out intro gamestate
+		UITexture logoTex;
+		Text text;
 	};
 }

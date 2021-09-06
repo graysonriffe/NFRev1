@@ -98,7 +98,6 @@ namespace nf {
 	std::string readFile(const std::string& filename) {
 		std::ifstream in;
 		in.open(filename, std::ios::binary);
-		//TODO: Test this change
 		if (!in)
 			Error("File \"" + (std::string)filename + (std::string)"\" could not be read!");
 		std::stringstream ss;

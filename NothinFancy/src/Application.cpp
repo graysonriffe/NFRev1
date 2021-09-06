@@ -54,7 +54,7 @@ namespace nf {
 	void Application::addDefaultState(const std::string& stateName) {
 		if (!m_defaultStateAdded) {
 			if (m_states.find(stateName) != m_states.end()) {
-				m_DefaultState = m_states[stateName];
+				m_defaultState = stateName;
 				m_defaultStateAdded = true;
 			}
 			else
@@ -62,6 +62,10 @@ namespace nf {
 		}
 		else
 			Error("More than one default state defined!");
+	}
+
+	const std::string& Application::getDefaultState() {
+		return m_defaultState;
 	}
 
 	void Application::run() {
@@ -146,7 +150,6 @@ namespace nf {
 		y = m_mouseDiffY;
 		m_mouseDiffX = 0;
 		m_mouseDiffY = 0;
-		//TODO: Replace with atomic?
 	}
 
 	void Application::registerWindowClass() {
@@ -283,6 +286,7 @@ namespace nf {
 
 	void Application::doStateChange() {
 		m_stateChange = false;
+		//TODO: Do fade in and out here
 		m_currentState->onExit();
 		m_currentState = m_states[m_nextState];
 		m_currentState->onEnter();

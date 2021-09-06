@@ -4,20 +4,23 @@
 
 #include "Assets.h"
 #include "Texture.h"
+#include "Shader.h"
 
 namespace nf {
 	UITexture::UITexture() :
 		m_texture(nullptr),
-		m_scale(1.0f)
+		m_scale(1.0f),
+		m_opacity(1.0f)
 	{
 
 	}
 
-	void UITexture::create(Asset* textureAsset, const Vec2& position, double scale) {
+	void UITexture::create(Asset* textureAsset, const Vec2& position, double scale, double opacity) {
 		m_constructed = true;
 		ATexture* tex = (ATexture*)textureAsset;
 		m_position = position;
 		m_scale = (float)scale;
+		m_opacity = (float)opacity;
 		if (tex->alreadyLoaded) {
 			m_texture = tex->loadedTexture;
 		}
@@ -37,6 +40,14 @@ namespace nf {
 
 	const char* UITexture::identity() {
 		return "texture";
+	}
+
+	void UITexture::setScale(double scale) {
+		m_scale = (float)scale;
+	}
+
+	void UITexture::setOpacity(double opacity) {
+		m_opacity = (float)opacity;
 	}
 
 	void UITexture::render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight) {
@@ -69,6 +80,7 @@ namespace nf {
 		m_texture->bind();
 		m_vao->setBufferData(0, vb, sizeof(vb));
 		m_vao->setBufferData(1, tc, sizeof(tc));
+		shader->setUniform("opacity", m_opacity);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 

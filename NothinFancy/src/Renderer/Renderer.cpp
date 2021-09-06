@@ -82,6 +82,7 @@ namespace nf {
 		BaseAssets::cone = (AModel*)m_baseAP["cone.obj"];
 		BaseAssets::cylinder = (AModel*)m_baseAP["cylinder.obj"];
 		BaseAssets::torus = (AModel*)m_baseAP["torus.obj"];
+		BaseAssets::logo = (ATexture*)m_baseAP["logo.png"];
 		BaseAssets::defaultFont = (AFont*)m_baseAP["default.ttf"];
 	}
 

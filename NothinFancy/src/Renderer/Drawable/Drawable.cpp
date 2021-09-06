@@ -3,7 +3,10 @@
 #include "Utility.h"
 
 namespace nf {
-	Drawable::Drawable() {
+	Drawable::Drawable() :
+		m_vao(nullptr),
+		m_ib(nullptr)
+	{
 
 	}
 

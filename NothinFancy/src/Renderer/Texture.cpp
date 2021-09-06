@@ -7,7 +7,10 @@
 #include "Utility.h"
 
 namespace nf {
-	Texture::Texture() {
+	Texture::Texture() :
+		m_x(0),
+		m_y(0)
+	{
 		glGenTextures(1, &m_id);
 	}
 

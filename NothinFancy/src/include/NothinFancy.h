@@ -89,6 +89,7 @@ namespace nf {
 		Renderer* getRenderer() const;
 		void addState(Gamestate* state, const std::string& stateName);
 		void addDefaultState(const std::string& stateName);
+		const std::string& getDefaultState();
 		void run();
 		void changeState(const std::string& stateName);
 		void showWindow(bool show);
@@ -136,7 +137,7 @@ namespace nf {
 		//Mapped to const char* to be referenced later in the frontend
 		std::unordered_map<std::string, Gamestate*> m_states;
 		Gamestate* m_sIntro;
-		Gamestate* m_DefaultState;
+		std::string m_defaultState;
 		bool m_defaultStateAdded;
 		Gamestate* m_currentState;
 		bool m_stateChange;
