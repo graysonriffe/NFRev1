@@ -30,13 +30,13 @@ Separate Model and UIElement from Drawable
 *Mouse position input
 Audio
 *Game states
-Text rendering
-UI elements
+*Text rendering
+*UI elements
 *Resource system and custom format
 *Read model objs
 And animations (Is this realistic?)
-Layered batch renderer
-Lighting? (Or is this part of the game's shaders?)
+*Layered renderer
+*Lighting
 Multithreading and async tasks (For audio and loading?)
 
 *Figure out format for storing resources OUTSIDE of exe (compressed format?)
