@@ -10,7 +10,7 @@ namespace nf {
 	public:
 		UITexture();
 
-		void create(Asset* texture, const Vec2& position, double scale = 1.0);
+		void create(Asset* textureAsset, const Vec2& position, double scale = 1.0);
 		const char* identity() override;
 		void render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight) override;
 

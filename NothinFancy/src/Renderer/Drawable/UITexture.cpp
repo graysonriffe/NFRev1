@@ -7,14 +7,15 @@
 
 namespace nf {
 	UITexture::UITexture() :
-		m_texture(0)
+		m_texture(nullptr),
+		m_scale(1.0f)
 	{
 
 	}
 
-	void UITexture::create(Asset* texture, const Vec2& position, double scale) {
+	void UITexture::create(Asset* textureAsset, const Vec2& position, double scale) {
 		m_constructed = true;
-		ATexture* tex = (ATexture*)texture;
+		ATexture* tex = (ATexture*)textureAsset;
 		m_position = position;
 		m_scale = (float)scale;
 		if (tex->alreadyLoaded) {

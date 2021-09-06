@@ -200,6 +200,7 @@
     <ClCompile Include="src\Gamestate.cpp" />
     <ClCompile Include="src\IntroGamestate.cpp" />
     <ClCompile Include="src\Renderer\Camera.cpp" />
+    <ClCompile Include="src\Renderer\Drawable\Cubemap.cpp" />
     <ClCompile Include="src\Renderer\Drawable\Drawable.cpp" />
     <ClCompile Include="src\Renderer\Drawable\Entity.cpp" />
     <ClCompile Include="src\Renderer\Drawable\Light.cpp" />
@@ -218,6 +219,7 @@
   <ItemGroup>
     <ClInclude Include="src\include\Assets.h" />
     <ClInclude Include="src\include\Camera.h" />
+    <ClInclude Include="src\include\Cubemap.h" />
     <ClInclude Include="src\include\Entity.h" />
     <ClInclude Include="src\include\Application.h" />
     <ClInclude Include="src\include\Config.h" />

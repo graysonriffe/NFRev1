@@ -48,21 +48,25 @@ namespace nf {
 	}
 
 	void Shader::setUniform(const std::string& name, glm::mat4& data) {
+		bind();
 		if (m_uniformLocations.find(name) == m_uniformLocations.end())
 			getUniformLocation(name);
 		glUniformMatrix4fv(m_uniformLocations[name], 1, GL_FALSE, glm::value_ptr(data));
 	}
 	void Shader::setUniform(const std::string& name, glm::vec3& data) {
+		bind();
 		if (m_uniformLocations.find(name) == m_uniformLocations.end())
 			getUniformLocation(name);
 		glUniform3fv(m_uniformLocations[name], 1, glm::value_ptr(data));
 	}
 	void Shader::setUniform(const std::string& name, int data) {
+		bind();
 		if (m_uniformLocations.find(name) == m_uniformLocations.end())
 			getUniformLocation(name);
 		glUniform1i(m_uniformLocations[name], data);
 	}
 	void Shader::setUniform(const std::string& name, float data) {
+		bind();
 		if (m_uniformLocations.find(name) == m_uniformLocations.end())
 			getUniformLocation(name);
 		glUniform1f(m_uniformLocations[name], data);

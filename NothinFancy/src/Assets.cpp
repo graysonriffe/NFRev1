@@ -16,6 +16,15 @@ namespace nf {
 
 	}
 
+	ACubemap::~ACubemap() {
+		delete[] frontData;
+		delete[] backData;
+		delete[] topData;
+		delete[] bottomData;
+		delete[] leftData;
+		delete[] rightData;
+	}
+
 	AShader::~AShader() {
 
 	}
@@ -31,6 +40,7 @@ namespace nf {
 	void AssetPack::load(const char* packName) {
 		std::string path = "assets/" + (std::string)packName;
 		std::string packContents = readFile(path);
+		unsigned int cubemapCount = 0;
 		while (packContents.size()) {
 			unsigned int startingPos = packContents.find_first_of("#NFASSET ") + 9;
 			packContents = packContents.substr(9);
@@ -62,6 +72,56 @@ namespace nf {
 				continue;
 			}
 			if (extension == "png") {
+				if (assetName.find("_cmfront") != std::string::npos || assetName.find("_cmback") != std::string::npos || assetName.find("_cmtop") != std::string::npos || assetName.find("_cmbottom") != std::string::npos || assetName.find("_cmleft") != std::string::npos || assetName.find("_cmright") != std::string::npos) {
+					static std::unordered_map<std::string, ACubemap*> cubemaps;
+					std::string cmName = assetName.substr(0, assetName.find('_'));
+					ACubemap* curr;
+					if (cubemaps.find(cmName) == cubemaps.end()) {
+						cubemaps[cmName] = new ACubemap;
+						cubemaps[cmName]->numImages = 0;
+					}
+					curr = cubemaps[cmName];
+					if (curr->numImages == 6)
+						Error("Duplicate cubemap images in pack \"" + (std::string)packName + (std::string)"\"!");
+					if (assetName.find("_cmfront") != std::string::npos) {
+						curr->frontData = new char[assetSize];
+						std::memcpy(curr->frontData, &assetContents[0], assetSize);
+						curr->frontSize = assetSize;
+					}
+					if (assetName.find("_cmback") != std::string::npos) {
+						curr->backData = new char[assetSize];
+						std::memcpy(curr->backData, &assetContents[0], assetSize);
+						curr->backSize = assetSize;
+					}
+					if (assetName.find("_cmtop") != std::string::npos) {
+						curr->topData = new char[assetSize];
+						std::memcpy(curr->topData, &assetContents[0], assetSize);
+						curr->topSize = assetSize;
+					}
+					if (assetName.find("_cmbottom") != std::string::npos) {
+						curr->bottomData = new char[assetSize];
+						std::memcpy(curr->bottomData, &assetContents[0], assetSize);
+						curr->bottomSize = assetSize;
+					}
+					if (assetName.find("_cmleft") != std::string::npos) {
+						curr->leftData = new char[assetSize];
+						std::memcpy(curr->leftData, &assetContents[0], assetSize);
+						curr->leftSize = assetSize;
+					}
+					if (assetName.find("_cmright") != std::string::npos) {
+						curr->rightData = new char[assetSize];
+						std::memcpy(curr->rightData, &assetContents[0], assetSize);
+						curr->rightSize = assetSize;
+					}
+					curr->numImages++;
+
+					if (curr->numImages == 6) {
+						m_assets[cmName] = curr;
+					}
+
+					cubemapCount++;
+					continue;
+				}
 				ATexture* texture = new ATexture;
 				texture->data = new char[assetSize];
 				std::memcpy(texture->data, &assetContents[0], assetSize);
@@ -87,6 +147,8 @@ namespace nf {
 			}
 			Error("Invalid asset extention in pack \"" + (std::string)packName + (std::string)"\"!");
 		}
+		if (cubemapCount % 6 != 0)
+			Error("Could not find full cubemap in pack \"" + (std::string)packName + (std::string)"\"!")
 	}
 
 	Asset* AssetPack::operator[](const char* in) {

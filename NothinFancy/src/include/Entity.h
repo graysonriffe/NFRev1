@@ -11,6 +11,7 @@ namespace nf {
 		Entity();
 
 		void create(Asset* modelAsset, Asset* textureAsset = nullptr);
+		bool isConstructed();
 
 		void setPosition(double x, double y, double z);
 		void setPosition(const Vec3& position);
@@ -27,6 +28,7 @@ namespace nf {
 	private:
 		void setModelMatrix(Shader* shader);
 
+		bool m_constructed;
 		Model* m_model;
 
 		Vec3 m_position;

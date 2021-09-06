@@ -6,6 +6,7 @@
 
 namespace nf {
 	Entity::Entity() :
+		m_constructed(false),
 		m_model(nullptr),
 		m_position(0.0),
 		m_rotation(0.0),
@@ -15,6 +16,7 @@ namespace nf {
 	}
 
 	void Entity::create(Asset* modelAsset, Asset* textureAsset) {
+		m_constructed = true;
 		AModel& model = *(AModel*)modelAsset;
 		if (model.alreadyLoaded && textureAsset == nullptr) {
 			m_model = model.loadedModel;
@@ -34,6 +36,10 @@ namespace nf {
 		m_model->create(&vb[0], vb.size() * sizeof(float), &ib[0], ibCount, &vn[0], vn.size() * sizeof(float), &tc[0], tc.size() * sizeof(float), &texture);
 		model.alreadyLoaded = true;
 		model.loadedModel = m_model;
+	}
+
+	bool Entity::isConstructed() {
+		return m_constructed;
 	}
 
 	void Entity::setPosition(double x, double y, double z) {

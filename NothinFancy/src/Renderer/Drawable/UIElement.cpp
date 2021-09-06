@@ -2,6 +2,7 @@
 
 namespace nf {
 	UIElement::UIElement() :
+		m_constructed(false),
 		m_centeredX(false),
 		m_centeredY(false)
 	{

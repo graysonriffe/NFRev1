@@ -8,12 +8,15 @@
 #include "Shader.h"
 #include "Light.h"
 #include "Entity.h"
+#include "Cubemap.h"
 #include "UIElement.h"
 #include "Camera.h"
 #include "Utility.h"
 
 namespace nf {
-	Renderer::Renderer(Application* app) {
+	Renderer::Renderer(Application* app) :
+		m_cubemap(nullptr)
+	{
 		m_app = app;
 		m_hdc = GetDC(m_app->getWindow());
 		PIXELFORMATDESCRIPTOR pfd = {
@@ -69,6 +72,9 @@ namespace nf {
 		const char* uiTextureVertex = m_baseAP["uiTextureVertex.shader"]->data;
 		const char* uiTextureFragment = m_baseAP["uiTextureFragment.shader"]->data;
 		m_uiTextureShader = new Shader(uiTextureVertex, uiTextureFragment);
+		const char* cubemapVertex = m_baseAP["cubemapVertex.shader"]->data;
+		const char* cubemapFragment = m_baseAP["cubemapFragment.shader"]->data;
+		m_cubemapShader = new Shader(cubemapVertex, cubemapFragment);
 
 		BaseAssets::cube = (AModel*)m_baseAP["cube.obj"];
 		BaseAssets::plane = (AModel*)m_baseAP["plane.obj"];
@@ -80,7 +86,7 @@ namespace nf {
 	}
 
 	void Renderer::render(Entity& in) {
-		if (in.getModel() == nullptr)
+		if (in.isConstructed() == false)
 			Error("Tried to render Entity before being created!");
 		m_lGame.push_back(&in);
 		//TODO: Sort transparent objects by distance; Farthest first
@@ -95,10 +101,17 @@ namespace nf {
 			Error("Tried to render a light before being created!");
 		m_lights.push_back(&in);
 	}
+	void Renderer::render(Cubemap& in) {
+		if (in.isConstructed() == false)
+			Error("Tried to render a cubemap before being created!");
+		m_cubemap = &in;
+	}
 
 	void Renderer::doFrame(Camera* camera) {
+		//Begin frame
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		camera->bind(m_entityShader, m_cubemapShader);
 
 		//Draw Entities (3D models)
 		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 100000.0f);
@@ -107,7 +120,6 @@ namespace nf {
 		for (Entity* draw : m_lGame) {
 			Entity& curr = *draw;
 			curr.bind(m_entityShader);
-			camera->bind(m_entityShader);
 			//TODO: Clean this up a bit
 			m_entityShader->setUniform("numberOfLights", (int)m_lights.size() + 1);
 			for (unsigned int i = 0; i < m_lights.size(); i++) {
@@ -120,19 +132,24 @@ namespace nf {
 		m_lGame.clear();
 		m_lights.clear();
 
+		//Draw cubemap where there isn't anything else
+		if (m_cubemap != nullptr) {
+			m_cubemapShader->setUniform("proj", proj);
+			m_cubemap->render();
+		}
+		m_cubemap = nullptr;
+
 		//Draw UI elements
 		glDisable(GL_DEPTH_TEST);
 		proj = glm::ortho(0.0f, (float)m_app->getConfig().width, 0.0f, (float)m_app->getConfig().height);
 		for (UIElement* draw : m_lUI) {
 			UIElement& curr = *draw;
 			if (curr.identity() == "text") {
-				m_textShader->bind();
 				m_textShader->setUniform("proj", proj);
 				curr.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
 				continue;
 			}
 			if (curr.identity() == "texture") {
-				m_uiTextureShader->bind();
 				m_uiTextureShader->setUniform("proj", proj);
 				curr.render(m_uiTextureShader, m_app->getConfig().width, m_app->getConfig().height);
 			}

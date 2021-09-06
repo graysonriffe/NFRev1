@@ -9,7 +9,6 @@ namespace nf {
 	struct Asset {
 		char* data;
 		bool alreadyLoaded = false;
-
 		virtual ~Asset();
 	};
 
@@ -24,6 +23,25 @@ namespace nf {
 		Texture* loadedTexture;
 
 		~ATexture() override;
+	};
+
+	struct ACubemap : Asset {
+		char* frontData;
+		size_t frontSize;
+		char* backData;
+		size_t backSize;
+		char* topData;
+		size_t topSize;
+		char* bottomData;
+		size_t bottomSize;
+		char* leftData;
+		size_t leftSize;
+		char* rightData;
+		size_t rightSize;
+
+		unsigned int numImages;
+
+		~ACubemap();
 	};
 
 	struct AShader : Asset {

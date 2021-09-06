@@ -71,7 +71,7 @@ namespace nf {
 		return m_front;
 	}
 
-	void Camera::bind(Shader* shader) {
+	void Camera::bind(Shader* entityShader, Shader* cubemapShader) {
 		glm::mat4 view;
 
 		switch (m_type) {
@@ -112,8 +112,11 @@ namespace nf {
 			}
 		}
 		glm::vec3 pos(m_position.x, m_position.y, m_position.z);
-		shader->setUniform("camera.pos", pos);
-		shader->setUniform("view", view);
+		entityShader->setUniform("camera.pos", pos);
+		entityShader->setUniform("view", view);
+
+		glm::mat4 cubemapView = glm::mat4(glm::mat3(view));
+		cubemapShader->setUniform("view", cubemapView);
 	}
 
 	Camera::~Camera() {

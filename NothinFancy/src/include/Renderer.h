@@ -10,6 +10,7 @@ namespace nf {
 	class Entity;
 	class UIElement;
 	class Light;
+	class Cubemap;
 	class Camera;
 
 	class Renderer {
@@ -19,6 +20,7 @@ namespace nf {
 		void render(Entity& in);
 		void render(UIElement& in);
 		void render(Light& in);
+		void render(Cubemap& in);
 
 		void doFrame(Camera* camera);
 
@@ -33,9 +35,11 @@ namespace nf {
 
 		std::vector<Light*> m_lights;
 		std::vector<Entity*> m_lGame;
+		Cubemap* m_cubemap;
 		std::vector<UIElement*> m_lUI;
 		Shader* m_entityShader;
 		Shader* m_textShader;
 		Shader* m_uiTextureShader;
+		Shader* m_cubemapShader;
 	};
 }
