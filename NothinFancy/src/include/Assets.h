@@ -63,6 +63,7 @@ namespace nf {
 		Asset* operator[](const char* in);
 		Asset* operator[](std::string& in);
 
+		void unload();
 		~AssetPack();
 	private:
 		std::unordered_map<std::string, Asset*> m_assets;
