@@ -5,18 +5,13 @@
 #include "Input.h"
 
 namespace nf {
-	IntroGamestate::IntroGamestate(Application* app) :
-		Gamestate(app),
-		m_counter(0)
-	{
-	}
-
 	void IntroGamestate::onEnter() {
 		Log("Intro onEnter!");
 		logoTex.create(BaseAssets::logo, Vec2(0.0, 0.0));
 		logoTex.centered(true, true);
 		text.create("(C) Grayson Riffe 2021", Vec2(0.01, 0.025), Vec3(0.8));
 		text.setScale(0.6);
+		m_counter = 0;
 	}
 
 	void IntroGamestate::update(double deltaTime) {

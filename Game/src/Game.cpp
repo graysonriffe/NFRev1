@@ -7,7 +7,7 @@ int main(int argc, char* argv[]) {
 	//app.setWindowIcon(...);
 	// app.setWindowCursor(...);
 
-	MainState* test = new MainState(&app);
+	MainState* test = new MainState;
 	app.addState(test, "Main State");
 	app.addDefaultState("Main State");
 

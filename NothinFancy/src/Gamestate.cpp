@@ -4,10 +4,16 @@
 #include "Utility.h"
 
 namespace nf {
-	Gamestate::Gamestate(Application* app) :
-		camera(app)
+	Gamestate::Gamestate() :
+		app(nullptr),
+		camera(nullptr)
 	{
+
+	}
+
+	void Gamestate::setup(Application* app) {
 		this->app = app;
+		camera = new Camera(this->app);
 	}
 
 	void Gamestate::onEnter() {
@@ -19,7 +25,7 @@ namespace nf {
 	}
 
 	Camera* Gamestate::getCamera() {
-		return &camera;
+		return camera;
 	}
 
 	void Gamestate::render(Renderer& renderer) {

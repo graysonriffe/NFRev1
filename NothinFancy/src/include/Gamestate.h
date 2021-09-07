@@ -4,12 +4,14 @@
 namespace nf {
 	class Application;
 	class Renderer;
-
+	class Camera;
 	class Gamestate {
 	public:
-		Gamestate(Application* app);
-		Gamestate() = delete;
+		Gamestate();
+
 		Gamestate(const Gamestate& other) = delete;
+
+		void setup(Application* app);
 
 		virtual void onEnter();
 
@@ -20,6 +22,6 @@ namespace nf {
 		virtual void onExit();
 	protected:
 		Application* app;
-		Camera camera;
+		Camera* camera;
 	};
 }

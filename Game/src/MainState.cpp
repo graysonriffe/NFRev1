@@ -1,11 +1,5 @@
 #include "MainState.h"
 
-MainState::MainState(nf::Application* app) :
-	Gamestate(app)
-{
-
-}
-
 void MainState::onEnter() {
 	Log("MainState onEnter!");
 

@@ -280,7 +280,8 @@ namespace nf {
 	}
 
 	void Application::startIntroState() {
-		m_sIntro = new IntroGamestate(this);
+		m_sIntro = new IntroGamestate;
+		m_sIntro->setup(this);
 		m_currentState = m_sIntro;
 		m_currentState->onEnter();
 	}
@@ -295,6 +296,7 @@ namespace nf {
 		if (m_renderer->isFadeOutComplete()) {
 			m_currentState->onExit();
 			m_currentState = m_states[m_nextState];
+			m_currentState->setup(this);
 			m_currentState->onEnter();
 			m_renderer->setFade(true, false, false);
 			m_stateChange = false;

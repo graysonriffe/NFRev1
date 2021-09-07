@@ -6,8 +6,6 @@
 namespace nf {
 	class IntroGamestate : public Gamestate {
 	public:
-		IntroGamestate(Application* app);
-
 		void onEnter() override;
 
 		void update(double deltaTime) override;
