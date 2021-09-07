@@ -8,7 +8,7 @@ uniform float opacity;
 out vec4 color;
 
 void main() {
-	vec3 texColor = texture(tex, texCoord).rgb;
+	vec4 texColor = texture(tex, texCoord);
 
-	color = vec4(texColor.rgb, opacity);
+	color = vec4(texColor.rgb, texColor.a * opacity);
 }

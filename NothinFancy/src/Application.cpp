@@ -251,6 +251,7 @@ namespace nf {
 	void Application::runMainGameThread() {
 		m_renderer = new Renderer(this);
 		startIntroState();
+		m_renderer->setFade(true, false, true);
 		std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 		std::chrono::steady_clock::time_point lastFrame = std::chrono::steady_clock::now();
 		while (m_running) {
@@ -280,16 +281,25 @@ namespace nf {
 
 	void Application::startIntroState() {
 		m_sIntro = new IntroGamestate(this);
-		m_sIntro->onEnter();
 		m_currentState = m_sIntro;
+		m_currentState->onEnter();
 	}
 
 	void Application::doStateChange() {
-		m_stateChange = false;
-		//TODO: Do fade in and out here
-		m_currentState->onExit();
-		m_currentState = m_states[m_nextState];
-		m_currentState->onEnter();
+		static bool once = true;
+		if (once) {
+			m_renderer->setFade(false, true, false);
+			once = false;
+		}
+
+		if (m_renderer->isFadeOutComplete()) {
+			m_currentState->onExit();
+			m_currentState = m_states[m_nextState];
+			m_currentState->onEnter();
+			m_renderer->setFade(true, false, false);
+			m_stateChange = false;
+			once = true;
+		}
 	}
 
 	LRESULT CALLBACK Application::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {

@@ -52,6 +52,9 @@ namespace nf {
 	public:
 		Renderer(Application* app);
 
+		void setFade(bool in, bool out, bool noText);
+		bool isFadeOutComplete();
+
 		void render(Entity& in);
 		void render(UIElement& in);
 		void render(Light& in);
@@ -76,6 +79,14 @@ namespace nf {
 		Shader* m_textShader;
 		Shader* m_uiTextureShader;
 		Shader* m_cubemapShader;
+		Shader* m_fadeShader;
+
+		bool m_fadeIn, m_fadeOut;
+		bool m_fadeNoText;
+		bool m_fadeOutComplete;
+		Text m_loadingText;
+		VertexArray* m_fadeVAO;
+		IndexBuffer* m_fadeIB;
 	};
 
 	class Application {

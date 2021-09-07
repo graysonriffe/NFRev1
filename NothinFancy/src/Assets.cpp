@@ -162,10 +162,13 @@ namespace nf {
 		return m_assets[in];
 	}
 
-	AssetPack::~AssetPack() {
-		for (auto curr : m_assets) {
+	void AssetPack::unload() {
+		for (auto curr : m_assets)
 			delete curr.second;
-		}
+	}
+
+	AssetPack::~AssetPack() {
+		unload();
 	}
 
 	AModel* BaseAssets::cube;

@@ -24,18 +24,15 @@ namespace nf {
 			app->changeState(app->getDefaultState());
 		}
 
-		static double opacity = 0.0;
-		static double scale = 1.0;
-		logoTex.setOpacity(opacity);
+		static double scale = 2.0;
 		logoTex.setScale(scale);
-		text.setOpacity(opacity);
 		if (m_counter >= 20) {
-			opacity += 0.02;
 			scale += 0.002;
 		}
-
 		m_counter++;
 
+		if (app->isInput(NFI_SPACE))
+			m_counter = 240;
 		if (app->isInput(NFI_ESCAPE))
 			app->quit();
 	}

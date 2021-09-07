@@ -15,7 +15,11 @@
 
 namespace nf {
 	Renderer::Renderer(Application* app) :
-		m_cubemap(nullptr)
+		m_cubemap(nullptr),
+		m_fadeIn(false),
+		m_fadeOut(false),
+		m_fadeNoText(false),
+		m_fadeOutComplete(false)
 	{
 		m_app = app;
 		m_hdc = GetDC(m_app->getWindow());
@@ -75,6 +79,9 @@ namespace nf {
 		const char* cubemapVertex = m_baseAP["cubemapVertex.shader"]->data;
 		const char* cubemapFragment = m_baseAP["cubemapFragment.shader"]->data;
 		m_cubemapShader = new Shader(cubemapVertex, cubemapFragment);
+		const char* fadeVertex = m_baseAP["fadeVertex.shader"]->data;
+		const char* fadeFragment = m_baseAP["fadeFragment.shader"]->data;
+		m_fadeShader = new Shader(fadeVertex, fadeFragment);
 
 		BaseAssets::cube = (AModel*)m_baseAP["cube.obj"];
 		BaseAssets::plane = (AModel*)m_baseAP["plane.obj"];
@@ -84,6 +91,33 @@ namespace nf {
 		BaseAssets::torus = (AModel*)m_baseAP["torus.obj"];
 		BaseAssets::logo = (ATexture*)m_baseAP["logo.png"];
 		BaseAssets::defaultFont = (AFont*)m_baseAP["default.ttf"];
+
+		float fadeVB[] = {
+			-1.0, -1.0,
+			1.0, -1.0,
+			1.0, 1.0,
+			-1.0, 1.0
+		};
+		unsigned int fadeIB[] = {
+			0, 1, 2,
+			2, 3, 0
+		};
+		m_fadeVAO = new VertexArray;
+		m_fadeVAO->addBuffer(fadeVB, sizeof(fadeVB));
+		m_fadeVAO->push<float>(2);
+		m_fadeVAO->finishBufferLayout();
+		m_fadeIB = new IndexBuffer(fadeIB, 6);
+		m_loadingText.create("Loading...", Vec2(0.025, 0.044), Vec3(0.7, 0.7, 0.7));
+	}
+
+	void Renderer::setFade(bool in, bool out, bool noText) {
+		m_fadeIn = in;
+		m_fadeOut = out;
+		m_fadeNoText = noText;
+	}
+
+	bool Renderer::isFadeOutComplete() {
+		return m_fadeOutComplete;
 	}
 
 	void Renderer::render(Entity& in) {
@@ -156,6 +190,43 @@ namespace nf {
 			}
 		}
 		m_lUI.clear();
+
+		if (m_fadeIn) {
+			static double opacity = 1.0;
+			m_fadeShader->setUniform("opacity", (float)opacity);
+			m_fadeVAO->bind();
+			m_fadeIB->bind();
+			glDrawElements(GL_TRIANGLES, m_fadeIB->getCount(), GL_UNSIGNED_INT, nullptr);
+			if (!m_fadeNoText) {
+				m_textShader->setUniform("proj", proj);
+				m_loadingText.setOpacity(opacity);
+				m_loadingText.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
+			}
+			opacity -= 0.03;
+			if (opacity <= 0.0) {
+				m_fadeIn = false;
+				m_fadeOutComplete = false;
+				opacity = 1.0;
+			}
+		}
+		else if (m_fadeOut) {
+			static double opacity = 0.0;
+			m_fadeShader->setUniform("opacity", (float)opacity);
+			m_fadeVAO->bind();
+			m_fadeIB->bind();
+			glDrawElements(GL_TRIANGLES, m_fadeIB->getCount(), GL_UNSIGNED_INT, nullptr);
+			if (!m_fadeNoText) {
+				m_textShader->setUniform("proj", proj);
+				m_loadingText.setOpacity(opacity);
+				m_loadingText.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
+			}
+			opacity += 0.03;
+			if (opacity >= 1.0) {
+				m_fadeIn = false;
+				m_fadeOutComplete = true;
+				opacity = 0.0;
+			}
+		}
 		glEnable(GL_DEPTH_TEST);
 
 		SwapBuffers(m_hdc);
@@ -169,6 +240,10 @@ namespace nf {
 		delete m_entityShader;
 		delete m_textShader;
 		delete m_uiTextureShader;
+		delete m_cubemapShader;
+		delete m_fadeShader;
+		delete m_fadeVAO;
+		delete m_fadeIB;
 		ReleaseDC(m_app->getWindow(), m_hdc);
 		wglMakeCurrent(NULL, NULL);
 		wglDeleteContext(m_hglrc);
