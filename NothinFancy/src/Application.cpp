@@ -278,16 +278,16 @@ namespace nf {
 				m_renderer->doFrame(m_currentState->getCamera(), m_deltaTime);
 				if (m_stateChange)
 					doStateChange();
-			}
-			m_fpsClock2 = std::chrono::steady_clock::now();
-			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
-			if (m_fpsDuration.count() >= 0.2) {
-				m_FPS = (int)(1.0 / m_deltaTime);
-				static int i = 0;
-				i++;
-				if (i % 5 == 0)
-					Log("FPS: " + std::to_string(m_FPS));
-				m_fpsClock1 = std::chrono::steady_clock::now();
+				m_fpsClock2 = std::chrono::steady_clock::now();
+				m_fpsDuration = m_fpsClock2 - m_fpsClock1;
+				if (m_fpsDuration.count() >= 0.2) {
+					m_FPS = (int)std::round(1.0 / m_deltaTime);
+					static int i = 0;
+					i++;
+					if (i % 5 == 0)
+						Log("FPS: " + std::to_string(m_FPS));
+					m_fpsClock1 = std::chrono::steady_clock::now();
+				}
 			}
 		}
 		m_currentState->onExit();
