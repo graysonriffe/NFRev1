@@ -4,6 +4,7 @@
 #include "GL/glew.h"
 #include "stb_image.h"
 
+#include "Application.h"
 #include "Assets.h"
 
 namespace nf {
@@ -108,6 +109,8 @@ namespace nf {
 		m_vao->addBuffer(vb, sizeof(vb));
 		m_vao->push<float>(3);
 		m_vao->finishBufferLayout();
+
+		Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}
 
 	bool Cubemap::isConstructed() {
@@ -122,8 +125,15 @@ namespace nf {
 		glDepthFunc(GL_LESS);
 	}
 
-	Cubemap::~Cubemap() {
-		if(m_constructed)
+	void Cubemap::destroy() {
+		if (m_constructed)
 			glDeleteTextures(1, &m_id);
+		m_constructed = false;
+		m_id = 0;
+		delete m_vao;
+	}
+
+	Cubemap::~Cubemap() {
+
 	}
 }

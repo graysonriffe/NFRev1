@@ -1,10 +1,11 @@
 #pragma once
+#include "NFObject.h"
 #include "Drawable.h"
 
 namespace nf {
 	struct Asset;
 
-	class Cubemap : public Drawable {
+	class Cubemap : public Drawable, public NFObject {
 	public:
 		Cubemap();
 
@@ -12,6 +13,7 @@ namespace nf {
 		bool isConstructed();
 		void render();
 
+		void destroy() override;
 		~Cubemap();
 	private:
 		bool m_constructed;

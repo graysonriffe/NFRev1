@@ -1,11 +1,12 @@
 #include "Light.h"
 
+#include "Application.h"
 #include "Shader.h"
 
 namespace nf {
 	Light::Light() :
-		m_type(Type::POINT),
 		m_constructed(false),
+		m_type(Type::POINT),
 		m_strength(1.0f)
 	{
 
@@ -18,6 +19,7 @@ namespace nf {
 		m_type = type;
 		m_strength = strength;
 
+		Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}
 
 	bool Light::isConstructed() {
@@ -75,6 +77,14 @@ namespace nf {
 
 	const float Light::getStrength() {
 		return m_strength;
+	}
+
+	void Light::destroy() {
+		m_constructed = false;
+		m_type = Type::POINT;
+		m_position = Vec3(0.0);
+		m_color = Vec3(0.0);
+		m_strength = 1.0f;
 	}
 
 	Light::~Light() {

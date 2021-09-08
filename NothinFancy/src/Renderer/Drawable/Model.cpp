@@ -8,6 +8,7 @@
 
 namespace nf {
 	Model::Model() :
+		m_base(false),
 		m_texture(nullptr)
 	{
 
@@ -29,7 +30,7 @@ namespace nf {
 		}
 		else {
 			m_texture = new Texture;
-			m_texture->create(texture->data, texture->size);
+			m_texture->create(texture);
 			texture->alreadyLoaded = true;
 			texture->loadedTexture = m_texture;
 		}
@@ -43,6 +44,14 @@ namespace nf {
 		if (m_texture)
 			m_texture->bind();
 		m_ib->bind();
+	}
+
+	void Model::setBaseAsset(bool isBase) {
+		m_base = isBase;
+	}
+
+	bool Model::isBaseAsset() {
+		return m_base;
 	}
 
 	Model::~Model() {

@@ -9,6 +9,7 @@
 #include "Utility.h"
 #include "IntroGamestate.h"
 #include "Assets.h"
+#include "Entity.h"
 #include "Light.h"
 #include "Cubemap.h"
 #include "Text.h"
@@ -19,34 +20,6 @@ namespace nf {
 	class Drawable;
 	class Shader;
 	class Model;
-
-	class Entity {
-	public:
-		Entity();
-
-		void create(Asset* modelAsset, Asset* textureAsset = nullptr);
-
-		void setPosition(double x, double y, double z);
-		void setPosition(const Vec3& position);
-		void setRotation(double x, double y, double z);
-		void setRotation(const Vec3& rotation);
-		void setScale(double x);
-		void setScale(double x, double y, double z);
-		void setScale(const Vec3& scale);
-
-		void bind(Shader* shader);
-		Model* getModel() const;
-
-		~Entity();
-	private:
-		void setModelMatrix(Shader* shader);
-
-		Model* m_model;
-
-		Vec3 m_position;
-		Vec3 m_rotation;
-		Vec3 m_scale;
-	};
 
 	class Renderer {
 	public:
@@ -60,7 +33,7 @@ namespace nf {
 		void render(Light& in);
 		void render(Cubemap& in);
 
-		void doFrame(Camera* camera);
+		void doFrame(Camera* camera, double dT);
 
 		~Renderer();
 	private:
@@ -103,6 +76,7 @@ namespace nf {
 		const std::string& getDefaultState();
 		void run();
 		void changeState(const std::string& stateName);
+		Gamestate* getCurrentState();
 		void showWindow(bool show);
 		const HWND& getWindow();
 		void changeConfig(const Config& in);
@@ -111,6 +85,7 @@ namespace nf {
 		bool isInput(unsigned int code);
 		void trackMouse(bool track);
 		void getMouseDiff(int& x, int& y);
+		static Application* getApp();
 
 		void quit();
 		~Application();
@@ -121,11 +96,12 @@ namespace nf {
 		void toggleFullscreen();
 		void updateInput();
 		void runMainGameThread();
-		void startIntroState();
 		void doStateChange();
+		static void setApp(Application* app);
 
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+		static Application* currentApp;
 		Config m_currentConfig;
 		bool m_running;
 		bool m_quit;
@@ -139,7 +115,6 @@ namespace nf {
 		double m_deltaTime;
 		std::chrono::steady_clock::time_point m_fpsClock1 = std::chrono::steady_clock::now();
 		std::chrono::steady_clock::time_point m_fpsClock2 = m_fpsClock1;
-		int m_frames;
 		const int m_targetFPS = 60;
 		const double m_minFrametime = 1.0 / m_targetFPS;
 		int m_FPS;

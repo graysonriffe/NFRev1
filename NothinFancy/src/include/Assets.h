@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include "NFObject.h"
 
 namespace nf {
 	class Model;
@@ -9,6 +10,7 @@ namespace nf {
 	struct Asset {
 		char* data = nullptr;
 		bool alreadyLoaded = false;
+		bool isBaseAsset = false;
 		virtual ~Asset();
 	};
 
@@ -55,7 +57,7 @@ namespace nf {
 		~AFont() override;
 	};
 
-	class AssetPack {
+	class AssetPack : public NFObject {
 	public:
 		AssetPack();
 
@@ -63,6 +65,7 @@ namespace nf {
 		Asset* operator[](const char* in);
 		Asset* operator[](std::string& in);
 
+		void destroy() override;
 		void unload();
 		~AssetPack();
 	private:

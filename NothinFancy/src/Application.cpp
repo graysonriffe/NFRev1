@@ -18,6 +18,9 @@ namespace nf {
 		Log("Creating NF application");
 		Log("Width: " + std::to_string(m_currentConfig.width) + ", Height: " + std::to_string(m_currentConfig.height) + ", Fullscreen: " + std::to_string(m_currentConfig.fullscreen) + ", Title: " + m_currentConfig.title);
 
+		if (getApp() != nullptr)
+			Error("Cannot create two NF Application objects!");
+		setApp(this);
 		m_hInst = GetModuleHandle(NULL);
 		registerWindowClass();
 		RECT windowSize = getWindowRect();
@@ -97,6 +100,10 @@ namespace nf {
 		m_nextState = stateName;
 	}
 
+	Gamestate* Application::getCurrentState() {
+		return m_currentState;
+	}
+
 	void Application::showWindow(bool show) {
 		if (show)
 			ShowWindow(m_window, SW_SHOW);
@@ -150,6 +157,10 @@ namespace nf {
 		y = m_mouseDiffY;
 		m_mouseDiffX = 0;
 		m_mouseDiffY = 0;
+	}
+
+	Application* Application::getApp() {
+		return currentApp;
 	}
 
 	void Application::registerWindowClass() {
@@ -249,41 +260,39 @@ namespace nf {
 	}
 
 	void Application::runMainGameThread() {
+		m_sIntro = new IntroGamestate;
+		m_currentState = m_sIntro;
 		m_renderer = new Renderer(this);
-		startIntroState();
+		m_currentState->setup(this);
+		m_currentState->onEnter();
 		m_renderer->setFade(true, false, true);
-		std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
+		std::chrono::steady_clock::time_point currentFrame = std::chrono::steady_clock::now();
 		std::chrono::steady_clock::time_point lastFrame = std::chrono::steady_clock::now();
 		while (m_running) {
-			currentTime = std::chrono::steady_clock::now();
-			m_deltaTime = std::chrono::duration<double>(currentTime - lastFrame).count();
+			currentFrame = std::chrono::steady_clock::now();
+			m_deltaTime = std::chrono::duration<double>(currentFrame - lastFrame).count();
 			if (m_deltaTime >= m_minFrametime) {
 				lastFrame = std::chrono::steady_clock::now();
 				m_currentState->update(m_deltaTime);
 				m_currentState->render(*m_renderer);
-				m_renderer->doFrame(m_currentState->getCamera());
-				m_frames++;
+				m_renderer->doFrame(m_currentState->getCamera(), m_deltaTime);
 				if (m_stateChange)
 					doStateChange();
 			}
 			m_fpsClock2 = std::chrono::steady_clock::now();
 			m_fpsDuration = m_fpsClock2 - m_fpsClock1;
-			if (m_fpsDuration.count() >= 1.0) {
-				m_FPS = m_frames;
-				m_frames = 0;
-				Log("FPS: " + std::to_string(m_FPS));
+			if (m_fpsDuration.count() >= 0.2) {
+				m_FPS = (int)(1.0 / m_deltaTime);
+				static int i = 0;
+				i++;
+				if (i % 5 == 0)
+					Log("FPS: " + std::to_string(m_FPS));
 				m_fpsClock1 = std::chrono::steady_clock::now();
 			}
 		}
 		m_currentState->onExit();
+		m_currentState->cleanup();
 		delete m_renderer;
-	}
-
-	void Application::startIntroState() {
-		m_sIntro = new IntroGamestate;
-		m_sIntro->setup(this);
-		m_currentState = m_sIntro;
-		m_currentState->onEnter();
 	}
 
 	void Application::doStateChange() {
@@ -295,6 +304,7 @@ namespace nf {
 
 		if (m_renderer->isFadeOutComplete()) {
 			m_currentState->onExit();
+			m_currentState->cleanup();
 			m_currentState = m_states[m_nextState];
 			m_currentState->setup(this);
 			m_currentState->onEnter();
@@ -302,6 +312,10 @@ namespace nf {
 			m_stateChange = false;
 			once = true;
 		}
+	}
+
+	void Application::setApp(Application* app) {
+		currentApp = app;
 	}
 
 	LRESULT CALLBACK Application::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -358,4 +372,6 @@ namespace nf {
 			delete curr;
 		}
 	}
+
+	Application* Application::currentApp = nullptr;
 }

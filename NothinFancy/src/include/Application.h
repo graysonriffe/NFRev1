@@ -23,6 +23,7 @@ namespace nf {
 		const std::string& getDefaultState();
 		void run();
 		void changeState(const std::string& stateName);
+		Gamestate* getCurrentState();
 		void showWindow(bool show);
 		const HWND& getWindow();
 		void changeConfig(const Config& in);
@@ -31,6 +32,7 @@ namespace nf {
 		bool isInput(unsigned int code);
 		void trackMouse(bool track);
 		void getMouseDiff(int& x, int& y);
+		static Application* getApp();
 
 		void quit();
 		~Application();
@@ -41,11 +43,12 @@ namespace nf {
 		void toggleFullscreen();
 		void updateInput();
 		void runMainGameThread();
-		void startIntroState();
 		void doStateChange();
+		static void setApp(Application* app);
 
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+		static Application* currentApp;
 		Config m_currentConfig;
 		bool m_running;
 		bool m_quit;
@@ -59,7 +62,6 @@ namespace nf {
 		double m_deltaTime;
 		std::chrono::steady_clock::time_point m_fpsClock1 = std::chrono::steady_clock::now();
 		std::chrono::steady_clock::time_point m_fpsClock2 = m_fpsClock1;
-		int m_frames;
 		const int m_targetFPS = 60;
 		const double m_minFrametime = 1.0 / m_targetFPS;
 		int m_FPS;

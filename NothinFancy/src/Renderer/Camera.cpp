@@ -120,6 +120,6 @@ namespace nf {
 	}
 
 	Camera::~Camera() {
-
+		m_app->trackMouse(false);
 	}
 }

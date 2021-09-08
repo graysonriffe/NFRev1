@@ -2,6 +2,7 @@
 #include <map>
 
 #include "UIElement.h"
+#include "NFObject.h"
 #include "Assets.h"
 #include "Utility.h"
 
@@ -15,9 +16,10 @@ namespace nf {
 
 	struct Font {
 		std::map<char, Character> m_characters;
+		bool isBase = false;
 	};
 
-	class Text : public UIElement {
+	class Text : public UIElement, public NFObject {
 	public:
 		Text();
 
@@ -29,6 +31,7 @@ namespace nf {
 		void setOpacity(double opacity);
 		void render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight) override;
 
+		void destroy() override;
 		~Text();
 	private:
 		std::string m_string;

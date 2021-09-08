@@ -1,12 +1,13 @@
 #pragma once
 #include "UIElement.h"
+#include "NFObject.h"
 #include "Utility.h"
 
 namespace nf {
 	class Texture;
 	struct Asset;
 
-	class UITexture : public UIElement {
+	class UITexture : public UIElement, public NFObject {
 	public:
 		UITexture();
 
@@ -16,6 +17,7 @@ namespace nf {
 		void setOpacity(double opacity);
 		void render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight) override;
 
+		void destroy() override;
 		~UITexture();
 	private:
 		Texture* m_texture;

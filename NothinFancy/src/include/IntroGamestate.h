@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Gamestate.h"
 #include "UITexture.h"
 #include "Text.h"
@@ -13,8 +14,8 @@ namespace nf {
 
 		void onExit() override;
 	private:
-		int m_counter;
-		UITexture logoTex;
-		Text text;
+		std::chrono::steady_clock::time_point m_start;
+		UITexture m_logoTex;
+		Text m_text;
 	};
 }

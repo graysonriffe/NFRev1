@@ -8,6 +8,7 @@
 #include "Shader.h"
 #include "Light.h"
 #include "Entity.h"
+#include "Model.h"
 #include "Cubemap.h"
 #include "UIElement.h"
 #include "Camera.h"
@@ -107,7 +108,7 @@ namespace nf {
 		m_fadeVAO->push<float>(2);
 		m_fadeVAO->finishBufferLayout();
 		m_fadeIB = new IndexBuffer(fadeIB, 6);
-		m_loadingText.create("Loading...", Vec2(0.025, 0.044), Vec3(0.7, 0.7, 0.7));
+		m_loadingText.create("NFLoadingText", Vec2(0.025, 0.044), Vec3(0.7, 0.7, 0.7));
 	}
 
 	void Renderer::setFade(bool in, bool out, bool noText) {
@@ -142,7 +143,7 @@ namespace nf {
 		m_cubemap = &in;
 	}
 
-	void Renderer::doFrame(Camera* camera) {
+	void Renderer::doFrame(Camera* camera, double dT) {
 		//Begin frame
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -202,7 +203,7 @@ namespace nf {
 				m_loadingText.setOpacity(opacity);
 				m_loadingText.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
 			}
-			opacity -= 0.03;
+			opacity -= 0.8 * dT;
 			if (opacity <= 0.0) {
 				m_fadeIn = false;
 				m_fadeOutComplete = false;
@@ -220,7 +221,7 @@ namespace nf {
 				m_loadingText.setOpacity(opacity);
 				m_loadingText.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
 			}
-			opacity += 0.03;
+			opacity += 1.2 * dT;
 			if (opacity >= 1.0) {
 				m_fadeIn = false;
 				m_fadeOutComplete = true;

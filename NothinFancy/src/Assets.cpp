@@ -1,5 +1,6 @@
 #include "Assets.h"
 
+#include "Application.h"
 #include "Model.h"
 #include "Utility.h"
 
@@ -40,6 +41,7 @@ namespace nf {
 	void AssetPack::load(const char* packName) {
 		std::string path = "assets/" + (std::string)packName;
 		std::string packContents = readFile(path);
+		std::unordered_map<std::string, ACubemap*> cubemaps;
 		unsigned int cubemapCount = 0;
 		while (packContents.size()) {
 			unsigned int startingPos = packContents.find_first_of("#NFASSET ") + 9;
@@ -68,12 +70,13 @@ namespace nf {
 				geometry->data[assetSize] = '\0';
 				geometry->alreadyLoaded = false;
 				geometry->loadedModel = nullptr;
+				if (packName == "base.nfpack")
+					geometry->isBaseAsset = true;
 				m_assets[assetName] = geometry;
 				continue;
 			}
 			if (extension == "png") {
 				if (assetName.find("_cmfront") != std::string::npos || assetName.find("_cmback") != std::string::npos || assetName.find("_cmtop") != std::string::npos || assetName.find("_cmbottom") != std::string::npos || assetName.find("_cmleft") != std::string::npos || assetName.find("_cmright") != std::string::npos) {
-					static std::unordered_map<std::string, ACubemap*> cubemaps;
 					std::string cmName = assetName.substr(0, assetName.find('_'));
 					ACubemap* curr;
 					if (cubemaps.find(cmName) == cubemaps.end()) {
@@ -126,6 +129,8 @@ namespace nf {
 				texture->data = new char[assetSize];
 				std::memcpy(texture->data, &assetContents[0], assetSize);
 				texture->size = assetSize;
+				if (packName == "base.nfpack")
+					texture->isBaseAsset = true;
 				m_assets[assetName] = texture;
 				continue;
 			}
@@ -142,13 +147,17 @@ namespace nf {
 				font->data = new char[assetSize];
 				std::memcpy(font->data, &assetContents[0], assetSize);
 				font->size = assetSize;
+				if (packName == "base.nfpack")
+					font->isBaseAsset = true;
 				m_assets[assetName] = font;
 				continue;
 			}
 			Error("Invalid asset extention in pack \"" + (std::string)packName + (std::string)"\"!");
 		}
 		if (cubemapCount % 6 != 0)
-			Error("Could not find full cubemap in pack \"" + (std::string)packName + (std::string)"\"!")
+			Error("Could not find full cubemap in pack \"" + (std::string)packName + (std::string)"\"!");
+		if (packName != "base.nfpack")
+			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}
 
 	Asset* AssetPack::operator[](const char* in) {
@@ -162,9 +171,14 @@ namespace nf {
 		return m_assets[in];
 	}
 
+	void AssetPack::destroy() {
+		unload();
+	}
+
 	void AssetPack::unload() {
 		for (auto curr : m_assets)
 			delete curr.second;
+		m_assets.clear();
 	}
 
 	AssetPack::~AssetPack() {

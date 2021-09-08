@@ -1,10 +1,11 @@
 #pragma once
+#include "NFObject.h"
 #include "Utility.h"
 
 namespace nf {
 	class Shader;
 
-	class Light {
+	class Light : public NFObject {
 	public:
 		enum class Type {
 			DIRECTIONAL,
@@ -25,6 +26,7 @@ namespace nf {
 		const Vec3& getColor();
 		const float getStrength();
 
+		void destroy() override;
 		~Light();
 	private:
 		bool m_constructed;

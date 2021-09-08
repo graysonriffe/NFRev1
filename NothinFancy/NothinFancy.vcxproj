@@ -230,6 +230,7 @@
     <ClInclude Include="src\include\Input.h" />
     <ClInclude Include="src\include\Light.h" />
     <ClInclude Include="src\include\Model.h" />
+    <ClInclude Include="src\include\NFObject.h" />
     <ClInclude Include="src\include\NothinFancy.h" />
     <ClInclude Include="src\include\Renderer.h" />
     <ClInclude Include="src\include\Shader.h" />

@@ -28,7 +28,7 @@ namespace nf {
 		void render(Light& in);
 		void render(Cubemap& in);
 
-		void doFrame(Camera* camera);
+		void doFrame(Camera* camera, double dT);
 
 		~Renderer();
 	private:

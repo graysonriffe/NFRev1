@@ -4,6 +4,7 @@
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
+#include "Application.h"
 #include "UIElement.h"
 #include "Shader.h"
 
@@ -53,6 +54,7 @@ namespace nf {
 			FT_Done_FreeType(ft);
 			newFont.alreadyLoaded = true;
 			newFont.loadedFont = m_font;
+			m_font->isBase = newFont.isBaseAsset;
 		}
 		m_vao = new VertexArray;
 		m_vao->addBuffer(nullptr, 0);
@@ -61,6 +63,13 @@ namespace nf {
 		m_vao->addBuffer(nullptr, 0);
 		m_vao->push<float>(2);
 		m_vao->finishBufferLayout();
+
+		if (m_string == "NFLoadingText") {
+			m_string = "Loading...";
+		}
+		else {
+			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
+		}
 	}
 
 	void Text::setText(const std::string& string) {
@@ -133,6 +142,18 @@ namespace nf {
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			currX += (c.advance >> 6) * scale * m_scale;
 		}
+	}
+
+	void Text::destroy() {
+		m_constructed = false;
+		m_position = Vec2(0.0);
+		m_centeredX = m_centeredY = false;
+		m_string = std::string();
+		if (!m_font->isBase)
+			delete m_font;
+		m_color = Vec3(0.0);
+		m_scale = 1.0f;
+		m_opacity = 1.0f;
 	}
 
 	Text::~Text() {

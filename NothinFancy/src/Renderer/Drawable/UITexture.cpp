@@ -26,7 +26,7 @@ namespace nf {
 		}
 		else {
 			m_texture = new Texture;
-			m_texture->create(tex->data, tex->size);
+			m_texture->create(tex);
 		}
 
 		m_vao = new VertexArray;
@@ -82,6 +82,17 @@ namespace nf {
 		m_vao->setBufferData(1, tc, sizeof(tc));
 		shader->setUniform("opacity", m_opacity);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
+	void UITexture::destroy() {
+		m_constructed = false;
+		m_position = Vec2(0.0);
+		m_centeredX = m_centeredY = false;
+		if (!m_texture->isBaseAsset())
+			delete m_texture;
+		m_scale = 1.0f;
+		m_opacity = 1.0f;
+		delete m_vao;
 	}
 
 	UITexture::~UITexture() {

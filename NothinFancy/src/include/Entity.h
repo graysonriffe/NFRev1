@@ -1,12 +1,13 @@
 #pragma once
-#include "Model.h"
 #include "Assets.h"
+#include "NFObject.h"
 #include "Utility.h"
 
 namespace nf {
 	class Shader;
+	class Model;
 
-	class Entity {
+	class Entity : public NFObject {
 	public:
 		Entity();
 
@@ -24,6 +25,7 @@ namespace nf {
 		void bind(Shader* shader);
 		Model* getModel() const;
 
+		void destroy() override;
 		~Entity();
 	private:
 		void setModelMatrix(Shader* shader);

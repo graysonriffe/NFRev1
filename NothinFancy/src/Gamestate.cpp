@@ -35,4 +35,13 @@ namespace nf {
 	void Gamestate::onExit() {
 
 	}
+
+	void Gamestate::cleanup() {
+		for (NFObject* curr : m_nfObjects)
+			curr->destroy();
+		m_nfObjects.clear();
+
+		delete camera;
+		app = nullptr;
+	}
 }
