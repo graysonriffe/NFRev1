@@ -100,6 +100,7 @@ int main(int argc, char* argv[]) {
 			continue;
 		std::string filename = currDir.path().filename().string().append(".nfpack");
 		Log("Creating pack \"" + filename + (std::string)"\"");
+		std::vector<std::string> packFilenames;
 		std::string currFileExtension;
 		std::string currFileContents;
 		std::stringstream out;
@@ -148,6 +149,10 @@ int main(int argc, char* argv[]) {
 				}
 				currFileContents += '\n' + mtlContents;
 			}
+			for (std::string& currFilename : packFilenames)
+				if (relative.filename().string() == currFilename)
+					Error("Duplicate asset name \"" + relative.filename().string() + (std::string)"\" in pack!");
+			packFilenames.push_back(relative.filename().string());
 			if (out.rdbuf()->in_avail() != 0)
 				out << "\n";
 			out << "#NFASSET " + curr.path().filename().string();
