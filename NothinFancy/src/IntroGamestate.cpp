@@ -9,7 +9,7 @@ namespace nf {
 		Log("Intro onEnter!");
 		m_logoTex.create(BaseAssets::logo, Vec2(0.0, 0.0));
 		m_logoTex.centered(true, true);
-		m_text.create("(C) Grayson Riffe 2021", Vec2(0.01, 0.025), Vec3(0.8));
+		m_text.create("(c) Grayson Riffe 2021", Vec2(0.01, 0.025), Vec3(0.8));
 		m_text.setScale(0.6);
 		m_start = std::chrono::steady_clock::now();
 	}

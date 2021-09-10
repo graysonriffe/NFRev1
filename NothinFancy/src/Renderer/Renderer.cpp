@@ -155,15 +155,12 @@ namespace nf {
 		m_entityShader->setUniform("proj", proj);
 		for (Entity* draw : m_lGame) {
 			Entity& curr = *draw;
-			curr.bind(m_entityShader);
 			//TODO: Clean this up a bit
 			m_entityShader->setUniform("numberOfLights", (int)m_lights.size() + 1);
 			for (unsigned int i = 0; i < m_lights.size(); i++) {
 				m_lights[i]->bind(m_entityShader, i);
 			}
-			//TODO: Bind and draw every material here
-			m_entityShader->setUniform("material.shininess", 1.0f);
-			glDrawElements(GL_TRIANGLES, curr.getModel()->getIndexCount(), GL_UNSIGNED_INT, nullptr);
+			curr.render(m_entityShader);
 		}
 		m_lGame.clear();
 		m_lights.clear();
@@ -203,7 +200,9 @@ namespace nf {
 				m_loadingText.setOpacity(opacity);
 				m_loadingText.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
 			}
-			opacity -= 0.8 * dT;
+			if (dT > 1.0 / 60.0)
+				dT = 1.0 / 60.0;
+			opacity -= 2.5 * dT;
 			if (opacity <= 0.0) {
 				m_fadeIn = false;
 				m_fadeOutComplete = false;
@@ -221,7 +220,7 @@ namespace nf {
 				m_loadingText.setOpacity(opacity);
 				m_loadingText.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
 			}
-			opacity += 1.2 * dT;
+			opacity += 3.0 * dT;
 			if (opacity >= 1.0) {
 				m_fadeIn = false;
 				m_fadeOutComplete = true;

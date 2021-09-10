@@ -13,7 +13,7 @@ namespace nf {
 		};
 		Light();
 
-		void create(const Vec3& position, const Vec3& color, float strength = 1.0f, Type type = Type::POINT);
+		void create(const Vec3& position, const Vec3& color, double strength = 1.0, Type type = Type::POINT);
 		bool isConstructed();
 		void setPosition(const Vec3& position);
 		void setColor(const Vec3& color);

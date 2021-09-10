@@ -6,10 +6,9 @@ namespace nf {
 
 	class Texture {
 	public:
-		Texture();
+		Texture(ATexture* tex);
 
-		void create(ATexture* tex);
-		void bind();
+		void bind(unsigned int slot = 0);
 		Vec2 getDimensions();
 		bool isBaseAsset();
 

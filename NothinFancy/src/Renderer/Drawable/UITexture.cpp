@@ -25,8 +25,7 @@ namespace nf {
 			m_texture = tex->loadedTexture;
 		}
 		else {
-			m_texture = new Texture;
-			m_texture->create(tex);
+			m_texture = new Texture(tex);
 		}
 
 		m_vao = new VertexArray;

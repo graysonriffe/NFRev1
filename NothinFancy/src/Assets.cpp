@@ -1,5 +1,7 @@
 #include "Assets.h"
 
+#include <sstream>
+
 #include "Application.h"
 #include "Model.h"
 #include "Utility.h"
@@ -9,11 +11,11 @@ namespace nf {
 		delete[] data;
 	}
 
-	AModel::~AModel() {
+	ATexture::~ATexture() {
 
 	}
 
-	ATexture::~ATexture() {
+	AModel::~AModel() {
 
 	}
 
@@ -41,6 +43,7 @@ namespace nf {
 	void AssetPack::load(const char* packName) {
 		std::string path = "assets/" + (std::string)packName;
 		std::string packContents = readFile(path);
+		std::string packContentsOBJ = packContents;
 		std::unordered_map<std::string, ACubemap*> cubemaps;
 		unsigned int cubemapCount = 0;
 		while (packContents.size()) {
@@ -63,18 +66,8 @@ namespace nf {
 			}
 			size_t assetSize = assetContents.size();
 
-			if (extension == "obj") {
-				AModel* geometry = new AModel;
-				geometry->data = new char[assetSize + 1];
-				std::memcpy(geometry->data, &assetContents[0], assetSize);
-				geometry->data[assetSize] = '\0';
-				geometry->alreadyLoaded = false;
-				geometry->loadedModel = nullptr;
-				if (packName == "base.nfpack")
-					geometry->isBaseAsset = true;
-				m_assets[assetName] = geometry;
+			if (extension == "obj")
 				continue;
-			}
 			if (extension == "png") {
 				if (assetName.find("_cmfront") != std::string::npos || assetName.find("_cmback") != std::string::npos || assetName.find("_cmtop") != std::string::npos || assetName.find("_cmbottom") != std::string::npos || assetName.find("_cmleft") != std::string::npos || assetName.find("_cmright") != std::string::npos) {
 					std::string cmName = assetName.substr(0, assetName.find('_'));
@@ -156,6 +149,48 @@ namespace nf {
 		}
 		if (cubemapCount % 6 != 0)
 			Error("Could not find full cubemap in pack \"" + (std::string)packName + (std::string)"\"!");
+
+		while (packContentsOBJ.size()) {
+			unsigned int startingPos = packContentsOBJ.find_first_of("#NFASSET ") + 9;
+			packContentsOBJ = packContentsOBJ.substr(9);
+			unsigned int endAssetNamePos = packContentsOBJ.find_first_of('\n');
+			std::string assetName = packContentsOBJ.substr(0, endAssetNamePos);
+			packContentsOBJ = packContentsOBJ.substr(endAssetNamePos + 1);
+			unsigned int extensionPos = assetName.find_first_of('.');
+			std::string extension = assetName.substr(extensionPos + 1);
+			std::string assetContents;
+			unsigned int nextAssetPos = packContentsOBJ.find("#NFASSET ");
+			if (nextAssetPos != std::string::npos) {
+				assetContents = packContentsOBJ.substr(0, nextAssetPos - 1);
+				packContentsOBJ = packContentsOBJ.substr(nextAssetPos);
+			}
+			else {
+				assetContents = packContentsOBJ;
+				packContentsOBJ = "";
+			}
+			size_t assetSize = assetContents.size();
+
+			if (extension == "obj") {
+				AModel* model = new AModel;
+				std::string textures = assetContents.substr(0, assetContents.find("\n"));
+				if (textures != "none") {
+					std::stringstream ss(textures);
+					std::string curr;
+					while (ss >> curr) {
+						model->neededTextures[curr] = (ATexture*)m_assets[curr];
+					}
+				}
+				assetContents = assetContents.substr(assetContents.find("\n") + 1);
+				model->data = new char[assetSize + 1];
+				std::memcpy(model->data, &assetContents[0], assetSize);
+				model->data[assetSize] = '\0';
+				if (packName == "base.nfpack")
+					model->isBaseAsset = true;
+				m_assets[assetName] = model;
+				continue;
+			}
+		}
+
 		if (packName != "base.nfpack")
 			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}

@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+
 #include "NFObject.h"
 
 namespace nf {
@@ -14,17 +15,19 @@ namespace nf {
 		virtual ~Asset();
 	};
 
-	struct AModel : Asset {
-		Model* loadedModel = nullptr;
-
-		~AModel() override;
-	};
-
 	struct ATexture : Asset {
 		size_t size = 0;
 		Texture* loadedTexture = nullptr;
 
 		~ATexture() override;
+	};
+
+	struct AModel : Asset {
+		Model* loadedModel = nullptr;
+
+		std::unordered_map<std::string, ATexture*> neededTextures;
+
+		~AModel() override;
 	};
 
 	struct ACubemap : Asset {

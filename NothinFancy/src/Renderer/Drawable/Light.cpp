@@ -12,12 +12,12 @@ namespace nf {
 
 	}
 
-	void Light::create(const Vec3& position, const Vec3& color, float strength, Type type) {
+	void Light::create(const Vec3& position, const Vec3& color, double strength, Type type) {
 		m_constructed = true;
 		m_position = position;
 		m_color = color;
 		m_type = type;
-		m_strength = strength;
+		m_strength = (float)strength;
 
 		Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}

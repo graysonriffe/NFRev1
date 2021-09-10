@@ -64,6 +64,22 @@ void writeFile(const std::string& filename, const std::string& in, bool encrypte
 	out.close();
 }
 
+void getNeededImages(std::string mtl, std::set<std::string>& set) {
+	while (mtl.size()) {
+		unsigned int pos = mtl.find("map_");
+		if (pos == std::string::npos)
+			break;
+		mtl = mtl.substr(pos + 7);
+		std::stringstream ss(mtl);
+		std::string temp;
+		ss >> temp;
+		unsigned int pos2 = temp.find_last_of("/\\");
+		if (pos2 != std::string::npos)
+			temp = temp.substr(pos2 + 1);
+		set.insert(temp);
+	}
+}
+
 int main(int argc, char* argv[]) {
 	Log("Starting up");
 
@@ -84,6 +100,7 @@ int main(int argc, char* argv[]) {
 			continue;
 		std::string filename = currDir.path().filename().string().append(".nfpack");
 		Log("Creating pack \"" + filename + (std::string)"\"");
+		std::string currFileExtension;
 		std::string currFileContents;
 		std::stringstream out;
 		unsigned int fileCount = 0;
@@ -91,11 +108,46 @@ int main(int argc, char* argv[]) {
 			if (curr.is_directory())
 				continue;
 			std::filesystem::path relative = std::filesystem::relative(curr, currDir);
-			if (extensions.find(relative.extension().string().substr(1)) == extensions.end())
+			currFileExtension = relative.extension().string().substr(1);
+			if (currFileExtension == "mtl")
+				continue;
+			if (extensions.find(currFileExtension) == extensions.end())
 				Error("File \"" + relative.string() + (std::string)"\" is not of supported type!");
 			Log("Current file: " + relative.string());
 
 			currFileContents = readFile(curr.path().string());
+			if (currFileExtension == "obj") {
+				std::filesystem::path mtlPath;
+				for (const auto& curr2 : std::filesystem::recursive_directory_iterator(curr.path().parent_path())) {
+					if (curr2.is_directory())
+						continue;
+					if (curr2.path().extension() != ".mtl")
+						continue;
+					std::string mtlFile = relative.filename().string().substr(0, relative.filename().string().size() - 4) + (std::string)".mtl";
+					if (curr2.path().filename().string() == mtlFile) {
+						mtlPath = curr2.path();
+						break;
+					}
+				}
+				if (mtlPath.empty())
+					Error("No mtl file found for " + relative.filename().string() + (std::string)"!");
+				Log("Found mtl file for " + relative.filename().string());
+				std::set<std::string> neededImages;
+				std::string mtlContents = readFile(mtlPath.string());
+				getNeededImages(mtlContents, neededImages);
+				if (!neededImages.empty()) {
+					currFileContents.insert(0, "\n");
+					for(std::string curr : neededImages) {
+						currFileContents.insert(0, curr);
+						currFileContents.insert(0, " ");
+					}
+					currFileContents = currFileContents.substr(1);
+				}
+				else {
+					currFileContents.insert(0, "none\n");
+				}
+				currFileContents += '\n' + mtlContents;
+			}
 			if (out.rdbuf()->in_avail() != 0)
 				out << "\n";
 			out << "#NFASSET " + curr.path().filename().string();

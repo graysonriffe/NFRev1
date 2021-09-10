@@ -11,7 +11,7 @@ namespace nf {
 	public:
 		Entity();
 
-		void create(Asset* modelAsset, Asset* textureAsset = nullptr);
+		void create(Asset* modelAsset);
 		bool isConstructed();
 
 		void setPosition(double x, double y, double z);
@@ -22,7 +22,7 @@ namespace nf {
 		void setScale(double x, double y, double z);
 		void setScale(const Vec3& scale);
 
-		void bind(Shader* shader);
+		void render(Shader* shader);
 		Model* getModel() const;
 
 		void destroy() override;

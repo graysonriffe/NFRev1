@@ -136,9 +136,11 @@ namespace nf {
 				1.0, 1.0,
 				1.0, 0.0
 			};
+			glActiveTexture(GL_TEXTURE10);
 			glBindTexture(GL_TEXTURE_2D, c.texID);
 			m_vao->setBufferData(0, vb, sizeof(vb));
 			m_vao->setBufferData(1, tc, sizeof(tc));
+			shader->setUniform("text", 10);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			currX += (c.advance >> 6) * scale * m_scale;
 		}

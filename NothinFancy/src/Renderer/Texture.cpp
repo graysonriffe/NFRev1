@@ -8,16 +8,12 @@
 #include "Utility.h"
 
 namespace nf {
-	Texture::Texture() :
+	Texture::Texture(ATexture* tex) :
 		m_isBase(false),
 		m_id(0),
 		m_x(0),
 		m_y(0)
 	{
-
-	}
-
-	void Texture::create(ATexture* tex) {
 		int nChannels;
 		stbi_set_flip_vertically_on_load(true);
 		unsigned char* texture = stbi_load_from_memory((unsigned char*)tex->data, tex->size, &m_x, &m_y, &nChannels, 0);
@@ -33,8 +29,10 @@ namespace nf {
 		m_isBase = tex->isBaseAsset;
 	}
 
-	void Texture::bind() {
+	void Texture::bind(unsigned int slot) {
+		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_id);
+		glActiveTexture(GL_TEXTURE0);
 	}
 
 	Vec2 Texture::getDimensions() {
