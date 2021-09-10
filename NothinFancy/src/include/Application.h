@@ -1,6 +1,7 @@
 #pragma once
 #include <chrono>
 #include <unordered_map>
+#include <array>
 #include <Windows.h>
 
 #include "Config.h"
@@ -29,7 +30,8 @@ namespace nf {
 		void changeConfig(const Config& in);
 		const Config& getConfig() const;
 		int getFPS() const;
-		bool isInput(unsigned int code);
+		bool isKeyHeld(unsigned int code);
+		bool isKeyPressed(unsigned int code);
 		void trackMouse(bool track);
 		void getMouseDiff(int& x, int& y);
 		static Application* getApp();
@@ -41,7 +43,7 @@ namespace nf {
 		RECT getWindowRect() const;
 		void calculateNewWindowPos(int& x, int& y);
 		void toggleFullscreen();
-		void updateInput();
+		void updateMouse();
 		void runMainGameThread();
 		void doStateChange();
 		static void setApp(Application* app);
@@ -77,7 +79,7 @@ namespace nf {
 		std::string m_nextState;
 
 		//Array of booleans that represent keyboard and mouse input minus the scrollwheel
-		bool m_input[164];
+		std::array<std::pair<bool, bool>, 164> m_keys;
 		unsigned int m_mouseX, m_mouseY;
 		bool m_trackingMouse;
 		bool m_mouseTrackFirst;

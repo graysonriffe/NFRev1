@@ -24,10 +24,10 @@ namespace nf {
 			scale += 0.12 * deltaTime;
 		}
 
-		if (dur.count() > 3.5 || app->isInput(NFI_SPACE)) {
+		if (dur.count() > 3.5 || app->isKeyPressed(NFI_SPACE)) {
 			app->changeState(app->getDefaultState());
 		}
-		if (app->isInput(NFI_ESCAPE))
+		if (app->isKeyPressed(NFI_ESCAPE))
 			app->quit();
 	}
 

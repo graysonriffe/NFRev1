@@ -87,7 +87,7 @@ namespace nf {
 					break;
 				}
 			}
-			updateInput();
+			updateMouse();
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 		mainThread.join();
@@ -137,13 +137,21 @@ namespace nf {
 		return m_FPS;
 	}
 
-	bool Application::isInput(unsigned int code) {
+	bool Application::isKeyHeld(unsigned int code) {
 		if (code < 164) {
-			return m_input[code];
+			return m_keys[code].first;
 		}
-		else {
-			return false;
+		return false;
+	}
+
+	bool Application::isKeyPressed(unsigned int code) {
+		if (code < 164) {
+			if (m_keys[code].second) {
+				m_keys[code].second = false;
+				return true;
+			}
 		}
+		return false;
 	}
 
 	void Application::trackMouse(bool track) {
@@ -216,13 +224,7 @@ namespace nf {
 		}
 	}
 
-	void Application::updateInput() {
-		for (unsigned int i = 0; i < 164; i++) {
-			if (GetFocus() == m_window)
-				m_input[i] = GetKeyState(i) & 0x8000;
-			else
-				m_input[i] = false;
-		}
+	void Application::updateMouse() {
 		POINT mouse;
 		GetCursorPos(&mouse);
 		ScreenToClient(m_window, &mouse);
@@ -321,45 +323,57 @@ namespace nf {
 	LRESULT CALLBACK Application::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		Application* app = (Application*)GetProp(hWnd, L"App");
 		switch (uMsg) {
-		case WM_CREATE: {
-			return 0;
-		}
-		case WM_SYSKEYDOWN: {
-			if (GetKeyState(VK_RETURN) & 0x8000) {
-				if (!(lParam & (1 << 30))) {
-					if (!app->m_currentConfig.fullscreen) {
-						app->m_altWidth = app->m_currentConfig.width;
-						app->m_altHeight = app->m_currentConfig.height;
+			case WM_CREATE: {
+				return 0;
+			}
+			case WM_SYSKEYDOWN: {
+				if (GetKeyState(VK_RETURN) & 0x8000) {
+					if (!(lParam & (1 << 30))) {
+						if (!app->m_currentConfig.fullscreen) {
+							app->m_altWidth = app->m_currentConfig.width;
+							app->m_altHeight = app->m_currentConfig.height;
+						}
+						app->changeConfig({ app->m_currentConfig.width, app->m_currentConfig.height, !app->m_currentConfig.fullscreen, app->m_currentConfig.title });
+						if (!app->m_currentConfig.fullscreen) {
+							app->changeConfig({ app->m_altWidth, app->m_altHeight, app->m_currentConfig.fullscreen, app->m_currentConfig.title });
+						}
 					}
-					app->changeConfig({ app->m_currentConfig.width, app->m_currentConfig.height, !app->m_currentConfig.fullscreen, app->m_currentConfig.title });
-					if (!app->m_currentConfig.fullscreen) {
-						app->changeConfig({ app->m_altWidth, app->m_altHeight, app->m_currentConfig.fullscreen, app->m_currentConfig.title });
-					}
+					return 0;
 				}
-				return 0;
-			}
-			break;
-		}
-		case WM_MENUCHAR: {
-			return MNC_CLOSE << 16;
-		}
-		case WM_SETCURSOR: {
-			if (LOWORD(lParam) != HTCLIENT)
 				break;
-			if (app->m_trackingMouse && LOWORD(lParam) == HTCLIENT && GetFocus() == hWnd) {
-				SetCursor(NULL);
+			}
+			case WM_MENUCHAR: {
+				return MNC_CLOSE << 16;
+			}
+			case WM_KEYDOWN: {
+				if (wParam < 164 && !(lParam & (1 << 30)))
+					app->m_keys[wParam].first = app->m_keys[wParam].second = true;
+
 				return 0;
 			}
-			break;
-		}
-		case WM_CLOSE: {
-			DestroyWindow(hWnd);
-			return 0;
-		}
-		case WM_DESTROY: {
-			PostQuitMessage(0);
-			return 0;
-		}
+			case WM_KEYUP: {
+				if (wParam < 164)
+					app->m_keys[wParam].first = app->m_keys[wParam].second = false;
+
+				return 0;
+			}
+			case WM_SETCURSOR: {
+				if (LOWORD(lParam) != HTCLIENT)
+					break;
+				if (app->m_trackingMouse && LOWORD(lParam) == HTCLIENT && GetFocus() == hWnd) {
+					SetCursor(NULL);
+					return 0;
+				}
+				break;
+			}
+			case WM_CLOSE: {
+				DestroyWindow(hWnd);
+				return 0;
+			}
+			case WM_DESTROY: {
+				PostQuitMessage(0);
+				return 0;
+			}
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
