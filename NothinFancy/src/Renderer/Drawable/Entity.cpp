@@ -19,16 +19,18 @@ namespace nf {
 
 	void Entity::create(Asset* modelAsset) {
 		m_constructed = true;
-		AModel& model = *(AModel*)modelAsset;
-		if (model.alreadyLoaded) {
-			m_model = model.loadedModel;
+		AModel* model;
+		if ((model = dynamic_cast<AModel*>(modelAsset)) == nullptr)
+			Error("Non-model asset passed to Entity::create!");
+		if (model->alreadyLoaded) {
+			m_model = model->loadedModel;
 		}
 		else {
-			m_model = new Model(&model);
-			model.alreadyLoaded = true;
-			model.loadedModel = m_model;
+			m_model = new Model(model);
+			model->alreadyLoaded = true;
+			model->loadedModel = m_model;
 		}
-		m_model->setBaseAsset(model.isBaseAsset);
+
 		Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}
 

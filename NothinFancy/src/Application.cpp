@@ -138,19 +138,24 @@ namespace nf {
 	}
 
 	bool Application::isKeyHeld(unsigned int code) {
-		if (code < 164) {
-			return m_keys[code].first;
-		}
+		if (code > 7 && code < 164)
+			return GetKeyState(code) & 0x8000;
 		return false;
 	}
 
 	bool Application::isKeyPressed(unsigned int code) {
-		if (code < 164) {
-			if (m_keys[code].second) {
-				m_keys[code].second = false;
+		if (code > 7 && code < 164) {
+			if (m_keysPressed[code]) {
+				m_keysPressed[code] = false;
 				return true;
 			}
 		}
+		return false;
+	}
+
+	bool Application::isMouse(unsigned int code) {
+		if (code < 7)
+			return GetKeyState(code) & 0x8000;
 		return false;
 	}
 
@@ -165,6 +170,10 @@ namespace nf {
 		y = m_mouseDiffY;
 		m_mouseDiffX = 0;
 		m_mouseDiffY = 0;
+	}
+
+	Vec2 Application::getMousePos() {
+		return Vec2(m_mouseX, m_mouseY);
 	}
 
 	Application* Application::getApp() {
@@ -284,10 +293,12 @@ namespace nf {
 				m_fpsDuration = m_fpsClock2 - m_fpsClock1;
 				if (m_fpsDuration.count() >= 0.2) {
 					m_FPS = (int)std::round(1.0 / m_deltaTime);
+#ifdef _DEBUG
 					static int i = 0;
 					i++;
 					if (i % 5 == 0)
 						Log("FPS: " + std::to_string(m_FPS));
+#endif
 					m_fpsClock1 = std::chrono::steady_clock::now();
 				}
 			}
@@ -347,14 +358,12 @@ namespace nf {
 			}
 			case WM_KEYDOWN: {
 				if (wParam < 164 && !(lParam & (1 << 30)))
-					app->m_keys[wParam].first = app->m_keys[wParam].second = true;
-
+					app->m_keysPressed[wParam] = true;
 				return 0;
 			}
 			case WM_KEYUP: {
 				if (wParam < 164)
-					app->m_keys[wParam].first = app->m_keys[wParam].second = false;
-
+					app->m_keysPressed[wParam] = false;
 				return 0;
 			}
 			case WM_SETCURSOR: {

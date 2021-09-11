@@ -8,9 +8,9 @@
 #include "Shader.h"
 #include "Light.h"
 #include "Entity.h"
-#include "Model.h"
 #include "Cubemap.h"
 #include "UIElement.h"
+#include "Button.h"
 #include "Camera.h"
 #include "Utility.h"
 
@@ -67,31 +67,7 @@ namespace nf {
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		m_baseAP.load("base.nfpack");
-		const char* entityVertex = m_baseAP["entityVertex.shader"]->data;
-		const char* entityFragment = m_baseAP["entityFragment.shader"]->data;
-		m_entityShader = new Shader(entityVertex, entityFragment);
-		const char* textVertex = m_baseAP["textVertex.shader"]->data;
-		const char* textFragment = m_baseAP["textFragment.shader"]->data;
-		m_textShader = new Shader(textVertex, textFragment);
-		const char* uiTextureVertex = m_baseAP["uiTextureVertex.shader"]->data;
-		const char* uiTextureFragment = m_baseAP["uiTextureFragment.shader"]->data;
-		m_uiTextureShader = new Shader(uiTextureVertex, uiTextureFragment);
-		const char* cubemapVertex = m_baseAP["cubemapVertex.shader"]->data;
-		const char* cubemapFragment = m_baseAP["cubemapFragment.shader"]->data;
-		m_cubemapShader = new Shader(cubemapVertex, cubemapFragment);
-		const char* fadeVertex = m_baseAP["fadeVertex.shader"]->data;
-		const char* fadeFragment = m_baseAP["fadeFragment.shader"]->data;
-		m_fadeShader = new Shader(fadeVertex, fadeFragment);
-
-		BaseAssets::cube = (AModel*)m_baseAP["cube.obj"];
-		BaseAssets::plane = (AModel*)m_baseAP["plane.obj"];
-		BaseAssets::sphere = (AModel*)m_baseAP["sphere.obj"];
-		BaseAssets::cone = (AModel*)m_baseAP["cone.obj"];
-		BaseAssets::cylinder = (AModel*)m_baseAP["cylinder.obj"];
-		BaseAssets::torus = (AModel*)m_baseAP["torus.obj"];
-		BaseAssets::logo = (ATexture*)m_baseAP["logo.png"];
-		BaseAssets::defaultFont = (AFont*)m_baseAP["default.ttf"];
+		loadBaseAssets();
 
 		float fadeVB[] = {
 			-1.0, -1.0,
@@ -168,7 +144,7 @@ namespace nf {
 		//Draw cubemap where there isn't anything else
 		if (m_cubemap != nullptr) {
 			m_cubemapShader->setUniform("proj", proj);
-			m_cubemap->render();
+			m_cubemap->render(m_cubemapShader);
 		}
 		m_cubemap = nullptr;
 
@@ -179,12 +155,18 @@ namespace nf {
 			UIElement& curr = *draw;
 			if (curr.identity() == "text") {
 				m_textShader->setUniform("proj", proj);
-				curr.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
+				Text& text = *(Text*)draw;
+				text.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
 				continue;
 			}
-			if (curr.identity() == "texture") {
+			else if (curr.identity() == "texture") {
 				m_uiTextureShader->setUniform("proj", proj);
 				curr.render(m_uiTextureShader, m_app->getConfig().width, m_app->getConfig().height);
+			}
+			else if (curr.identity() == "button") {
+				m_uiTextureShader->setUniform("proj", proj);
+				Button& button = *(Button*)draw;
+				button.render(m_uiTextureShader, m_app->getConfig().width, m_app->getConfig().height, m_app, m_textShader);
 			}
 		}
 		m_lUI.clear();
@@ -234,6 +216,36 @@ namespace nf {
 		GLenum err = glGetError();
 		if (err != GL_NO_ERROR)
 			Error("OpenGL error " + std::to_string(err));
+	}
+
+	void Renderer::loadBaseAssets() {
+		m_baseAP.load("base.nfpack");
+		const char* entityVertex = m_baseAP["entityVertex.shader"]->data;
+		const char* entityFragment = m_baseAP["entityFragment.shader"]->data;
+		m_entityShader = new Shader(entityVertex, entityFragment);
+		const char* textVertex = m_baseAP["textVertex.shader"]->data;
+		const char* textFragment = m_baseAP["textFragment.shader"]->data;
+		m_textShader = new Shader(textVertex, textFragment);
+		const char* uiTextureVertex = m_baseAP["uiTextureVertex.shader"]->data;
+		const char* uiTextureFragment = m_baseAP["uiTextureFragment.shader"]->data;
+		m_uiTextureShader = new Shader(uiTextureVertex, uiTextureFragment);
+		const char* cubemapVertex = m_baseAP["cubemapVertex.shader"]->data;
+		const char* cubemapFragment = m_baseAP["cubemapFragment.shader"]->data;
+		m_cubemapShader = new Shader(cubemapVertex, cubemapFragment);
+		const char* fadeVertex = m_baseAP["fadeVertex.shader"]->data;
+		const char* fadeFragment = m_baseAP["fadeFragment.shader"]->data;
+		m_fadeShader = new Shader(fadeVertex, fadeFragment);
+
+		BaseAssets::cube = (AModel*)m_baseAP["cube.obj"];
+		BaseAssets::plane = (AModel*)m_baseAP["plane.obj"];
+		BaseAssets::sphere = (AModel*)m_baseAP["sphere.obj"];
+		BaseAssets::cone = (AModel*)m_baseAP["cone.obj"];
+		BaseAssets::cylinder = (AModel*)m_baseAP["cylinder.obj"];
+		BaseAssets::torus = (AModel*)m_baseAP["torus.obj"];
+		BaseAssets::logo = (ATexture*)m_baseAP["logo.png"];
+		BaseAssets::cubemap = (ACubemap*)m_baseAP["default.cm"];
+		BaseAssets::font = (AFont*)m_baseAP["default.ttf"];
+		BaseAssets::button = (AButton*)m_baseAP["default.button"];
 	}
 
 	Renderer::~Renderer() {

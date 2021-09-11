@@ -5,6 +5,7 @@
 #include "stb_image.h"
 
 #include "Application.h"
+#include "Shader.h"
 #include "Assets.h"
 
 namespace nf {
@@ -19,6 +20,7 @@ namespace nf {
 		m_constructed = true;
 		ACubemap& cm = *(ACubemap*)cubemapAsset;
 		glGenTextures(1, &m_id);
+		glActiveTexture(GL_TEXTURE12);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
 		struct CMFace {
 			CMFace(unsigned char* d, unsigned int w, unsigned int h, unsigned int nc) :
@@ -61,6 +63,8 @@ namespace nf {
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		glActiveTexture(GL_TEXTURE0);
 
 		float vb[] = {
 			-1.0f,  1.0f, -1.0f,
@@ -117,8 +121,10 @@ namespace nf {
 		return m_constructed;
 	}
 
-	void Cubemap::render() {
+	void Cubemap::render(Shader* shader) {
 		m_vao->bind();
+		glActiveTexture(GL_TEXTURE12);
+		shader->setUniform("cm", 12);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
 		glDepthFunc(GL_LEQUAL);
 		glDrawArrays(GL_TRIANGLES, 0, 36);

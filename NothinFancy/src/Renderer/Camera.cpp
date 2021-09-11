@@ -76,7 +76,7 @@ namespace nf {
 
 		switch (m_type) {
 			case Type::UI: {
-				view = glm::mat4(1.0);
+
 				break;
 			}
 			case Type::FIRST_PERSON: {
@@ -91,15 +91,6 @@ namespace nf {
 					m_pitch = 89.0f;
 				if (m_pitch < -89.0f)
 					m_pitch = -89.0f;
-				glm::vec3 rotation;
-				rotation.x = std::cos(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
-				rotation.y = std::sin(glm::radians(m_pitch));
-				rotation.z = std::sin(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
-				rotation = glm::normalize(rotation);
-				m_front = { rotation.x, rotation.y, rotation.z };
-				glm::vec3 position(m_position.x, m_position.y, m_position.z);
-				glm::vec3 up(0.0, 1.0, 0.0);
-				view = glm::lookAt(position, position + rotation, up);
 				break;
 			}
 			case Type::ORBIT: {
@@ -113,6 +104,16 @@ namespace nf {
 		}
 		glm::vec3 pos(m_position.x, m_position.y, m_position.z);
 		entityShader->setUniform("camera.pos", pos);
+
+		glm::vec3 rotation;
+		rotation.x = std::cos(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
+		rotation.y = std::sin(glm::radians(m_pitch));
+		rotation.z = std::sin(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
+		rotation = glm::normalize(rotation);
+		m_front = { rotation.x, rotation.y, rotation.z };
+		glm::vec3 position(m_position.x, m_position.y, m_position.z);
+		glm::vec3 up(0.0, 1.0, 0.0);
+		view = glm::lookAt(position, position + rotation, up);
 		entityShader->setUniform("view", view);
 
 		glm::mat4 cubemapView = glm::mat4(glm::mat3(view));

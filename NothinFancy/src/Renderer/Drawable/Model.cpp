@@ -24,12 +24,18 @@ namespace nf {
 		m_ib = new IndexBuffer(ib, ibCount);
 		if (diffTex) {
 			m_hasDiffuse = true;
-			m_diffuseTexture = new Texture(diffTex);
+			if (diffTex->alreadyLoaded)
+				m_diffuseTexture = diffTex->loadedTexture;
+			else
+				m_diffuseTexture = new Texture(diffTex);
 		}
 		m_diffColor = diffColor;
 		if (specTex) {
 			m_hasSpecular = true;
-			m_specularTexture = new Texture(specTex);
+			if (specTex->alreadyLoaded)
+				m_specularTexture = specTex->loadedTexture;
+			else
+				m_specularTexture = new Texture(specTex);
 		}
 		m_shininess = shininess;
 	}
@@ -63,7 +69,7 @@ namespace nf {
 	}
 
 	Model::Model(AModel* model) :
-		m_base(false)
+		m_base(model->isBaseAsset)
 	{
 		std::string obj = model->data;
 		unsigned int startMtlPos = obj.find("newmtl");
@@ -279,10 +285,6 @@ namespace nf {
 		for (Material* curr : m_materials) {
 			curr->render(shader);
 		}
-	}
-
-	void Model::setBaseAsset(bool isBase) {
-		m_base = isBase;
 	}
 
 	bool Model::isBaseAsset() {

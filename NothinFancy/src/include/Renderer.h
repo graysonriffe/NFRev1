@@ -32,6 +32,8 @@ namespace nf {
 
 		~Renderer();
 	private:
+		void loadBaseAssets();
+
 		Application* m_app;
 
 		HDC m_hdc;

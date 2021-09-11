@@ -49,15 +49,25 @@ namespace nf {
 		~ACubemap();
 	};
 
-	struct AShader : Asset {
-		~AShader() override;
-	};
-
 	struct AFont : Asset {
 		size_t size = 0;
 		Font* loadedFont = nullptr;
 
 		~AFont() override;
+	};
+
+	struct AButton : Asset {
+		ATexture idleTex;
+		ATexture hoverTex;
+		ATexture pressedTex;
+
+		unsigned int numImages = 0;
+
+		~AButton() override;
+	};
+
+	struct AShader : Asset {
+		~AShader() override;
 	};
 
 	class AssetPack : public NFObject {
@@ -85,7 +95,10 @@ namespace nf {
 
 		static ATexture* logo;
 
-		static AFont* defaultFont;
+		static ACubemap* cubemap;
 
+		static AFont* font;
+
+		static AButton* button;
 	};
 }

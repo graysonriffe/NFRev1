@@ -2,6 +2,7 @@
 
 #include "GL/glew.h"
 
+#include "Application.h"
 #include "Assets.h"
 #include "Texture.h"
 #include "Shader.h"
@@ -17,7 +18,9 @@ namespace nf {
 
 	void UITexture::create(Asset* textureAsset, const Vec2& position, double scale, double opacity) {
 		m_constructed = true;
-		ATexture* tex = (ATexture*)textureAsset;
+		ATexture* tex;
+		if ((tex = dynamic_cast<ATexture*>(textureAsset)) == nullptr)
+			Error("Non-texture asset passed to UITexture::create!");
 		m_position = position;
 		m_scale = (float)scale;
 		m_opacity = (float)opacity;
@@ -28,13 +31,23 @@ namespace nf {
 			m_texture = new Texture(tex);
 		}
 
+		float tc[] = {
+			0.0, 1.0,
+			0.0, 0.0,
+			1.0, 0.0,
+			0.0, 1.0,
+			1.0, 0.0,
+			1.0, 1.0
+		};
 		m_vao = new VertexArray;
 		m_vao->addBuffer(nullptr, 0);
 		m_vao->push<float>(2);
 		m_vao->finishBufferLayout();
-		m_vao->addBuffer(nullptr, 0);
+		m_vao->addBuffer(tc, sizeof(tc));
 		m_vao->push<float>(2);
 		m_vao->finishBufferLayout();
+
+		Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}
 
 	const char* UITexture::identity() {
@@ -68,17 +81,9 @@ namespace nf {
 			posX + width, posY,
 			posX + width, posY + height
 		};
-		float tc[3][4] = {
-			0.0, 1.0,
-			0.0, 0.0,
-			1.0, 0.0,
-			0.0, 1.0,
-			1.0, 0.0,
-			1.0, 1.0
-		};
+		
 		m_texture->bind();
 		m_vao->setBufferData(0, vb, sizeof(vb));
-		m_vao->setBufferData(1, tc, sizeof(tc));
 		shader->setUniform("opacity", m_opacity);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}

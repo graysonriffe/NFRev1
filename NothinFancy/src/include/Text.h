@@ -23,13 +23,13 @@ namespace nf {
 	public:
 		Text();
 
-		void create(const std::string& string, const Vec2& position, const Vec3& color = {1.0, 1.0, 1.0}, double opacity = 1.0, double scale = 1.0, Asset* font = BaseAssets::defaultFont);
+		void create(const std::string& string, const Vec2& position, const Vec3& color = {1.0, 1.0, 1.0}, double opacity = 1.0, double scale = 1.0, Asset* font = BaseAssets::font);
 		const char* identity() override;
 		void setText(const std::string& string);
 		void setColor(const Vec3& color);
 		void setScale(double scale);
 		void setOpacity(double opacity);
-		void render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight) override;
+		void render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight, bool onButton = false, float buttonWidth = 0.0f, float buttonHeight = 0.0f, const Vec2& buttonPos = Vec2());
 
 		void destroy() override;
 		~Text();

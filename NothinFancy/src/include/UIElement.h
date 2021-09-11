@@ -11,7 +11,7 @@ namespace nf {
 		UIElement();
 
 		virtual const char* identity();
-		void setPosition(float x, float y);
+		void setPosition(double x, double y);
 		void setPosition(const Vec2& position);
 		void centered(bool x, bool y = false);
 		bool isConstructed();

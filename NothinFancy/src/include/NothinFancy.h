@@ -15,6 +15,7 @@
 #include "Cubemap.h"
 #include "Text.h"
 #include "UITexture.h"
+#include "Button.h"
 #include "Input.h"
 
 namespace nf {
@@ -85,8 +86,10 @@ namespace nf {
 		int getFPS() const;
 		bool isKeyHeld(unsigned int code);
 		bool isKeyPressed(unsigned int code);
+		bool isMouse(unsigned int code);
 		void trackMouse(bool track);
 		void getMouseDiff(int& x, int& y);
+		Vec2 getMousePos();
 		static Application* getApp();
 
 		void quit();
@@ -132,7 +135,7 @@ namespace nf {
 		std::string m_nextState;
 
 		//Array of booleans that represent keyboard and mouse input minus the scrollwheel
-		std::array<std::pair<bool, bool>, 164> m_keys;
+		std::array<bool, 164> m_keysPressed;
 		unsigned int m_mouseX, m_mouseY;
 		bool m_trackingMouse;
 		bool m_mouseTrackFirst;

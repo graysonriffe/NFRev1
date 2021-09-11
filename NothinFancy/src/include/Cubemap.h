@@ -4,6 +4,7 @@
 
 namespace nf {
 	struct Asset;
+	class Shader;
 
 	class Cubemap : public Drawable, public NFObject {
 	public:
@@ -11,7 +12,7 @@ namespace nf {
 
 		void create(Asset* cubemapAsset);
 		bool isConstructed();
-		void render();
+		void render(Shader* shader);
 
 		void destroy() override;
 		~Cubemap();

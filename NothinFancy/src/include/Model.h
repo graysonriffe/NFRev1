@@ -30,7 +30,6 @@ namespace nf {
 
 		void render(Shader* shader);
 
-		void setBaseAsset(bool isBase);
 		bool isBaseAsset();
 
 		~Model();

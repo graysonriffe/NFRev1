@@ -92,11 +92,12 @@ namespace nf {
 		return "text";
 	}
 
-	void Text::render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight) {
+	void Text::render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight, bool onButton, float buttonWidth, float buttonHeight, const Vec2& buttonPos) {
 		float scale = windowWidth / 4000.0f;
-		m_vao->bind();
-		std::string::const_iterator si;
+		if (onButton)
+			scale *= buttonHeight / 100.0f;
 		float currX = (float)m_position.x * windowWidth, currY = (float)m_position.y * windowHeight;
+		std::string::const_iterator si;
 		if (m_centeredX || m_centeredY) {
 			float textWidth = 0.0f;
 			float textHeight = 0.0f;
@@ -110,7 +111,23 @@ namespace nf {
 				currX = ((float)windowWidth - textWidth) / 2;
 			if (m_centeredY)
 				currY = ((float)windowHeight - textHeight) / 2;
+
+			if (onButton) {
+				while (textWidth > buttonWidth - 20) {
+					scale -= 0.01f;
+					textHeight = textWidth = 0.0f;
+					for (si = m_string.begin(); si != m_string.end(); si++) {
+						Character& c = m_font->m_characters[*si];
+						textWidth += (c.advance >> 6) * scale * m_scale;
+						if (c.size.y >= textHeight)
+							textHeight = (float)c.size.y * scale * m_scale;
+					}
+				}
+				currX = (((float)buttonWidth - textWidth) / 2) + (float)buttonPos.x;
+				currY = (((float)buttonHeight - textHeight) / 2) + (float)buttonPos.y;
+			}
 		}
+
 		glm::vec3 color = { m_color.x, m_color.y, m_color.z };
 		shader->setUniform("textColor", color);
 		shader->setUniform("opacity", m_opacity);
@@ -120,7 +137,7 @@ namespace nf {
 			float y = currY - float(c.size.y - c.bearing.y) * scale * m_scale;
 			float w = (float)c.size.x * scale * m_scale;
 			float h = (float)c.size.y * scale * m_scale;
-			float vb[3][4] = {
+			float vb[] = {
 				x, y + h,
 				x, y,
 				x + w, y,
@@ -128,7 +145,7 @@ namespace nf {
 				x + w, y,
 				x + w, y + h
 			};
-			float tc[3][4] = {
+			float tc[] = {
 				0.0, 0.0,
 				0.0, 1.0,
 				1.0, 1.0,
@@ -138,6 +155,7 @@ namespace nf {
 			};
 			glActiveTexture(GL_TEXTURE10);
 			glBindTexture(GL_TEXTURE_2D, c.texID);
+			m_vao->bind();
 			m_vao->setBufferData(0, vb, sizeof(vb));
 			m_vao->setBufferData(1, tc, sizeof(tc));
 			shader->setUniform("text", 10);

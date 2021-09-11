@@ -11,7 +11,7 @@ namespace nf {
 	public:
 		UITexture();
 
-		void create(Asset* textureAsset, const Vec2& position, double scale = 1.0, double opacity = 1.0 );
+		void create(Asset* textureAsset, const Vec2& position, double scale = 1.0, double opacity = 1.0);
 		const char* identity() override;
 		void setScale(double scale);
 		void setOpacity(double opacity);

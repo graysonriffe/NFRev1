@@ -15,7 +15,7 @@ namespace nf {
 #define SleepMS(x) std::this_thread::sleep_for(std::chrono::milliseconds(x))
 //Prints a nicely-formatted message complete with a timestamp
 #define Log(x) nf::Debug::LogImp(x)
-//Prints error message and breaks the debugger
+//Prints error message and breaks the debugger in debug mode
 #define Error(x) {nf::Debug::ErrorImp(x,__FILENAME__, __LINE__);\
 __debugbreak();}
 
@@ -34,6 +34,7 @@ __debugbreak();}
 #else
 #define DEBUGINIT
 #define Log(x)
+//Shows error dialog with specified message then exits
 #define Error(x) {MessageBox(FindWindow(L"NFClass", NULL), toWide(x), L"NF Engine Error", MB_OK | MB_ICONERROR);\
 std::exit(-1);}
 #endif
@@ -53,6 +54,9 @@ std::exit(-1);}
 			this->x -= rhs.x;
 			this->y -= rhs.y;
 			return *this;
+		}
+		bool operator==(const Vec2& rhs) {
+			return this->x == rhs.x && this->y == rhs.y;
 		}
 		double x, y;
 	};
@@ -74,6 +78,9 @@ std::exit(-1);}
 			this->y -= rhs.y;
 			this->z -= rhs.z;
 			return *this;
+		}
+		bool operator==(const Vec3& rhs) {
+			return this->x == rhs.x && this->y == rhs.y && this->z == rhs.z	;
 		}
 		double x, y, z;
 	};

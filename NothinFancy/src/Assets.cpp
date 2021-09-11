@@ -28,11 +28,15 @@ namespace nf {
 		delete[] rightData;
 	}
 
-	AShader::~AShader() {
+	AFont::~AFont() {
 
 	}
 
-	AFont::~AFont() {
+	AButton::~AButton() {
+
+	}
+
+	AShader::~AShader() {
 
 	}
 
@@ -45,7 +49,9 @@ namespace nf {
 		std::string packContents = readFile(path);
 		std::string packContentsOBJ = packContents;
 		std::unordered_map<std::string, ACubemap*> cubemaps;
+		std::unordered_map<std::string, AButton*> buttons;
 		unsigned int cubemapCount = 0;
+		unsigned int buttonCount = 0;
 		while (packContents.size()) {
 			unsigned int startingPos = packContents.find_first_of("#NFASSET ") + 9;
 			packContents = packContents.substr(9);
@@ -68,13 +74,12 @@ namespace nf {
 
 			if (extension == "obj")
 				continue;
-			if (extension == "png") {
+			if (extension == "png" || extension == "jpg") {
 				if (assetName.find("_cmfront") != std::string::npos || assetName.find("_cmback") != std::string::npos || assetName.find("_cmtop") != std::string::npos || assetName.find("_cmbottom") != std::string::npos || assetName.find("_cmleft") != std::string::npos || assetName.find("_cmright") != std::string::npos) {
 					std::string cmName = assetName.substr(0, assetName.find('_'));
 					ACubemap* curr;
 					if (cubemaps.find(cmName) == cubemaps.end()) {
 						cubemaps[cmName] = new ACubemap;
-						cubemaps[cmName]->numImages = 0;
 					}
 					curr = cubemaps[cmName];
 					if (curr->numImages == 6)
@@ -111,11 +116,43 @@ namespace nf {
 					}
 					curr->numImages++;
 
-					if (curr->numImages == 6) {
+					if (curr->numImages == 6)
 						m_assets[cmName + (std::string)".cm"] = curr;
-					}
 
 					cubemapCount++;
+					continue;
+				}
+				else if (assetName.find("_buttonidle") != std::string::npos || assetName.find("_buttonhover") != std::string::npos || assetName.find("_buttonpressed") != std::string::npos) {
+					std::string buttonName = assetName.substr(0, assetName.find('_'));
+					AButton* curr;
+					if (buttons.find(buttonName) == buttons.end()) {
+						buttons[buttonName] = new AButton;
+						buttons[buttonName]->numImages = 0;
+					}
+					curr = buttons[buttonName];
+					if (curr->numImages == 3)
+						Error("Duplicate button images in pack \"" + (std::string)packName + (std::string)"\"!");
+					if (assetName.find("_buttonidle") != std::string::npos) {
+						curr->idleTex.data = new char[assetSize];
+						std::memcpy(curr->idleTex.data, &assetContents[0], assetSize);
+						curr->idleTex.size = assetSize;
+					}
+					if (assetName.find("_buttonhover") != std::string::npos) {
+						curr->hoverTex.data = new char[assetSize];
+						std::memcpy(curr->hoverTex.data, &assetContents[0], assetSize);
+						curr->hoverTex.size = assetSize;
+					}
+					if (assetName.find("_buttonpressed") != std::string::npos) {
+						curr->pressedTex.data = new char[assetSize];
+						std::memcpy(curr->pressedTex.data, &assetContents[0], assetSize);
+						curr->pressedTex.size = assetSize;
+					}
+					curr->numImages++;
+
+					if (curr->numImages == 3)
+						m_assets[buttonName + (std::string)".button"] = curr;
+
+					buttonCount++;
 					continue;
 				}
 				ATexture* texture = new ATexture;
@@ -149,6 +186,8 @@ namespace nf {
 		}
 		if (cubemapCount % 6 != 0)
 			Error("Could not find full cubemap in pack \"" + (std::string)packName + (std::string)"\"!");
+		if (buttonCount % 3 != 0)
+			Error("Could not find full button set in pack \"" + (std::string)packName + (std::string)"\"!");
 
 		while (packContentsOBJ.size()) {
 			unsigned int startingPos = packContentsOBJ.find_first_of("#NFASSET ") + 9;
@@ -229,5 +268,9 @@ namespace nf {
 
 	ATexture* BaseAssets::logo;
 
-	AFont* BaseAssets::defaultFont;
+	ACubemap* BaseAssets::cubemap;
+
+	AFont* BaseAssets::font;
+
+	AButton* BaseAssets::button;
 }
