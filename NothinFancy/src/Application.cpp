@@ -10,6 +10,8 @@ namespace nf {
 	Application::Application(Config& config) :
 		m_currentConfig(config),
 		m_running(false),
+		m_quit(false),
+		m_customWindowIconSet(false),
 		m_altWidth(1280),
 		m_altHeight(720),
 		m_defaultStateAdded(false),
@@ -34,7 +36,8 @@ namespace nf {
 	}
 
 	void Application::setWindowIcon(HANDLE hIcon) {
-		SendMessage(m_window, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+		m_customWindowIconSet = true;
+		SendMessage(m_window, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
 		SendMessage(m_window, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
 	}
 	//TODO: Test these top-level features
@@ -91,6 +94,10 @@ namespace nf {
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 		mainThread.join();
+	}
+
+	bool Application::isCustomWindowIcon() {
+		return m_customWindowIconSet;
 	}
 
 	void Application::changeState(const std::string& stateName) {

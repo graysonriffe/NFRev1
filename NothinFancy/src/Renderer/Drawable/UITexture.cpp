@@ -81,7 +81,7 @@ namespace nf {
 			posX + width, posY,
 			posX + width, posY + height
 		};
-		
+
 		m_texture->bind();
 		m_vao->setBufferData(0, vb, sizeof(vb));
 		shader->setUniform("opacity", m_opacity);

@@ -77,6 +77,7 @@ namespace nf {
 		void addDefaultState(const std::string& stateName);
 		const std::string& getDefaultState();
 		void run();
+		bool isCustomWindowIcon();
 		void changeState(const std::string& stateName);
 		Gamestate* getCurrentState();
 		void showWindow(bool show);
@@ -113,6 +114,7 @@ namespace nf {
 		HINSTANCE m_hInst;
 		LPCWSTR m_wclassName;
 		HWND m_window;
+		bool m_customWindowIconSet;
 		LONG m_defaultWindowStyle;
 		unsigned int m_altWidth, m_altHeight;
 

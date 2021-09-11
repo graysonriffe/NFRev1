@@ -3,6 +3,7 @@
 #include "GL/glew.h"
 #include "GL\wglew.h"
 #include "glm/glm.hpp"
+#include "stb_image.h"
 
 #include "Application.h"
 #include "Shader.h"
@@ -68,6 +69,22 @@ namespace nf {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		loadBaseAssets();
+
+		if (!m_app->isCustomWindowIcon()) {
+			ATexture& windowTex = *(ATexture*)m_baseAP["defaultwindowicon.png"];
+			int width, height, nChannels;
+			unsigned char* tex = stbi_load_from_memory((const unsigned char*)windowTex.data, windowTex.size, &width, &height, &nChannels, 0);
+			std::vector<unsigned char> pixels(width * height * 4);
+			for (unsigned int i = 0; i < pixels.size() / 4; i++) {
+				pixels[i * 4 + 0] = tex[i * 4 + 2];
+				pixels[i * 4 + 1] = tex[i * 4 + 1];
+				pixels[i * 4 + 2] = tex[i * 4 + 0];
+				pixels[i * 4 + 3] = tex[i * 4 + 3];
+			}
+			HICON windowIcon = CreateIcon(GetModuleHandle(NULL), width, height, 1, 32, NULL, &pixels[0]);
+			SendMessage(m_app->getWindow(), WM_SETICON, ICON_BIG, (LPARAM)windowIcon);
+			SendMessage(m_app->getWindow(), WM_SETICON, ICON_SMALL, (LPARAM)windowIcon);
+		}
 
 		float fadeVB[] = {
 			-1.0, -1.0,

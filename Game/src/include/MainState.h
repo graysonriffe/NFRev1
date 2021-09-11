@@ -10,5 +10,15 @@ public:
 
 	void onExit() override;
 private:
+	nf::AssetPack ap;
+	nf::Entity test;
+	nf::Entity plane;
+	nf::Text text;
+	nf::UITexture uiTex;
+	nf::Button button;
+	nf::Light light;
+	nf::Cubemap cm;
+
+	float xrot, yrot;
 
 };
