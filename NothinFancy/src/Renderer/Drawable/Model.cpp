@@ -40,26 +40,28 @@ namespace nf {
 		m_shininess = shininess;
 	}
 
-	void Material::render(Shader* shader) {
+	void Material::render(Shader* shader, bool onlyDepth) {
 		m_vao->bind();
 		m_ib->bind();
-		if (m_hasDiffuse) {
-			shader->setUniform("material.hasDiffuseTex", true);
-			m_diffuseTexture->bind();
+		if (!onlyDepth) {
+			if (m_hasDiffuse) {
+				shader->setUniform("material.hasDiffuseTex", true);
+				m_diffuseTexture->bind();
+			}
+			else {
+				shader->setUniform("material.hasDiffuseTex", false);
+				glm::vec3 color(m_diffColor.x, m_diffColor.y, m_diffColor.z);
+				shader->setUniform("material.diffuseColor", color);
+			}
+			if (m_hasSpecular) {
+				shader->setUniform("material.hasSpecTex", true);
+				m_specularTexture->bind(1);
+				shader->setUniform("material.specularTexture", 1);
+			}
+			else
+				shader->setUniform("material.hasSpecTex", false);
+			shader->setUniform("material.specPower", m_shininess);
 		}
-		else {
-			shader->setUniform("material.hasDiffuseTex", false);
-			glm::vec3 color(m_diffColor.x, m_diffColor.y, m_diffColor.z);
-			shader->setUniform("material.diffuseColor", color);
-		}
-		if (m_hasSpecular) {
-			shader->setUniform("material.hasSpecTex", true);
-			m_specularTexture->bind(1);
-			shader->setUniform("material.specularTexture", 1);
-		}
-		else
-			shader->setUniform("material.hasSpecTex", false);
-		shader->setUniform("material.specPower", m_shininess);
 		glDrawElements(GL_TRIANGLES, m_ib->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
 
@@ -281,9 +283,9 @@ namespace nf {
 		}
 	}
 
-	void Model::render(Shader* shader) {
+	void Model::render(Shader* shader, bool onlyDepth) {
 		for (Material* curr : m_materials) {
-			curr->render(shader);
+			curr->render(shader, onlyDepth);
 		}
 	}
 

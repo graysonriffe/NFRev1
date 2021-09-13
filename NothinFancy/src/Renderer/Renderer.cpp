@@ -17,6 +17,7 @@
 
 namespace nf {
 	Renderer::Renderer(Application* app) :
+		m_shadowMapFBO(0),
 		m_cubemap(nullptr),
 		m_fadeIn(false),
 		m_fadeOut(false),
@@ -69,6 +70,8 @@ namespace nf {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		loadBaseAssets();
+
+		createShadowMap();
 
 		if (!m_app->isCustomWindowIcon()) {
 			ATexture& windowTex = *(ATexture*)m_baseAP["defaultwindowicon.png"];
@@ -138,23 +141,23 @@ namespace nf {
 
 	void Renderer::doFrame(Camera* camera, double dT) {
 		//Begin frame
-		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		camera->bind(m_entityShader, m_cubemapShader);
 
 		//Draw Entities (3D models)
-		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 100000.0f);
+		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 10000.0f);
 		m_entityShader->bind();
 		m_entityShader->setUniform("proj", proj);
 		for (Entity* draw : m_lGame) {
 			Entity& curr = *draw;
-			unsigned int drawCount = (unsigned int)std::ceil(m_lights.size() / 100.0);
+			unsigned int drawCount = (unsigned int)std::ceil(m_lights.size() / (double)m_texSlots);
 			if (drawCount == 0)
 				drawCount++;
 			unsigned int lightsRemaining = m_lights.size();
 			int currLight;
-			if (lightsRemaining > 100)
-				currLight = -100;
+			if (lightsRemaining > m_texSlots)
+				currLight = -(int)m_texSlots;
 			else
 				currLight = -(int)lightsRemaining;
 			for (unsigned int i = 0; i < drawCount; i++) {
@@ -166,8 +169,8 @@ namespace nf {
 					m_entityShader->setUniform("isContinued", true);
 				}
 				unsigned int currLightsDrawn;
-				if (lightsRemaining >= 100)
-					currLightsDrawn = 100;
+				if (lightsRemaining >= m_texSlots)
+					currLightsDrawn = m_texSlots;
 				else
 					currLightsDrawn = lightsRemaining;
 				lightsRemaining -= currLightsDrawn;
@@ -176,6 +179,9 @@ namespace nf {
 				for (unsigned int j = 0; j < currLightsDrawn; j++) {
 					m_lights[j + (unsigned int)currLight]->bind(m_entityShader, j);
 				}
+				renderShadowMaps(currLight, currLightsDrawn);
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
 				curr.render(m_entityShader);
 			}
 			glDepthFunc(GL_LESS);
@@ -261,6 +267,40 @@ namespace nf {
 			Error("OpenGL error " + std::to_string(err));
 	}
 
+	void Renderer::renderShadowMaps(unsigned int startingLight, unsigned int count) {
+		glViewport(0, 0, 4096, 4096);
+		float nearP = 0.1f, farP = 500.0f;
+		glm::mat4 lightProj = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, nearP, farP);
+		glm::mat4 lightView;
+		glm::mat4 lightSpaceMat;
+		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
+		for (unsigned int i = 0; i < count; i++) {
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_shadowMaps[i], 0);
+			glDrawBuffer(GL_NONE);
+			glReadBuffer(GL_NONE);
+			glClear(GL_DEPTH_BUFFER_BIT);
+			Vec3 posTemp = m_lights[startingLight + i]->getPosition();
+			glm::vec3 posTemp2(posTemp.x, posTemp.y, posTemp.z);
+			lightView = glm::lookAt(posTemp2, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
+			lightSpaceMat = lightProj * lightView;
+			m_directionalShadowShader->setUniform("lightSpace", lightSpaceMat);
+			std::string stringPos = "lightSpaceMat[";
+			stringPos += std::to_string(i);
+			stringPos += "]";
+			m_entityShader->setUniform(stringPos, lightSpaceMat);
+			for (Entity* curr : m_lGame) {
+				curr->render(m_directionalShadowShader, true);
+			}
+			stringPos = "light[";
+			stringPos += std::to_string(i);
+			stringPos += "].depthTex";
+			glActiveTexture(GL_TEXTURE3 + i);
+			glBindTexture(GL_TEXTURE_2D, m_shadowMaps[i]);
+			m_entityShader->setUniform(stringPos, 3 + (int)i);
+		}
+		m_entityShader->setUniform("numMats", (int)count);
+	}
+
 	void Renderer::loadBaseAssets() {
 		m_baseAP.load("base.nfpack");
 		const char* entityVertex = m_baseAP["entityVertex.shader"]->data;
@@ -278,6 +318,9 @@ namespace nf {
 		const char* fadeVertex = m_baseAP["fadeVertex.shader"]->data;
 		const char* fadeFragment = m_baseAP["fadeFragment.shader"]->data;
 		m_fadeShader = new Shader(fadeVertex, fadeFragment);
+		const char* directionalShadowVertex = m_baseAP["directionalShadowVertex.shader"]->data;
+		const char* directionalShadowFragment = m_baseAP["directionalShadowFragment.shader"]->data;
+		m_directionalShadowShader = new Shader(directionalShadowVertex, directionalShadowFragment);
 
 		BaseAssets::cube = (AModel*)m_baseAP["cube.obj"];
 		BaseAssets::plane = (AModel*)m_baseAP["plane.obj"];
@@ -291,12 +334,33 @@ namespace nf {
 		BaseAssets::button = (AButton*)m_baseAP["default.button"];
 	}
 
+	void Renderer::createShadowMap() {
+		m_texSlots = 16;
+		glGenFramebuffers(1, &m_shadowMapFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
+		for (unsigned int i = 0; i < m_texSlots; i++) {
+			unsigned int depthMap;
+			glGenTextures(1, &depthMap);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 4096, 4096, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+			float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+			m_shadowMaps.push_back(depthMap);
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
 	Renderer::~Renderer() {
 		delete m_entityShader;
 		delete m_textShader;
 		delete m_uiTextureShader;
 		delete m_cubemapShader;
 		delete m_fadeShader;
+		delete m_directionalShadowShader;
 		delete m_fadeVAO;
 		delete m_fadeIB;
 		ReleaseDC(m_app->getWindow(), m_hdc);

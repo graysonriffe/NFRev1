@@ -3,6 +3,7 @@
 in vec2 texCoord;
 in vec3 normals;
 in vec3 fragPos;
+in vec4 fragPosLightSpace[16];
 
 struct Camera {
 	vec3 pos;
@@ -23,6 +24,7 @@ struct Light {
 	vec3 pos;
 	vec3 color;
 	float strength;
+	sampler2D depthTex;
 };
 
 uniform Camera camera;
@@ -32,6 +34,26 @@ uniform int numberOfLights;
 uniform bool isContinued;
 
 out vec4 outColor;
+
+float calcShadow(int lightNum, vec4 fragPosLight, vec3 no, vec3 lDir) {
+	vec3 fp = fragPosLight.xyz / fragPosLight.w;
+	fp = fp * 0.5 + 0.5;
+	float current = fp.z;
+	float bias = max(0.05 * (1.0 - dot(no, lDir)), 0.005);
+	float shad = 0.0f;
+	vec2 texSize = 1.0 / textureSize(light[lightNum].depthTex, 0);
+
+	for (int x = -1; x <= 1; x++) {
+		for (int y = -1; y <= 1; y++) {
+			float pcfDepth = texture(light[lightNum].depthTex, fp.xy + vec2(x, y) * texSize).r;
+			shad += current - bias > pcfDepth ? 1.0 : 0.0;
+		}
+	}
+	shad /= 9.0;
+	if (current > 1.0)
+		shad = 0.0;
+	return shad;
+}
 
 void main() {
 	vec3 color = vec3(0.0);
@@ -46,7 +68,7 @@ void main() {
 	if (material.hasSpecTex)
 		matSpec = texture(material.specularTexture, texCoord).rgb;
 
-	float ambientStrength = 0.5f;
+	float ambientStrength = 0.2f;
 	vec3 ambient = ambientStrength * matDiff;
 	if (!isContinued)
 		color += ambient;
@@ -56,7 +78,7 @@ void main() {
 		}
 
 		if (light[i].type == 1) {
-			vec3 lightDir = normalize(-light[i].pos);
+			vec3 lightDir = normalize(light[i].pos - fragPos);
 			vec3 norm = normalize(normals);
 			float diff = max(dot(norm, lightDir), 0.0);
 			vec3 diffuse = light[i].color * (diff * matDiff) * (light[i].strength / 2.0f);
@@ -66,7 +88,8 @@ void main() {
 			float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.specPower);
 			vec3 specular = light[i].color * spec * matSpec * (light[i].strength / 2.0f);
 
-			color += (ambient + diffuse + specular);
+			float shadow = calcShadow(i, fragPosLightSpace[i], norm, lightDir);
+			color += (diffuse + specular) * (1.0 - shadow);
 			continue;
 		}
 		if (light[i].type == 2) {

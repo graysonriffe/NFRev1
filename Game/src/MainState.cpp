@@ -13,7 +13,7 @@ void MainState::onEnter() {
 	text.centered(true);
 	uiTex.create(nf::BaseAssets::logo, nf::Vec2(0.025, 0.025), 0.5);
 	button.create(nf::Vec2(0.8, 0.025), "Reset");
-	light.create(nf::Vec3(0.0, 5.0, 0.0), nf::Vec3(1.0, 1.0, 1.0));
+	light.create(nf::Vec3(5.0, 300.0, 100.0), nf::Vec3(1.0, 1.0, 1.0), 1.5, nf::Light::Type::DIRECTIONAL);
 	cm.create(nf::BaseAssets::cubemap);
 }
 
@@ -48,7 +48,7 @@ void MainState::update(double deltaTime) {
 		xrot += offset;
 	if (app->isKeyHeld(NFI_RIGHT))
 		xrot -= offset;
-	test.setRotation(-yrot, -xrot, 0.0);
+	test.setPosition(-xrot / 10.0, 0.0, -yrot / 10.0 - 5.0);
 
 	text.setText("FPS: " + std::to_string(app->getFPS()));
 
@@ -61,10 +61,10 @@ void MainState::update(double deltaTime) {
 void MainState::render(nf::Renderer& renderer) {
 	renderer.render(test);
 	renderer.render(plane);
+	renderer.render(light);
 	renderer.render(text);
 	renderer.render(uiTex);
 	renderer.render(button);
-	renderer.render(light);
 	renderer.render(cm);
 }
 

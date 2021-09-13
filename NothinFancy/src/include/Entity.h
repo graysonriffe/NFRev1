@@ -22,7 +22,7 @@ namespace nf {
 		void setScale(double x, double y, double z);
 		void setScale(const Vec3& scale);
 
-		void render(Shader* shader);
+		void render(Shader* shader, bool onlyDepth = false);
 		Model* getModel() const;
 
 		void destroy() override;

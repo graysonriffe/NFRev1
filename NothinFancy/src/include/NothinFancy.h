@@ -39,12 +39,21 @@ namespace nf {
 
 		~Renderer();
 	private:
+		void renderShadowMaps(unsigned int startingLight, unsigned int count);
+
+		void loadBaseAssets();
+		void createShadowMap();
+
 		Application* m_app;
 
 		HDC m_hdc;
 		HGLRC m_hglrc;
 
 		AssetPack m_baseAP;
+
+		unsigned int m_shadowMapFBO;
+		std::vector<unsigned int> m_shadowMaps;
+		unsigned int m_texSlots;
 
 		std::vector<Light*> m_lights;
 		std::vector<Entity*> m_lGame;
@@ -55,6 +64,7 @@ namespace nf {
 		Shader* m_uiTextureShader;
 		Shader* m_cubemapShader;
 		Shader* m_fadeShader;
+		Shader* m_directionalShadowShader;
 
 		bool m_fadeIn, m_fadeOut;
 		bool m_fadeNoText;

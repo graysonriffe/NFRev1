@@ -66,10 +66,10 @@ namespace nf {
 		m_scale = scale;
 	}
 
-	void Entity::render(Shader* shader) {
+	void Entity::render(Shader* shader, bool onlyDepth) {
 		shader->bind();
 		setModelMatrix(shader);
-		m_model->render(shader);
+		m_model->render(shader, onlyDepth);
 	}
 
 	Model* Entity::getModel() const {

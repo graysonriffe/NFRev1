@@ -12,7 +12,7 @@ namespace nf {
 	public:
 		Material(const void* vb, const size_t vbSize, const void* tc, const size_t tcSize, const void* vn, const size_t vnSize, const void* ib, const unsigned int ibCount, ATexture* diffTex, Vec3& diffColor, ATexture* specTex, float shininess);
 
-		void render(Shader* shader);
+		void render(Shader* shader, bool onlyDepth);
 
 		~Material();
 	private:
@@ -28,7 +28,7 @@ namespace nf {
 	public:
 		Model(AModel* model);
 
-		void render(Shader* shader);
+		void render(Shader* shader, bool onlyDepth);
 
 		bool isBaseAsset();
 
