@@ -142,6 +142,7 @@ namespace nf {
 	void Renderer::doFrame(Camera* camera, double dT) {
 		//Begin frame
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		camera->bind(m_entityShader, m_cubemapShader);
 
