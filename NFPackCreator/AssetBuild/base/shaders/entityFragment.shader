@@ -29,6 +29,7 @@ uniform Camera camera;
 uniform Material material;
 uniform Light light[100];
 uniform int numberOfLights;
+uniform bool isContinued;
 
 out vec4 outColor;
 
@@ -42,14 +43,15 @@ void main() {
 		matDiff = material.diffuseColor;
 
 	vec3 matSpec = vec3(1.0);
-	if(material.hasSpecTex)
-	matSpec = texture(material.specularTexture, texCoord).rgb;
+	if (material.hasSpecTex)
+		matSpec = texture(material.specularTexture, texCoord).rgb;
 
+	float ambientStrength = 0.5f;
+	vec3 ambient = ambientStrength * matDiff;
+	if (!isContinued)
+		color += ambient;
 	for (int i = 0; i < numberOfLights; i++) {
-		float ambientStrength = 0.2f;
-		vec3 ambient = ambientStrength * matDiff;
 		if (i == numberOfLights - 1 && numberOfLights == 1) {
-			color += ambient;
 			break;
 		}
 
@@ -81,7 +83,7 @@ void main() {
 			float length = length(light[i].pos - fragPos);
 			float att = clamp(10.0 / length, 0.0, 1.0) * light[i].strength;
 
-			color += ((ambient + diffuse + specular) * att);
+			color += ((diffuse + specular) * att);
 			continue;
 		}
 	}

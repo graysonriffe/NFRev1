@@ -148,15 +148,41 @@ namespace nf {
 		m_entityShader->setUniform("proj", proj);
 		for (Entity* draw : m_lGame) {
 			Entity& curr = *draw;
-			//TODO: Clean this up a bit
-			m_entityShader->setUniform("numberOfLights", (int)m_lights.size() + 1);
-			for (unsigned int i = 0; i < m_lights.size(); i++) {
-				m_lights[i]->bind(m_entityShader, i);
+			unsigned int drawCount = (unsigned int)std::ceil(m_lights.size() / 100.0);
+			if (drawCount == 0)
+				drawCount++;
+			unsigned int lightsRemaining = m_lights.size();
+			int currLight;
+			if (lightsRemaining > 100)
+				currLight = -100;
+			else
+				currLight = -(int)lightsRemaining;
+			for (unsigned int i = 0; i < drawCount; i++) {
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				m_entityShader->setUniform("isContinued", false);
+				if (i != 0) {
+					glBlendFunc(GL_ONE, GL_ONE);
+					glDepthFunc(GL_LEQUAL);
+					m_entityShader->setUniform("isContinued", true);
+				}
+				unsigned int currLightsDrawn;
+				if (lightsRemaining >= 100)
+					currLightsDrawn = 100;
+				else
+					currLightsDrawn = lightsRemaining;
+				lightsRemaining -= currLightsDrawn;
+				currLight += (int)currLightsDrawn;
+				m_entityShader->setUniform("numberOfLights", (int)currLightsDrawn + 1);
+				for (unsigned int j = 0; j < currLightsDrawn; j++) {
+					m_lights[j + (unsigned int)currLight]->bind(m_entityShader, j);
+				}
+				curr.render(m_entityShader);
 			}
-			curr.render(m_entityShader);
+			glDepthFunc(GL_LESS);
 		}
 		m_lGame.clear();
 		m_lights.clear();
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		//Draw cubemap where there isn't anything else
 		if (m_cubemap != nullptr) {
