@@ -145,7 +145,7 @@ namespace nf {
 	}
 
 	bool Application::isKeyHeld(unsigned int code) {
-		if (code > 7 && code < 164)
+		if (code > 7 && code < 164 && GetForegroundWindow() == m_window)
 			return GetKeyState(code) & 0x8000;
 		return false;
 	}
@@ -328,6 +328,7 @@ namespace nf {
 			m_currentState = m_states[m_nextState];
 			m_currentState->setup(this);
 			m_currentState->onEnter();
+			m_currentState->setRunning();
 			m_renderer->setFade(true, false, false);
 			m_stateChange = false;
 			once = true;
@@ -364,12 +365,12 @@ namespace nf {
 				return MNC_CLOSE << 16;
 			}
 			case WM_KEYDOWN: {
-				if (wParam < 164 && !(lParam & (1 << 30)))
+				if (wParam < 164 && !(lParam & (1 << 30)) && GetFocus() == hWnd)
 					app->m_keysPressed[wParam] = true;
 				return 0;
 			}
 			case WM_KEYUP: {
-				if (wParam < 164)
+				if (wParam < 164 && GetFocus() == hWnd)
 					app->m_keysPressed[wParam] = false;
 				return 0;
 			}

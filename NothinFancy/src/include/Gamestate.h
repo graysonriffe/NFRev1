@@ -17,6 +17,8 @@ namespace nf {
 		void setup(Application* app);
 
 		virtual void onEnter();
+		bool isRunning();
+		void setRunning();
 
 		virtual void update(double deltaTime);
 		Camera* getCamera();
@@ -29,5 +31,6 @@ namespace nf {
 	protected:
 		Application* app;
 		Camera* camera;
+		bool m_running;
 	};
 }

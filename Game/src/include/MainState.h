@@ -20,5 +20,4 @@ private:
 	nf::Cubemap cm;
 
 	float xrot, yrot;
-
 };

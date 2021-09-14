@@ -68,7 +68,8 @@ namespace nf {
 			m_string = "Loading...";
 		}
 		else {
-			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
+			if (!Application::getApp()->getCurrentState()->isRunning())
+				Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 		}
 	}
 
@@ -95,7 +96,7 @@ namespace nf {
 	void Text::render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight, bool onButton, float buttonWidth, float buttonHeight, const Vec2& buttonPos) {
 		float scale = windowWidth / 4000.0f;
 		if (onButton)
-			scale *= buttonHeight / 100.0f;
+			scale *= buttonWidth / 400.0f;
 		float currX = (float)m_position.x * windowWidth, currY = (float)m_position.y * windowHeight;
 		std::string::const_iterator si;
 		if (m_centeredX || m_centeredY) {
@@ -177,6 +178,6 @@ namespace nf {
 	}
 
 	Text::~Text() {
-
+		destroy();
 	}
 }

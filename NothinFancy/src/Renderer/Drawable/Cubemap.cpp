@@ -114,7 +114,8 @@ namespace nf {
 		m_vao->push<float>(3);
 		m_vao->finishBufferLayout();
 
-		Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
+		if (!Application::getApp()->getCurrentState()->isRunning())
+			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}
 
 	bool Cubemap::isConstructed() {
@@ -140,6 +141,6 @@ namespace nf {
 	}
 
 	Cubemap::~Cubemap() {
-
+		destroy();
 	}
 }

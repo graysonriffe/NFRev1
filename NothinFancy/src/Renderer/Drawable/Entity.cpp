@@ -31,7 +31,8 @@ namespace nf {
 			model->loadedModel = m_model;
 		}
 
-		Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
+		if (!Application::getApp()->getCurrentState()->isRunning())
+			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}
 
 	bool Entity::isConstructed() {
@@ -88,7 +89,7 @@ namespace nf {
 
 	void Entity::destroy() {
 		m_constructed = false;
-		if(m_model && !m_model->isBaseAsset())
+		if (m_model && !m_model->isBaseAsset())
 			delete m_model;
 		m_model = nullptr;
 		m_position = Vec3(0.0);
@@ -97,6 +98,6 @@ namespace nf {
 	}
 
 	Entity::~Entity() {
-
+		destroy();
 	}
 }

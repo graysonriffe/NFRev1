@@ -18,6 +18,8 @@
 namespace nf {
 	Renderer::Renderer(Application* app) :
 		m_shadowMapFBO(0),
+		m_directionalDepthTexSize(0),
+		m_pointDepthTexSize(0),
 		m_cubemap(nullptr),
 		m_fadeIn(false),
 		m_fadeOut(false),
@@ -71,6 +73,8 @@ namespace nf {
 
 		loadBaseAssets();
 
+		m_directionalDepthTexSize = 4096;
+		m_pointDepthTexSize = 1024;
 		createShadowMap();
 
 		if (!m_app->isCustomWindowIcon()) {
@@ -176,7 +180,7 @@ namespace nf {
 					currLightsDrawn = lightsRemaining;
 				lightsRemaining -= currLightsDrawn;
 				currLight += (int)currLightsDrawn;
-				m_entityShader->setUniform("numberOfLights", (int)currLightsDrawn + 1);
+				m_entityShader->setUniform("numberOfLights", (int)currLightsDrawn);
 				for (unsigned int j = 0; j < currLightsDrawn; j++) {
 					m_lights[j + (unsigned int)currLight]->bind(m_entityShader, j);
 				}
@@ -269,35 +273,78 @@ namespace nf {
 	}
 
 	void Renderer::renderShadowMaps(unsigned int startingLight, unsigned int count) {
-		glViewport(0, 0, 4096, 4096);
-		float nearP = 0.1f, farP = 500.0f;
-		glm::mat4 lightProj = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, nearP, farP);
+		float nearP = 0.1f, farP = 400.0f;
+		glm::mat4 directionalLightProj = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, nearP, farP);
+		glm::mat4 pointLightProj = glm::perspective(glm::radians(90.0f), 1.0f, nearP, farP);
 		glm::mat4 lightView;
 		glm::mat4 lightSpaceMat;
 		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
 		for (unsigned int i = 0; i < count; i++) {
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_shadowMaps[i], 0);
-			glDrawBuffer(GL_NONE);
-			glReadBuffer(GL_NONE);
-			glClear(GL_DEPTH_BUFFER_BIT);
-			Vec3 posTemp = m_lights[startingLight + i]->getPosition();
-			glm::vec3 posTemp2(posTemp.x, posTemp.y, posTemp.z);
-			lightView = glm::lookAt(posTemp2, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
-			lightSpaceMat = lightProj * lightView;
-			m_directionalShadowShader->setUniform("lightSpace", lightSpaceMat);
-			std::string stringPos = "lightSpaceMat[";
-			stringPos += std::to_string(i);
-			stringPos += "]";
-			m_entityShader->setUniform(stringPos, lightSpaceMat);
-			for (Entity* curr : m_lGame) {
-				curr->render(m_directionalShadowShader, true);
+			Light::Type type = m_lights[i]->getType();
+			unsigned int tex = type == Light::Type::DIRECTIONAL ? m_directionalShadowMaps[i] : m_pointShadowMaps[i];
+			switch (type) {
+				case Light::Type::DIRECTIONAL: {
+					glViewport(0, 0, m_directionalDepthTexSize, m_directionalDepthTexSize);
+					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex, 0);
+					glDrawBuffer(GL_NONE);
+					glReadBuffer(GL_NONE);
+					glClear(GL_DEPTH_BUFFER_BIT);
+					Vec3 posTemp = m_lights[startingLight + i]->getPosition();
+					glm::vec3 lightPos(posTemp.x, posTemp.y, posTemp.z);
+					lightView = glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
+					lightSpaceMat = directionalLightProj * lightView;
+					m_directionalShadowShader->setUniform("lightSpace", lightSpaceMat);
+					std::string stringPos = "lightSpaceMat[";
+					stringPos += std::to_string(i);
+					stringPos += "]";
+					m_entityShader->setUniform(stringPos, lightSpaceMat);
+					for (Entity* curr : m_lGame) {
+						curr->render(m_directionalShadowShader, true);
+					}
+					stringPos = "light[";
+					stringPos += std::to_string(i);
+					stringPos += "].directionalDepthTex";
+					glActiveTexture(GL_TEXTURE3 + i);
+					glBindTexture(GL_TEXTURE_2D, tex);
+					m_entityShader->setUniform(stringPos, 3 + (int)i);
+					break;
+				}
+				case Light::Type::POINT: {
+					glViewport(0, 0, m_pointDepthTexSize, m_pointDepthTexSize);
+					glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tex, 0);
+					glDrawBuffer(GL_NONE);
+					glReadBuffer(GL_NONE);
+					glClear(GL_DEPTH_BUFFER_BIT);
+					Vec3 posTemp = m_lights[startingLight + i]->getPosition();
+					glm::vec3 lightPos(posTemp.x, posTemp.y, posTemp.z);
+					std::vector<glm::mat4> lightSpaceMats;
+					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+					for (int j = 0; j < 6; j++) {
+						std::string stringPos = "lightSpaceMat[";
+						stringPos += std::to_string(j);
+						stringPos += "]";
+						m_pointShadowShader->setUniform(stringPos, lightSpaceMats[j]);
+					}
+					m_pointShadowShader->setUniform("farPlane", farP);
+					m_pointShadowShader->setUniform("lightPos", lightPos);
+					for (Entity* curr : m_lGame) {
+						curr->render(m_pointShadowShader, true);
+					}
+					std::string stringPos = "light[";
+					stringPos += std::to_string(i);
+					stringPos += "].pointDepthTex";
+					glActiveTexture(GL_TEXTURE3 + i);
+					glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+					m_entityShader->setUniform(stringPos, 3 + (int)i);
+					m_entityShader->setUniform("farPlane", farP);
+					break;
+				}
 			}
-			stringPos = "light[";
-			stringPos += std::to_string(i);
-			stringPos += "].depthTex";
-			glActiveTexture(GL_TEXTURE3 + i);
-			glBindTexture(GL_TEXTURE_2D, m_shadowMaps[i]);
-			m_entityShader->setUniform(stringPos, 3 + (int)i);
 		}
 		m_entityShader->setUniform("numMats", (int)count);
 	}
@@ -322,6 +369,10 @@ namespace nf {
 		const char* directionalShadowVertex = m_baseAP["directionalShadowVertex.shader"]->data;
 		const char* directionalShadowFragment = m_baseAP["directionalShadowFragment.shader"]->data;
 		m_directionalShadowShader = new Shader(directionalShadowVertex, directionalShadowFragment);
+		const char* pointShadowVertex = m_baseAP["pointShadowVertex.shader"]->data;
+		const char* pointShadowGeometry = m_baseAP["pointShadowGeometry.shader"]->data;
+		const char* pointShadowFragment = m_baseAP["pointShadowFragment.shader"]->data;
+		m_pointShadowShader = new Shader(pointShadowVertex, pointShadowFragment, pointShadowGeometry);
 
 		BaseAssets::cube = (AModel*)m_baseAP["cube.obj"];
 		BaseAssets::plane = (AModel*)m_baseAP["plane.obj"];
@@ -340,17 +391,28 @@ namespace nf {
 		glGenFramebuffers(1, &m_shadowMapFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
 		for (unsigned int i = 0; i < m_texSlots; i++) {
-			unsigned int depthMap;
-			glGenTextures(1, &depthMap);
-			glBindTexture(GL_TEXTURE_2D, depthMap);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 4096, 4096, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			unsigned int directionalDepthMap, pointDepthMap;
+			glGenTextures(1, &directionalDepthMap);
+			glGenTextures(1, &pointDepthMap);
+			glBindTexture(GL_TEXTURE_2D, directionalDepthMap);
+			glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT24, m_directionalDepthTexSize, m_directionalDepthTexSize);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 			float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-			m_shadowMaps.push_back(depthMap);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, pointDepthMap);
+			glTexStorage2D(GL_TEXTURE_CUBE_MAP, 1, GL_DEPTH_COMPONENT24, m_pointDepthTexSize, m_pointDepthTexSize);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+			m_directionalShadowMaps.push_back(directionalDepthMap);
+			m_pointShadowMaps.push_back(pointDepthMap);
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}

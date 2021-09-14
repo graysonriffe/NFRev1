@@ -230,8 +230,10 @@ namespace nf {
 			}
 		}
 
-		if (packName != "base.nfpack")
-			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
+		if (packName != "base.nfpack") {
+			if (!Application::getApp()->getCurrentState()->isRunning())
+				Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
+		}
 	}
 
 	Asset* AssetPack::operator[](const char* in) {

@@ -13,7 +13,7 @@ void MainState::onEnter() {
 	text.centered(true);
 	uiTex.create(nf::BaseAssets::logo, nf::Vec2(0.025, 0.025), 0.5);
 	button.create(nf::Vec2(0.8, 0.025), "Reset");
-	light.create(nf::Vec3(5.0, 300.0, 100.0), nf::Vec3(1.0, 1.0, 1.0), 1.5, nf::Light::Type::DIRECTIONAL);
+	light.create(nf::Vec3(0.0, 5.0, 0.0), nf::Vec3(1.0, 1.0, 1.0), 1.5);
 	cm.create(nf::BaseAssets::cubemap);
 }
 

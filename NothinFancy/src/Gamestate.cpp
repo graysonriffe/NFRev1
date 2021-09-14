@@ -6,7 +6,8 @@
 namespace nf {
 	Gamestate::Gamestate() :
 		app(nullptr),
-		camera(nullptr)
+		camera(nullptr),
+		m_running(false)
 	{
 
 	}
@@ -14,10 +15,19 @@ namespace nf {
 	void Gamestate::setup(Application* app) {
 		this->app = app;
 		camera = new Camera(this->app);
+		m_running = false;
 	}
 
 	void Gamestate::onEnter() {
 
+	}
+
+	bool Gamestate::isRunning() {
+		return m_running;
+	}
+
+	void Gamestate::setRunning() {
+		m_running = true;
 	}
 
 	void Gamestate::update(double deltaTime) {

@@ -45,7 +45,10 @@ namespace nf {
 		AssetPack m_baseAP;
 
 		unsigned int m_shadowMapFBO;
-		std::vector<unsigned int> m_shadowMaps;
+		int m_directionalDepthTexSize;
+		int m_pointDepthTexSize;
+		std::vector<unsigned int> m_directionalShadowMaps;
+		std::vector<unsigned int> m_pointShadowMaps;
 		unsigned int m_texSlots;
 
 		std::vector<Light*> m_lights;
@@ -58,6 +61,7 @@ namespace nf {
 		Shader* m_cubemapShader;
 		Shader* m_fadeShader;
 		Shader* m_directionalShadowShader;
+		Shader* m_pointShadowShader;
 
 		bool m_fadeIn, m_fadeOut;
 		bool m_fadeNoText;

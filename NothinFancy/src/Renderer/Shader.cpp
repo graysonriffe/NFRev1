@@ -5,16 +5,30 @@
 #include "Utility.h"
 
 namespace nf {
-	Shader::Shader(const char* vertexSource, const char* fragmentSource) {
+	Shader::Shader(const char* vertexSource, const char* fragmentSource, const char* geometrySource) {
 		m_id = glCreateProgram();
 		unsigned int vs = glCreateShader(GL_VERTEX_SHADER);
 		unsigned int fs = glCreateShader(GL_FRAGMENT_SHADER);
+		unsigned int gs = 0;
 		glShaderSource(vs, 1, &vertexSource, nullptr);
 		glShaderSource(fs, 1, &fragmentSource, nullptr);
 		glCompileShader(vs);
 		glCompileShader(fs);
-		for (int i = 0; i < 2; i++) {
-			unsigned int curr = (i == 0 ? vs : fs);
+		if (geometrySource) {
+			gs = glCreateShader(GL_GEOMETRY_SHADER);
+			glShaderSource(gs, 1, &geometrySource, nullptr);
+			glCompileShader(gs);
+		}
+		for (int i = 0; i < 3; i++) {
+			unsigned int curr;
+			if (i == 0)
+				curr = vs;
+			else if (i == 1)
+				curr = fs;
+			else if (i == 2)
+				curr = gs;
+			if (curr == 0)
+				break;
 			int result;
 			glGetShaderiv(curr, GL_COMPILE_STATUS, &result);
 			if (result != GL_TRUE) {
@@ -28,6 +42,7 @@ namespace nf {
 		}
 		glAttachShader(m_id, vs);
 		glAttachShader(m_id, fs);
+		if (gs) glAttachShader(m_id, gs);
 		glLinkProgram(m_id);
 		glValidateProgram(m_id);
 		int result;
@@ -39,8 +54,14 @@ namespace nf {
 			glGetProgramInfoLog(m_id, length, &length, message);
 			Error("OpenGL Error: " + (std::string)message);
 		}
+		glDetachShader(m_id, vs);
+		glDetachShader(m_id, fs);
 		glDeleteShader(vs);
 		glDeleteShader(fs);
+		if (gs) {
+			glDetachShader(m_id, gs);
+			glDeleteShader(gs);
+		}
 	}
 
 	void Shader::bind() {

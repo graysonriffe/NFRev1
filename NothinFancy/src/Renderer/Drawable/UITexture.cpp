@@ -47,7 +47,8 @@ namespace nf {
 		m_vao->push<float>(2);
 		m_vao->finishBufferLayout();
 
-		Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
+		if (!Application::getApp()->getCurrentState()->isRunning())
+			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}
 
 	const char* UITexture::identity() {
@@ -100,6 +101,6 @@ namespace nf {
 	}
 
 	UITexture::~UITexture() {
-
+		destroy();
 	}
 }

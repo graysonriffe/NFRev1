@@ -19,7 +19,8 @@ namespace nf {
 		m_type = type;
 		m_strength = (float)strength;
 
-		Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
+		if (!Application::getApp()->getCurrentState()->isRunning())
+			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}
 
 	bool Light::isConstructed() {
@@ -88,6 +89,6 @@ namespace nf {
 	}
 
 	Light::~Light() {
-
+		destroy();
 	}
 }
