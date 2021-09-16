@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	std::set<std::string> extensions;
-	extensions.insert({ "obj", "png", "jpg", "shader", "ttf" });
+	extensions.insert({ "shader", "obj", "png", "jpg", "ttf", "wav" });
 
 	unsigned int dirCount = 0;
 	const std::filesystem::path workingDir = std::filesystem::current_path();
@@ -99,6 +99,8 @@ int main(int argc, char* argv[]) {
 		if (!currDir.is_directory())
 			continue;
 		std::string filename = currDir.path().filename().string().append(".nfpack");
+		/*if (filename == "base.nfpack")
+			Error("Cannot create a pack called base.nfpack!");*/
 		Log("Creating pack \"" + filename + (std::string)"\"");
 		std::vector<std::string> packFilenames;
 		std::string currFileExtension;

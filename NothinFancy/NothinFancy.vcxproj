@@ -197,28 +197,31 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Assets.cpp" />
+    <ClCompile Include="src\AudioEngine.cpp" />
     <ClCompile Include="src\Gamestate.cpp" />
     <ClCompile Include="src\IntroGamestate.cpp" />
     <ClCompile Include="src\Renderer\Camera.cpp" />
-    <ClCompile Include="src\Renderer\Drawable\Button.cpp" />
-    <ClCompile Include="src\Renderer\Drawable\Cubemap.cpp" />
-    <ClCompile Include="src\Renderer\Drawable\Drawable.cpp" />
-    <ClCompile Include="src\Renderer\Drawable\Entity.cpp" />
-    <ClCompile Include="src\Renderer\Drawable\Light.cpp" />
-    <ClCompile Include="src\Renderer\Drawable\Model.cpp" />
-    <ClCompile Include="src\Renderer\Drawable\Text.cpp" />
-    <ClCompile Include="src\Renderer\Drawable\UIElement.cpp" />
-    <ClCompile Include="src\Renderer\Drawable\UITexture.cpp" />
+    <ClCompile Include="src\NFObject\Button.cpp" />
+    <ClCompile Include="src\NFObject\Cubemap.cpp" />
+    <ClCompile Include="src\Renderer\Drawable.cpp" />
+    <ClCompile Include="src\NFObject\Entity.cpp" />
+    <ClCompile Include="src\NFObject\Light.cpp" />
+    <ClCompile Include="src\Renderer\Model.cpp" />
+    <ClCompile Include="src\NFObject\Text.cpp" />
+    <ClCompile Include="src\Renderer\UIElement.cpp" />
+    <ClCompile Include="src\NFObject\UITexture.cpp" />
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="src\Renderer\Texture.cpp" />
     <ClCompile Include="src\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="src\NFObject\Sound.cpp" />
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Assets.h" />
+    <ClInclude Include="src\include\AudioEngine.h" />
     <ClInclude Include="src\include\Button.h" />
     <ClInclude Include="src\include\Camera.h" />
     <ClInclude Include="src\include\Cubemap.h" />
@@ -236,6 +239,7 @@
     <ClInclude Include="src\include\NothinFancy.h" />
     <ClInclude Include="src\include\Renderer.h" />
     <ClInclude Include="src\include\Shader.h" />
+    <ClInclude Include="src\include\Sound.h" />
     <ClInclude Include="src\include\Text.h" />
     <ClInclude Include="src\include\Texture.h" />
     <ClInclude Include="src\include\UIElement.h" />

@@ -17,6 +17,8 @@ namespace nf {
 	}
 
 	void UITexture::create(Asset* textureAsset, const Vec2& position, double scale, double opacity) {
+		if (m_constructed)
+			Error("UITexture already created!");
 		m_constructed = true;
 		ATexture* tex;
 		if ((tex = dynamic_cast<ATexture*>(textureAsset)) == nullptr)

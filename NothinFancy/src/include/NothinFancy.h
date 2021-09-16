@@ -16,12 +16,14 @@
 #include "Text.h"
 #include "UITexture.h"
 #include "Button.h"
+#include "Sound.h"
 #include "Input.h"
 
 namespace nf {
 	class Drawable;
 	class Shader;
 	class Model;
+	class AudioEngine;
 
 	class Renderer {
 	public:
@@ -86,7 +88,6 @@ namespace nf {
 
 		void setWindowIcon(HANDLE hIcon);
 		void setWindowCursor(HCURSOR hCursor);
-		Renderer* getRenderer() const;
 		void addState(Gamestate* state, const std::string& stateName);
 		void addDefaultState(const std::string& stateName);
 		const std::string& getDefaultState();
@@ -159,5 +160,7 @@ namespace nf {
 
 		//Renderer object to use OpenGL to render the current state
 		Renderer* m_renderer;
+
+		AudioEngine* m_audio;
 	};
 }

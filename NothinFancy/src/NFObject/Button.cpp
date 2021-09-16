@@ -22,6 +22,8 @@ namespace nf {
 	}
 
 	void Button::create(const Vec2& position, std::string string, Asset* buttonAsset, double scale, double opacity) {
+		if (m_constructed)
+			Error("Button already created!");
 		m_constructed = true;
 		m_position = position;
 		m_string = string;

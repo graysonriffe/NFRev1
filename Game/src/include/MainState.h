@@ -16,8 +16,11 @@ private:
 	nf::Text text;
 	nf::UITexture uiTex;
 	nf::Button button;
+	nf::Button button2;
 	nf::Light light;
 	nf::Cubemap cm;
+
+	nf::Sound sound;
 
 	float xrot, yrot;
 };

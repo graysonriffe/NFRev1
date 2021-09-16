@@ -18,6 +18,8 @@ namespace nf {
 	}
 
 	void Text::create(const std::string& string, const Vec2& position, const Vec3& color, double opacity, double scale, Asset* font) {
+		if (m_constructed)
+			Error("Text already created!");
 		m_constructed = true;
 		m_string = string;
 		m_position = position;

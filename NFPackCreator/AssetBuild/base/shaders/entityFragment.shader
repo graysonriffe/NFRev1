@@ -106,7 +106,7 @@ void main() {
 			vec3 lightDir = normalize(light[i].pos - fragPos);
 			vec3 norm = normalize(normals);
 			float diff = max(dot(norm, lightDir), 0.0);
-			vec3 diffuse = light[i].color * (diff * matDiff) * (light[i].strength / 2.0f);
+			vec3 diffuse = light[i].color * diff * matDiff * (light[i].strength / 2.0f);
 
 			vec3 viewDir = normalize(camera.pos - fragPos);
 			vec3 reflectDir = reflect(-lightDir, norm);
@@ -121,18 +121,18 @@ void main() {
 			vec3 lightDir = normalize(light[i].pos - fragPos);
 			vec3 norm = normalize(normals);
 			float diff = max(dot(norm, lightDir), 0.0);
-			vec3 diffuse = light[i].color * (diff * matDiff);
+			vec3 diffuse = light[i].color * diff * matDiff * light[i].strength;
 
 			vec3 viewDir = normalize(camera.pos - fragPos);
 			vec3 reflectDir = reflect(-lightDir, norm);
 			float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.specPower);
-			vec3 specular = light[i].color * spec * matSpec;
+			vec3 specular = light[i].color * spec * matSpec * (light[i].strength / 2.5f);
 
 			float length = length(light[i].pos - fragPos);
-			float att = 1.0 / (1.0 + 0.09 * length + 0.032 * (length * length));
+			float att = clamp(10.0 / length, 0.0, 1.0) * light[i].strength;
 
 			float shadow = calcShadowPoint(i, norm, lightDir);
-			color += (((diffuse + specular) * (1.0 - shadow)) * att) * light[i].strength;
+			color += ((diffuse + specular) * (1.0 - shadow) * att);
 			continue;
 		}
 	}

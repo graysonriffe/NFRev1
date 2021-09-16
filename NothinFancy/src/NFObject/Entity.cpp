@@ -18,6 +18,8 @@ namespace nf {
 	}
 
 	void Entity::create(Asset* modelAsset) {
+		if (m_constructed)
+			Error("Entity already created!");
 		m_constructed = true;
 		AModel* model;
 		if ((model = dynamic_cast<AModel*>(modelAsset)) == nullptr)

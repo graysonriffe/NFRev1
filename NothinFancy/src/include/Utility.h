@@ -1,4 +1,5 @@
 #pragma once
+#include <thread>
 #include <chrono>
 #include <string>
 #include <Windows.h>

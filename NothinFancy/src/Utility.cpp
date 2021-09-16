@@ -1,5 +1,4 @@
 #include "Utility.h"
-#include <thread>
 #include <iostream>
 #include <sstream>
 #include <fstream>

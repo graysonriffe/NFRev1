@@ -40,6 +40,10 @@ namespace nf {
 
 	}
 
+	ASound::~ASound() {
+
+	}
+
 	AssetPack::AssetPack() {
 
 	}
@@ -180,6 +184,16 @@ namespace nf {
 				if (packName == "base.nfpack")
 					font->isBaseAsset = true;
 				m_assets[assetName] = font;
+				continue;
+			}
+			if (extension == "wav") {
+				ASound* sound = new ASound;
+				sound->data = new char[assetSize];
+				std::memcpy(sound->data, &assetContents[0], assetSize);
+				sound->size = assetSize;
+				if (packName == "base.nfpack")
+					sound->isBaseAsset = true;
+				m_assets[assetName] = sound;
 				continue;
 			}
 			Error("Invalid asset extention in pack \"" + (std::string)packName + (std::string)"\"!");

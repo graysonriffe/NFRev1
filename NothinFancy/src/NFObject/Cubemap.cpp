@@ -17,6 +17,8 @@ namespace nf {
 	}
 
 	void Cubemap::create(Asset* cubemapAsset) {
+		if (m_constructed)
+			Error("Cubemap already created!");
 		m_constructed = true;
 		ACubemap& cm = *(ACubemap*)cubemapAsset;
 		glGenTextures(1, &m_id);

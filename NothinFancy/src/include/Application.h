@@ -7,6 +7,7 @@
 #include "Config.h"
 #include "IntroGamestate.h"
 #include "Renderer.h"
+#include "AudioEngine.h"
 //TODO: Document ALL frontend functions
 
 namespace nf {
@@ -18,7 +19,7 @@ namespace nf {
 
 		void setWindowIcon(HANDLE hIcon);
 		void setWindowCursor(HCURSOR hCursor);
-		Renderer* getRenderer() const;
+		AudioEngine* getAudioEngine() const;
 		void addState(Gamestate* state, const std::string& stateName);
 		void addDefaultState(const std::string& stateName);
 		const std::string& getDefaultState();
@@ -91,5 +92,7 @@ namespace nf {
 
 		//Renderer object to use OpenGL to render the current state
 		Renderer* m_renderer;
+
+		AudioEngine* m_audio;
 	};
 }

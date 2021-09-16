@@ -10,15 +10,14 @@ namespace nf {
 
 	struct Asset {
 		char* data = nullptr;
+		size_t size = 0;
 		bool alreadyLoaded = false;
 		bool isBaseAsset = false;
 		virtual ~Asset();
 	};
 
 	struct ATexture : Asset {
-		size_t size = 0;
 		Texture* loadedTexture = nullptr;
-
 		~ATexture() override;
 	};
 
@@ -68,6 +67,10 @@ namespace nf {
 
 	struct AShader : Asset {
 		~AShader() override;
+	};
+
+	struct ASound : Asset {
+		~ASound() override;
 	};
 
 	class AssetPack : public NFObject {
