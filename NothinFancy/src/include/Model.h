@@ -10,7 +10,7 @@ namespace nf {
 
 	class Material : public Drawable {
 	public:
-		Material(const void* vb, const size_t vbSize, const void* tc, const size_t tcSize, const void* vn, const size_t vnSize, const void* ib, const unsigned int ibCount, ATexture* diffTex, Vec3& diffColor, ATexture* specTex, float shininess);
+		Material(const void* vb, const size_t vbSize, const void* tc, const size_t tcSize, const void* vn, const size_t vnSize, const void* ib, const unsigned int ibCount, ATexture* diffTex, Vec3& diffColor, ATexture* specTex, float shininess, ATexture* normalTex);
 
 		void render(Shader* shader, bool onlyDepth);
 
@@ -22,6 +22,8 @@ namespace nf {
 		bool m_hasSpecular = false;
 		Texture* m_specularTexture = nullptr;
 		float m_shininess;
+		bool m_hasNormal = false;
+		Texture* m_normalTexture = nullptr;
 	};
 
 	class Model {

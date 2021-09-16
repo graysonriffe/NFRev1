@@ -16,6 +16,8 @@ struct Material {
 	bool hasSpecTex;
 	sampler2D specularTexture;
 	float specPower;
+	bool hasNormTex;
+	sampler2D normalTexture;
 };
 
 struct Light {
@@ -96,6 +98,15 @@ void main() {
 	if (material.hasSpecTex)
 		matSpec = texture(material.specularTexture, texCoord).rgb;
 
+	vec3 norm;
+	if (material.hasNormTex) {
+		norm = texture(material.normalTexture, texCoord).rgb;
+		norm = normalize(norm * 2.0 - 1.0);
+	}
+	else {
+		norm = normalize(normals);
+	}
+
 	float ambientStrength = 0.2f;
 	vec3 ambient = ambientStrength * matDiff;
 	if (!isContinued)
@@ -104,7 +115,6 @@ void main() {
 
 		if (light[i].type == 1) {
 			vec3 lightDir = normalize(light[i].pos - fragPos);
-			vec3 norm = normalize(normals);
 			float diff = max(dot(norm, lightDir), 0.0);
 			vec3 diffuse = light[i].color * diff * matDiff * (light[i].strength / 2.0f);
 
@@ -119,13 +129,12 @@ void main() {
 		}
 		if (light[i].type == 2) {
 			vec3 lightDir = normalize(light[i].pos - fragPos);
-			vec3 norm = normalize(normals);
 			float diff = max(dot(norm, lightDir), 0.0);
 			vec3 diffuse = light[i].color * diff * matDiff * light[i].strength;
 
 			vec3 viewDir = normalize(camera.pos - fragPos);
-			vec3 reflectDir = reflect(-lightDir, norm);
-			float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.specPower);
+			vec3 halfway = normalize(lightDir + viewDir);
+			float spec = pow(max(dot(norm, halfway), 0.0), material.specPower);
 			vec3 specular = light[i].color * spec * matSpec * (light[i].strength / 2.5f);
 
 			float length = length(light[i].pos - fragPos);
@@ -136,5 +145,8 @@ void main() {
 			continue;
 		}
 	}
+	//TODO: Move this to a post-processing pass
+	float gamma = 2.2;
+	color.rgb = pow(color.rgb, vec3(1.0 / gamma));
 	outColor = vec4(color, 1.0);
 }

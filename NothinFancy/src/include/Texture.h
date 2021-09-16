@@ -6,7 +6,7 @@ namespace nf {
 
 	class Texture {
 	public:
-		Texture(ATexture* tex);
+		Texture(ATexture* tex, bool linear = false);
 
 		void bind(unsigned int slot = 0);
 		Vec2 getDimensions();

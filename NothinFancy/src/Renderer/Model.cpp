@@ -10,7 +10,7 @@
 #include "Utility.h"
 
 namespace nf {
-	Material::Material(const void* vb, const size_t vbSize, const void* tc, const size_t tcSize, const void* vn, const size_t vnSize, const void* ib, const unsigned int ibCount, ATexture* diffTex, Vec3& diffColor, ATexture* specTex, float shininess) {
+	Material::Material(const void* vb, const size_t vbSize, const void* tc, const size_t tcSize, const void* vn, const size_t vnSize, const void* ib, const unsigned int ibCount, ATexture* diffTex, Vec3& diffColor, ATexture* specTex, float shininess, ATexture* normalTex) {
 		m_vao = new VertexArray();
 		m_vao->addBuffer(vb, vbSize);
 		m_vao->push<float>(3);
@@ -35,9 +35,16 @@ namespace nf {
 			if (specTex->alreadyLoaded)
 				m_specularTexture = specTex->loadedTexture;
 			else
-				m_specularTexture = new Texture(specTex);
+				m_specularTexture = new Texture(specTex, true);
 		}
 		m_shininess = shininess;
+		if (normalTex) {
+			m_hasNormal = true;
+			if (normalTex->alreadyLoaded)
+				m_normalTexture = normalTex->loadedTexture;
+			else
+				m_normalTexture = new Texture(normalTex, true);
+		}
 	}
 
 	void Material::render(Shader* shader, bool onlyDepth) {
@@ -60,6 +67,13 @@ namespace nf {
 			}
 			else
 				shader->setUniform("material.hasSpecTex", false);
+			if (m_hasNormal) {
+				shader->setUniform("material.hasNormTex", true);
+				m_normalTexture->bind(2);
+				shader->setUniform("material.normalTexture", 2);
+			}
+			else
+				shader->setUniform("material.hasNormTex", false);
 			shader->setUniform("material.specPower", m_shininess);
 		}
 		glDrawElements(GL_TRIANGLES, m_ib->getCount(), GL_UNSIGNED_INT, nullptr);
@@ -94,6 +108,7 @@ namespace nf {
 			std::string diffuseTextureName;
 			Vec3 diffuseColor;
 			std::string specularTextureName;
+			std::string normalTextureName;
 			float shininess = 1.0f;
 		};
 		std::unordered_map<std::string, TempMaterial*> mats;
@@ -123,6 +138,11 @@ namespace nf {
 				char texName[100];
 				sscanf_s(mtl.c_str(), "\nmap_Ks %s\n", texName, (unsigned)_countof(texName));
 				mats[currMat]->specularTextureName = (std::string)texName;
+			}
+			else if (std::strcmp(line, "map_Bump") == 0) {
+				char texName[100];
+				sscanf_s(mtl.c_str(), "\nmap_Bump %s\n", texName, (unsigned)_countof(texName));
+				mats[currMat]->normalTextureName = (std::string)texName;
 			}
 			else if (std::strcmp(line, "Ns") == 0) {
 				float s = 0.0;
@@ -277,7 +297,10 @@ namespace nf {
 			ATexture* spec = nullptr;
 			if (curr.specularTextureName.size())
 				spec = model->neededTextures[curr.specularTextureName];
-			m_materials.push_back(new Material(&curr.outVB[0], curr.outVB.size() * sizeof(float), &curr.outTC[0], curr.outTC.size() * sizeof(float), &curr.outVN[0], curr.outVN.size() * sizeof(float), &curr.outIB[0], curr.ibCount, diff, curr.diffuseColor, spec, curr.shininess));
+			ATexture* norm = nullptr;
+			if (curr.normalTextureName.size())
+				norm = model->neededTextures[curr.normalTextureName];
+			m_materials.push_back(new Material(&curr.outVB[0], curr.outVB.size() * sizeof(float), &curr.outTC[0], curr.outTC.size() * sizeof(float), &curr.outVN[0], curr.outVN.size() * sizeof(float), &curr.outIB[0], curr.ibCount, diff, curr.diffuseColor, spec, curr.shininess, norm));
 
 			delete m.second;
 		}

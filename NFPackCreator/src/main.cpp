@@ -69,7 +69,10 @@ void getNeededImages(std::string mtl, std::set<std::string>& set) {
 		unsigned int pos = mtl.find("map_");
 		if (pos == std::string::npos)
 			break;
-		mtl = mtl.substr(pos + 7);
+		if (pos == mtl.find("map_Kd") || pos == mtl.find("map_Ks"))
+			mtl = mtl.substr(pos + 7);
+		else
+			mtl = mtl.substr(pos + 9);
 		std::stringstream ss(mtl);
 		std::string temp;
 		ss >> temp;
@@ -140,7 +143,7 @@ int main(int argc, char* argv[]) {
 				getNeededImages(mtlContents, neededImages);
 				if (!neededImages.empty()) {
 					currFileContents.insert(0, "\n");
-					for(std::string curr : neededImages) {
+					for (std::string curr : neededImages) {
 						currFileContents.insert(0, curr);
 						currFileContents.insert(0, " ");
 					}

@@ -387,7 +387,7 @@ namespace nf {
 	}
 
 	void Renderer::createShadowMap() {
-		m_texSlots = 16;
+		m_texSlots = 13;
 		glGenFramebuffers(1, &m_shadowMapFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
 		for (unsigned int i = 0; i < m_texSlots; i++) {
