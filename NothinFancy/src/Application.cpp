@@ -256,7 +256,7 @@ namespace nf {
 			if (m_mouseY < 0)
 				m_mouseY = 0;
 
-			if (m_trackingMouse) {
+			if (m_trackingMouse && m_currentState->isRunning()) {
 				int middleX = m_currentConfig.width / 2;
 				int middleY = m_currentConfig.height / 2;
 				m_mouseDiffX += m_mouseX - middleX;
@@ -381,7 +381,7 @@ namespace nf {
 			case WM_SETCURSOR: {
 				if (LOWORD(lParam) != HTCLIENT)
 					break;
-				if (app->m_trackingMouse && LOWORD(lParam) == HTCLIENT && GetFocus() == hWnd) {
+				if (app->m_trackingMouse && app->m_currentState->isRunning() && LOWORD(lParam) == HTCLIENT && GetFocus() == hWnd) {
 					SetCursor(NULL);
 					return 0;
 				}
