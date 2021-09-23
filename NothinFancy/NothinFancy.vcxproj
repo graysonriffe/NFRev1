@@ -206,6 +206,7 @@
     <ClCompile Include="src\Renderer\Drawable.cpp" />
     <ClCompile Include="src\NFObject\Entity.cpp" />
     <ClCompile Include="src\NFObject\Light.cpp" />
+    <ClCompile Include="src\Renderer\GBuffer.cpp" />
     <ClCompile Include="src\Renderer\Model.cpp" />
     <ClCompile Include="src\NFObject\Text.cpp" />
     <ClCompile Include="src\Renderer\UIElement.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="src\include\Config.h" />
     <ClInclude Include="src\include\Drawable.h" />
     <ClInclude Include="src\include\Gamestate.h" />
+    <ClInclude Include="src\include\GBuffer.h" />
     <ClInclude Include="src\include\IndexBuffer.h" />
     <ClInclude Include="src\include\IntroGamestate.h" />
     <ClInclude Include="src\include\Input.h" />

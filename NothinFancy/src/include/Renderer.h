@@ -13,6 +13,7 @@ namespace nf {
 	class Light;
 	class Cubemap;
 	class Camera;
+	class GBuffer;
 	class VertexArray;
 	class IndexBuffer;
 
@@ -44,6 +45,8 @@ namespace nf {
 
 		AssetPack m_baseAP;
 
+		GBuffer* m_gBuffer;
+
 		unsigned int m_shadowMapFBO;
 		int m_directionalDepthTexSize;
 		int m_pointDepthTexSize;
@@ -55,6 +58,7 @@ namespace nf {
 		std::vector<Entity*> m_lGame;
 		Cubemap* m_cubemap;
 		std::vector<UIElement*> m_lUI;
+		Shader* m_gBufferShader;
 		Shader* m_entityShader;
 		Shader* m_textShader;
 		Shader* m_uiTextureShader;

@@ -64,6 +64,7 @@ namespace nf {
 		std::vector<Entity*> m_lGame;
 		Cubemap* m_cubemap;
 		std::vector<UIElement*> m_lUI;
+		Shader* m_gBufferShader;
 		Shader* m_entityShader;
 		Shader* m_textShader;
 		Shader* m_uiTextureShader;

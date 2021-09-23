@@ -6,6 +6,7 @@
 #include "stb_image.h"
 
 #include "Application.h"
+#include "GBuffer.h"
 #include "Shader.h"
 #include "Light.h"
 #include "Entity.h"
@@ -17,6 +18,7 @@
 
 namespace nf {
 	Renderer::Renderer(Application* app) :
+		m_gBuffer(nullptr),
 		m_shadowMapFBO(0),
 		m_directionalDepthTexSize(0),
 		m_pointDepthTexSize(0),
@@ -72,6 +74,8 @@ namespace nf {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		loadBaseAssets();
+
+		m_gBuffer = new GBuffer;
 
 		m_directionalDepthTexSize = 4096;
 		m_pointDepthTexSize = 1024;
@@ -354,6 +358,9 @@ namespace nf {
 		const char* entityVertex = m_baseAP["entityVertex.shader"]->data;
 		const char* entityFragment = m_baseAP["entityFragment.shader"]->data;
 		m_entityShader = new Shader(entityVertex, entityFragment);
+		const char* gBufferVertex = m_baseAP["gBufferVertex.shader"]->data;
+		const char* gBufferFragment = m_baseAP["gBufferFragment.shader"]->data;
+		m_gBufferShader = new Shader(gBufferVertex, gBufferFragment);
 		const char* textVertex = m_baseAP["textVertex.shader"]->data;
 		const char* textFragment = m_baseAP["textFragment.shader"]->data;
 		m_textShader = new Shader(textVertex, textFragment);
@@ -424,6 +431,7 @@ namespace nf {
 		delete m_cubemapShader;
 		delete m_fadeShader;
 		delete m_directionalShadowShader;
+		delete m_gBuffer;
 		delete m_fadeVAO;
 		delete m_fadeIB;
 		ReleaseDC(m_app->getWindow(), m_hdc);
