@@ -23,4 +23,6 @@ private:
 	nf::Sound sound;
 
 	float xrot, yrot;
+
+	std::vector<nf::Entity*> entities;
 };

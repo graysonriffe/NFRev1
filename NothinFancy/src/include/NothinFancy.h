@@ -44,7 +44,7 @@ namespace nf {
 		void renderShadowMaps(unsigned int startingLight, unsigned int count);
 
 		void loadBaseAssets();
-		void createShadowMap();
+		void createShadowMaps();
 
 		Application* m_app;
 

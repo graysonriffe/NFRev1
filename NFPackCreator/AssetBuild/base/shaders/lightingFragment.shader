@@ -9,17 +9,6 @@ struct Camera {
 	vec3 pos;
 };
 
-struct Material {
-	bool hasDiffuseTex;
-	sampler2D diffuseTexture;
-	vec3 diffuseColor;
-	bool hasSpecTex;
-	sampler2D specularTexture;
-	float specPower;
-	bool hasNormTex;
-	sampler2D normalTexture;
-};
-
 struct Light {
 	//Directional = 1, Point = 2
 	int type;
@@ -31,7 +20,6 @@ struct Light {
 };
 
 uniform Camera camera;
-uniform Material material;
 uniform Light light[100];
 uniform int numberOfLights;
 uniform bool isContinued;

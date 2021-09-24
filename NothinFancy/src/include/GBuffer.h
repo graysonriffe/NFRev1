@@ -4,19 +4,20 @@
 
 namespace nf {
 	class Entity;
+	class Shader;
 
 	class GBuffer {
 	public:
 		GBuffer();
 
-		void resize();
-		void render(std::vector<Entity*>& entities);
-		void bindTextures();
+		void render(std::vector<Entity*>& entities, Shader* shader);
+		void bindTextures(Shader* shader);
 
 		~GBuffer();
 	private:
+		void resize();
 		unsigned int m_FBO;
-		std::array<unsigned int, 5> m_textures; //TODO: Check this number
+		std::array<unsigned int, 4> m_textures; //TODO: Check this number
 		unsigned int m_depth;
 
 		unsigned int m_width, m_height;

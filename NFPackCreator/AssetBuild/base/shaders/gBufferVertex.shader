@@ -17,7 +17,7 @@ void main() {
 	fragPos = world.xyz;
 	texCoord = texCoords;
 	mat3 normalMat = transpose(inverse(mat3(model)));
-	normal - normalMat * normals;
+	normal = normalMat * normals;
 
 	gl_Position = proj * view * world;
 }

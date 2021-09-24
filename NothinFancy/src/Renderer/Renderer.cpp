@@ -15,6 +15,7 @@
 #include "Button.h"
 #include "Camera.h"
 #include "Utility.h"
+#include "Texture.h"
 
 namespace nf {
 	Renderer::Renderer(Application* app) :
@@ -79,7 +80,7 @@ namespace nf {
 
 		m_directionalDepthTexSize = 4096;
 		m_pointDepthTexSize = 1024;
-		createShadowMap();
+		createShadowMaps();
 
 		if (!m_app->isCustomWindowIcon()) {
 			ATexture& windowTex = *(ATexture*)m_baseAP["defaultwindowicon.png"];
@@ -152,13 +153,23 @@ namespace nf {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		camera->bind(m_entityShader, m_cubemapShader);
-
-		//Draw Entities (3D models)
 		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 10000.0f);
-		m_entityShader->bind();
-		m_entityShader->setUniform("proj", proj);
-		for (Entity* draw : m_lGame) {
+		camera->bind(m_gBufferShader, m_lightingShader, m_cubemapShader);
+
+		//First, draw the cubemap if one is currently set
+		if (m_cubemap != nullptr) {
+			m_cubemapShader->setUniform("proj", proj);
+			m_cubemap->render(m_cubemapShader);
+		}
+		m_cubemap = nullptr;
+
+		//Fill gBuffer with entities
+		m_gBufferShader->setUniform("proj", proj);
+		m_gBuffer->render(m_lGame, m_gBufferShader);
+		m_lGame.clear();
+
+		//Light entities using the gBuffer
+		/*for (Entity* draw : m_lGame) {
 			Entity& curr = *draw;
 			unsigned int drawCount = (unsigned int)std::ceil(m_lights.size() / (double)m_texSlots);
 			if (drawCount == 0)
@@ -171,11 +182,11 @@ namespace nf {
 				currLight = -(int)lightsRemaining;
 			for (unsigned int i = 0; i < drawCount; i++) {
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				m_entityShader->setUniform("isContinued", false);
+				m_lightingShader->setUniform("isContinued", false);
 				if (i != 0) {
 					glBlendFunc(GL_ONE, GL_ONE);
 					glDepthFunc(GL_LEQUAL);
-					m_entityShader->setUniform("isContinued", true);
+					m_lightingShader->setUniform("isContinued", true);
 				}
 				unsigned int currLightsDrawn;
 				if (lightsRemaining >= m_texSlots)
@@ -184,27 +195,20 @@ namespace nf {
 					currLightsDrawn = lightsRemaining;
 				lightsRemaining -= currLightsDrawn;
 				currLight += (int)currLightsDrawn;
-				m_entityShader->setUniform("numberOfLights", (int)currLightsDrawn);
+				m_lightingShader->setUniform("numberOfLights", (int)currLightsDrawn);
 				for (unsigned int j = 0; j < currLightsDrawn; j++) {
-					m_lights[j + (unsigned int)currLight]->bind(m_entityShader, j);
+					m_lights[j + (unsigned int)currLight]->bind(m_lightingShader, j);
 				}
 				renderShadowMaps(currLight, currLightsDrawn);
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
-				curr.render(m_entityShader);
+				curr.render(m_lightingShader);
 			}
 			glDepthFunc(GL_LESS);
 		}
-		m_lGame.clear();
+		m_lGame.clear();*/
 		m_lights.clear();
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		//Draw cubemap where there isn't anything else
-		if (m_cubemap != nullptr) {
-			m_cubemapShader->setUniform("proj", proj);
-			m_cubemap->render(m_cubemapShader);
-		}
-		m_cubemap = nullptr;
 
 		//Draw UI elements
 		glDisable(GL_DEPTH_TEST);
@@ -245,8 +249,8 @@ namespace nf {
 			opacity -= 2.5 * dT;
 			if (opacity <= 0.0) {
 				m_fadeIn = false;
-				m_fadeOutComplete = false;
 				opacity = 1.0;
+				m_fadeOutComplete = false;
 			}
 		}
 		else if (m_fadeOut) {
@@ -263,17 +267,18 @@ namespace nf {
 			opacity += 3.0 * dT;
 			if (opacity >= 1.0) {
 				m_fadeIn = false;
-				m_fadeOutComplete = true;
 				opacity = 0.0;
+				m_fadeOutComplete = true;
 			}
 		}
 		glEnable(GL_DEPTH_TEST);
 
-		SwapBuffers(m_hdc);
-
+		//Check for OpenGL errors
 		GLenum err = glGetError();
 		if (err != GL_NO_ERROR)
 			Error("OpenGL error " + std::to_string(err));
+
+		SwapBuffers(m_hdc);
 	}
 
 	void Renderer::renderShadowMaps(unsigned int startingLight, unsigned int count) {
@@ -282,6 +287,8 @@ namespace nf {
 		glm::mat4 pointLightProj = glm::perspective(glm::radians(90.0f), 1.0f, nearP, farP);
 		glm::mat4 lightView;
 		glm::mat4 lightSpaceMat;
+		int prevFBO;
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
 		for (unsigned int i = 0; i < count; i++) {
 			Light::Type type = m_lights[i]->getType();
@@ -301,7 +308,7 @@ namespace nf {
 					std::string stringPos = "lightSpaceMat[";
 					stringPos += std::to_string(i);
 					stringPos += "]";
-					m_entityShader->setUniform(stringPos, lightSpaceMat);
+					m_lightingShader->setUniform(stringPos, lightSpaceMat);
 					for (Entity* curr : m_lGame) {
 						curr->render(m_directionalShadowShader, true);
 					}
@@ -310,7 +317,7 @@ namespace nf {
 					stringPos += "].directionalDepthTex";
 					glActiveTexture(GL_TEXTURE3 + i);
 					glBindTexture(GL_TEXTURE_2D, tex);
-					m_entityShader->setUniform(stringPos, 3 + (int)i);
+					m_lightingShader->setUniform(stringPos, 3 + (int)i);
 					break;
 				}
 				case Light::Type::POINT: {
@@ -344,23 +351,25 @@ namespace nf {
 					stringPos += "].pointDepthTex";
 					glActiveTexture(GL_TEXTURE3 + i);
 					glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
-					m_entityShader->setUniform(stringPos, 3 + (int)i);
-					m_entityShader->setUniform("farPlane", farP);
+					m_lightingShader->setUniform(stringPos, 3 + (int)i);
+					m_lightingShader->setUniform("farPlane", farP);
 					break;
 				}
 			}
 		}
-		m_entityShader->setUniform("numMats", (int)count);
+		m_lightingShader->setUniform("numMats", (int)count);
+		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
+		glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
 	}
 
 	void Renderer::loadBaseAssets() {
 		m_baseAP.load("base.nfpack");
-		const char* entityVertex = m_baseAP["entityVertex.shader"]->data;
-		const char* entityFragment = m_baseAP["entityFragment.shader"]->data;
-		m_entityShader = new Shader(entityVertex, entityFragment);
 		const char* gBufferVertex = m_baseAP["gBufferVertex.shader"]->data;
 		const char* gBufferFragment = m_baseAP["gBufferFragment.shader"]->data;
 		m_gBufferShader = new Shader(gBufferVertex, gBufferFragment);
+		const char* lightingVertex = m_baseAP["lightingVertex.shader"]->data;
+		const char* lightingFragment = m_baseAP["lightingFragment.shader"]->data;
+		//m_lightingShader = new Shader(lightingVertex, lightingFragment);
 		const char* textVertex = m_baseAP["textVertex.shader"]->data;
 		const char* textFragment = m_baseAP["textFragment.shader"]->data;
 		m_textShader = new Shader(textVertex, textFragment);
@@ -393,7 +402,7 @@ namespace nf {
 		BaseAssets::button = (AButton*)m_baseAP["default.button"];
 	}
 
-	void Renderer::createShadowMap() {
+	void Renderer::createShadowMaps() {
 		m_texSlots = 13;
 		glGenFramebuffers(1, &m_shadowMapFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
@@ -425,7 +434,8 @@ namespace nf {
 	}
 
 	Renderer::~Renderer() {
-		delete m_entityShader;
+		delete m_gBufferShader;
+		delete m_lightingShader;
 		delete m_textShader;
 		delete m_uiTextureShader;
 		delete m_cubemapShader;

@@ -18,6 +18,16 @@ void MainState::onEnter() {
 	cm.create(nf::BaseAssets::cubemap);
 
 	sound.create(ap["sound.wav"]);
+
+	for (int x = 0; x < 10; x++) {
+		for (int y = 0; y < 10; y++) {
+			for (int z = 0; z < 10; z++) {
+				entities.push_back(new nf::Entity);
+				entities.back()->create(ap["spec.obj"]);
+				entities.back()->setPosition(5.0 + x * 2.1, 0.05 + z * 2.1, -5.0 + y * 2.1);
+			}
+		}
+	}
 }
 
 void MainState::update(double deltaTime) {
@@ -51,7 +61,7 @@ void MainState::update(double deltaTime) {
 		xrot += offset;
 	if (app->isKeyHeld(NFI_RIGHT))
 		xrot -= offset;
-	light.setPosition(nf::Vec3(-5.0, yrot / 10.0 + 10.0, 5.0));
+	plane.setRotation(nf::Vec3(yrot * 10.0, 0.0, yrot * 10.0));
 
 	text.setText("FPS: " + std::to_string(app->getFPS()));
 
@@ -73,6 +83,9 @@ void MainState::render(nf::Renderer& renderer) {
 	renderer.render(button);
 	renderer.render(button2);
 	renderer.render(cm);
+
+	for (nf::Entity* curr : entities)
+		renderer.render(*curr);
 }
 
 void MainState::onExit() {

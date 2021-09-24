@@ -82,6 +82,7 @@ namespace nf {
 	Material::~Material() {
 		delete m_diffuseTexture;
 		delete m_specularTexture;
+		delete m_normalTexture;
 	}
 
 	Model::Model(AModel* model) :

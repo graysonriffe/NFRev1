@@ -71,7 +71,7 @@ namespace nf {
 		return m_front;
 	}
 
-	void Camera::bind(Shader* entityShader, Shader* cubemapShader) {
+	void Camera::bind(Shader* gBufferShader, Shader* lightingShader, Shader* cubemapShader) {
 		glm::mat4 view;
 
 		switch (m_type) {
@@ -83,7 +83,7 @@ namespace nf {
 				int mouseDiffx = 0;
 				int mouseDiffy = 0;
 				m_app->getMouseDiff(mouseDiffx, mouseDiffy);
-				float mouseX = (float)mouseDiffx * 0.1f;
+				float mouseX = (float)mouseDiffx * 0.1f; //TODO: Mouse sensitivity
 				float mouseY = (float)mouseDiffy * 0.1f;
 				m_yaw += mouseX;
 				m_pitch += mouseY;
@@ -102,9 +102,6 @@ namespace nf {
 				break;
 			}
 		}
-		glm::vec3 pos(m_position.x, m_position.y, m_position.z);
-		entityShader->setUniform("camera.pos", pos);
-
 		glm::vec3 rotation;
 		rotation.x = std::cos(glm::radians(m_yaw)) * std::cos(glm::radians(m_pitch));
 		rotation.y = std::sin(glm::radians(m_pitch));
@@ -114,7 +111,10 @@ namespace nf {
 		glm::vec3 position(m_position.x, m_position.y, m_position.z);
 		glm::vec3 up(0.0, 1.0, 0.0);
 		view = glm::lookAt(position, position + rotation, up);
-		entityShader->setUniform("view", view);
+		gBufferShader->setUniform("view", view);
+
+		glm::vec3 pos(m_position.x, m_position.y, m_position.z);
+		//lightingShader->setUniform("camera.pos", pos);
 
 		glm::mat4 cubemapView = glm::mat4(glm::mat3(view));
 		cubemapShader->setUniform("view", cubemapView);

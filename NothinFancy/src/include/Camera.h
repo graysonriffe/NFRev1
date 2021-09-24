@@ -27,7 +27,7 @@ namespace nf {
 		const Vec3& getPosition();
 		const Vec3& getRotation();
 
-		void bind(Shader* entityShader, Shader* cubemapShader);
+		void bind(Shader* gBufferShader, Shader* lightingShader, Shader* cubemapShader);
 
 		~Camera();
 	private:

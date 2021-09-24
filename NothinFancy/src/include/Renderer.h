@@ -36,7 +36,7 @@ namespace nf {
 		void renderShadowMaps(unsigned int startingLight, unsigned int count);
 
 		void loadBaseAssets();
-		void createShadowMap();
+		void createShadowMaps();
 
 		Application* m_app;
 
@@ -59,7 +59,7 @@ namespace nf {
 		Cubemap* m_cubemap;
 		std::vector<UIElement*> m_lUI;
 		Shader* m_gBufferShader;
-		Shader* m_entityShader;
+		Shader* m_lightingShader;
 		Shader* m_textShader;
 		Shader* m_uiTextureShader;
 		Shader* m_cubemapShader;
