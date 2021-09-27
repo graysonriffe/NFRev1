@@ -19,6 +19,7 @@
 
 namespace nf {
 	Renderer::Renderer(Application* app) :
+		m_app(app),
 		m_gBuffer(nullptr),
 		m_shadowMapFBO(0),
 		m_directionalDepthTexSize(0),
@@ -29,7 +30,6 @@ namespace nf {
 		m_fadeNoText(false),
 		m_fadeOutComplete(false)
 	{
-		m_app = app;
 		m_hdc = GetDC(m_app->getWindow());
 		PIXELFORMATDESCRIPTOR pfd = {
 			sizeof(PIXELFORMATDESCRIPTOR),
@@ -60,11 +60,12 @@ namespace nf {
 			WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
 			WGL_CONTEXT_MINOR_VERSION_ARB, 3,
 			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-			0, 0
+			0
 		};
 		wglDeleteContext(m_hglrc);
 		m_hglrc = wglCreateContextAttribsARB(m_hdc, NULL, attrib);
 		wglMakeCurrent(m_hdc, m_hglrc);
+		//TODO: Configure V-Sync with a custom max FPS
 		wglSwapIntervalEXT(0);
 		Log("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 		glDepthFunc(GL_LESS);
@@ -72,7 +73,7 @@ namespace nf {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_CULL_FACE);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		loadBaseAssets();
 
@@ -98,21 +99,22 @@ namespace nf {
 			SendMessage(m_app->getWindow(), WM_SETICON, ICON_SMALL, (LPARAM)windowIcon);
 		}
 
-		float fadeVB[] = {
-			-1.0, -1.0,
-			1.0, -1.0,
-			1.0, 1.0,
-			-1.0, 1.0
+		float quadVB[] = {
+			-1.0, -1.0, 0.0, 0.0,
+			1.0, -1.0, 1.0, 0.0,
+			1.0, 1.0, 1.0, 1.0,
+			-1.0, 1.0, 0.0, 1.0
 		};
-		unsigned int fadeIB[] = {
+		unsigned int quadIB[] = {
 			0, 1, 2,
 			2, 3, 0
 		};
-		m_fadeVAO = new VertexArray;
-		m_fadeVAO->addBuffer(fadeVB, sizeof(fadeVB));
-		m_fadeVAO->push<float>(2);
-		m_fadeVAO->finishBufferLayout();
-		m_fadeIB = new IndexBuffer(fadeIB, 6);
+		m_quadVAO = new VertexArray;
+		m_quadVAO->addBuffer(quadVB, sizeof(quadVB));
+		m_quadVAO->push<float>(2);
+		m_quadVAO->push<float>(2);
+		m_quadVAO->finishBufferLayout();
+		m_quadIB = new IndexBuffer(quadIB, 6);
 		m_loadingText.create("NFLoadingText", Vec2(0.025, 0.044), Vec3(0.7, 0.7, 0.7));
 	}
 
@@ -156,59 +158,59 @@ namespace nf {
 		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 10000.0f);
 		camera->bind(m_gBufferShader, m_lightingShader, m_cubemapShader);
 
-		//First, draw the cubemap if one is currently set
+		//First, fill the gBuffer with entities
+		m_gBufferShader->setUniform("proj", proj);
+		m_gBuffer->render(m_lGame, m_gBufferShader);
+
+		//Light entities using the gBuffer
+		unsigned int lightsRemaining = m_lights.size();
+		if (!lightsRemaining) {
+			m_quadVAO->bind();
+			m_quadIB->bind();
+			m_lightingShader->bind();
+			m_gBuffer->bindTextures(m_lightingShader);
+			glDrawElements(GL_TRIANGLES, m_quadIB->getCount(), GL_UNSIGNED_INT, nullptr);
+		}
+		unsigned int drawCount = 0;
+		while (lightsRemaining > 0) {
+			unsigned int currLightsDrawn;
+			if (lightsRemaining > m_texSlots)
+				currLightsDrawn = m_texSlots;
+			else
+				currLightsDrawn = lightsRemaining;
+			lightsRemaining -= currLightsDrawn;
+			m_lightingShader->setUniform("numberOfLights", (int)currLightsDrawn);
+			if(drawCount == 0)
+				m_lightingShader->setUniform("isContinued", false);
+			else {
+				m_lightingShader->setUniform("isContinued", true);
+				glBlendFunc(GL_ONE, GL_ONE);
+				glDepthFunc(GL_LEQUAL);
+			}
+			for (unsigned int i = 0; i < currLightsDrawn; i++)
+				m_lights[i]->bind(m_lightingShader, i);
+			renderShadowMaps(currLightsDrawn);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
+			m_quadVAO->bind();
+			m_quadIB->bind();
+			m_lightingShader->bind();
+			m_gBuffer->bindTextures(m_lightingShader);
+			glDrawElements(GL_TRIANGLES, m_quadIB->getCount(), GL_UNSIGNED_INT, nullptr);
+			m_lights.erase(m_lights.begin(), m_lights.begin() + currLightsDrawn);
+			drawCount++;
+		}
+		m_lGame.clear();
+		m_lights.clear();
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDepthFunc(GL_LESS);
+
+		//Draw the cubemap if one is currently set
 		if (m_cubemap != nullptr) {
 			m_cubemapShader->setUniform("proj", proj);
 			m_cubemap->render(m_cubemapShader);
 		}
 		m_cubemap = nullptr;
-
-		//Fill gBuffer with entities
-		m_gBufferShader->setUniform("proj", proj);
-		m_gBuffer->render(m_lGame, m_gBufferShader);
-		m_lGame.clear();
-
-		//Light entities using the gBuffer
-		/*for (Entity* draw : m_lGame) {
-			Entity& curr = *draw;
-			unsigned int drawCount = (unsigned int)std::ceil(m_lights.size() / (double)m_texSlots);
-			if (drawCount == 0)
-				drawCount++;
-			unsigned int lightsRemaining = m_lights.size();
-			int currLight;
-			if (lightsRemaining > m_texSlots)
-				currLight = -(int)m_texSlots;
-			else
-				currLight = -(int)lightsRemaining;
-			for (unsigned int i = 0; i < drawCount; i++) {
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				m_lightingShader->setUniform("isContinued", false);
-				if (i != 0) {
-					glBlendFunc(GL_ONE, GL_ONE);
-					glDepthFunc(GL_LEQUAL);
-					m_lightingShader->setUniform("isContinued", true);
-				}
-				unsigned int currLightsDrawn;
-				if (lightsRemaining >= m_texSlots)
-					currLightsDrawn = m_texSlots;
-				else
-					currLightsDrawn = lightsRemaining;
-				lightsRemaining -= currLightsDrawn;
-				currLight += (int)currLightsDrawn;
-				m_lightingShader->setUniform("numberOfLights", (int)currLightsDrawn);
-				for (unsigned int j = 0; j < currLightsDrawn; j++) {
-					m_lights[j + (unsigned int)currLight]->bind(m_lightingShader, j);
-				}
-				renderShadowMaps(currLight, currLightsDrawn);
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
-				glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
-				curr.render(m_lightingShader);
-			}
-			glDepthFunc(GL_LESS);
-		}
-		m_lGame.clear();*/
-		m_lights.clear();
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		//Draw UI elements
 		glDisable(GL_DEPTH_TEST);
@@ -233,12 +235,13 @@ namespace nf {
 		}
 		m_lUI.clear();
 
+		//Fade over everything when states change
 		if (m_fadeIn) {
 			static double opacity = 1.0;
 			m_fadeShader->setUniform("opacity", (float)opacity);
-			m_fadeVAO->bind();
-			m_fadeIB->bind();
-			glDrawElements(GL_TRIANGLES, m_fadeIB->getCount(), GL_UNSIGNED_INT, nullptr);
+			m_quadVAO->bind();
+			m_quadIB->bind();
+			glDrawElements(GL_TRIANGLES, m_quadIB->getCount(), GL_UNSIGNED_INT, nullptr);
 			if (!m_fadeNoText) {
 				m_textShader->setUniform("proj", proj);
 				m_loadingText.setOpacity(opacity);
@@ -256,9 +259,9 @@ namespace nf {
 		else if (m_fadeOut) {
 			static double opacity = 0.0;
 			m_fadeShader->setUniform("opacity", (float)opacity);
-			m_fadeVAO->bind();
-			m_fadeIB->bind();
-			glDrawElements(GL_TRIANGLES, m_fadeIB->getCount(), GL_UNSIGNED_INT, nullptr);
+			m_quadVAO->bind();
+			m_quadIB->bind();
+			glDrawElements(GL_TRIANGLES, m_quadIB->getCount(), GL_UNSIGNED_INT, nullptr);
 			if (!m_fadeNoText) {
 				m_textShader->setUniform("proj", proj);
 				m_loadingText.setOpacity(opacity);
@@ -278,17 +281,16 @@ namespace nf {
 		if (err != GL_NO_ERROR)
 			Error("OpenGL error " + std::to_string(err));
 
+		//Show completed frame
 		SwapBuffers(m_hdc);
 	}
 
-	void Renderer::renderShadowMaps(unsigned int startingLight, unsigned int count) {
+	void Renderer::renderShadowMaps(unsigned int count) {
 		float nearP = 0.1f, farP = 400.0f;
 		glm::mat4 directionalLightProj = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, nearP, farP);
 		glm::mat4 pointLightProj = glm::perspective(glm::radians(90.0f), 1.0f, nearP, farP);
 		glm::mat4 lightView;
 		glm::mat4 lightSpaceMat;
-		int prevFBO;
-		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
 		for (unsigned int i = 0; i < count; i++) {
 			Light::Type type = m_lights[i]->getType();
@@ -300,7 +302,7 @@ namespace nf {
 					glDrawBuffer(GL_NONE);
 					glReadBuffer(GL_NONE);
 					glClear(GL_DEPTH_BUFFER_BIT);
-					Vec3 posTemp = m_lights[startingLight + i]->getPosition();
+					Vec3 posTemp = m_lights[i]->getPosition();
 					glm::vec3 lightPos(posTemp.x, posTemp.y, posTemp.z);
 					lightView = glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
 					lightSpaceMat = directionalLightProj * lightView;
@@ -315,9 +317,9 @@ namespace nf {
 					stringPos = "light[";
 					stringPos += std::to_string(i);
 					stringPos += "].directionalDepthTex";
-					glActiveTexture(GL_TEXTURE3 + i);
+					glActiveTexture(GL_TEXTURE4 + i);
 					glBindTexture(GL_TEXTURE_2D, tex);
-					m_lightingShader->setUniform(stringPos, 3 + (int)i);
+					m_lightingShader->setUniform(stringPos, 4 + (int)i);
 					break;
 				}
 				case Light::Type::POINT: {
@@ -326,7 +328,7 @@ namespace nf {
 					glDrawBuffer(GL_NONE);
 					glReadBuffer(GL_NONE);
 					glClear(GL_DEPTH_BUFFER_BIT);
-					Vec3 posTemp = m_lights[startingLight + i]->getPosition();
+					Vec3 posTemp = m_lights[i]->getPosition();
 					glm::vec3 lightPos(posTemp.x, posTemp.y, posTemp.z);
 					std::vector<glm::mat4> lightSpaceMats;
 					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
@@ -349,17 +351,15 @@ namespace nf {
 					std::string stringPos = "light[";
 					stringPos += std::to_string(i);
 					stringPos += "].pointDepthTex";
-					glActiveTexture(GL_TEXTURE3 + i);
+					glActiveTexture(GL_TEXTURE4 + i);
 					glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
-					m_lightingShader->setUniform(stringPos, 3 + (int)i);
+					m_lightingShader->setUniform(stringPos, 4 + (int)i);
 					m_lightingShader->setUniform("farPlane", farP);
 					break;
 				}
 			}
 		}
 		m_lightingShader->setUniform("numMats", (int)count);
-		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
-		glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
 	}
 
 	void Renderer::loadBaseAssets() {
@@ -369,7 +369,7 @@ namespace nf {
 		m_gBufferShader = new Shader(gBufferVertex, gBufferFragment);
 		const char* lightingVertex = m_baseAP["lightingVertex.shader"]->data;
 		const char* lightingFragment = m_baseAP["lightingFragment.shader"]->data;
-		//m_lightingShader = new Shader(lightingVertex, lightingFragment);
+		m_lightingShader = new Shader(lightingVertex, lightingFragment);
 		const char* textVertex = m_baseAP["textVertex.shader"]->data;
 		const char* textFragment = m_baseAP["textFragment.shader"]->data;
 		m_textShader = new Shader(textVertex, textFragment);
@@ -403,9 +403,8 @@ namespace nf {
 	}
 
 	void Renderer::createShadowMaps() {
-		m_texSlots = 13;
+		m_texSlots = 12;
 		glGenFramebuffers(1, &m_shadowMapFBO);
-		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
 		for (unsigned int i = 0; i < m_texSlots; i++) {
 			unsigned int directionalDepthMap, pointDepthMap;
 			glGenTextures(1, &directionalDepthMap);
@@ -442,8 +441,8 @@ namespace nf {
 		delete m_fadeShader;
 		delete m_directionalShadowShader;
 		delete m_gBuffer;
-		delete m_fadeVAO;
-		delete m_fadeIB;
+		delete m_quadVAO;
+		delete m_quadIB;
 		ReleaseDC(m_app->getWindow(), m_hdc);
 		wglMakeCurrent(NULL, NULL);
 		wglDeleteContext(m_hglrc);

@@ -18,6 +18,8 @@ private:
 	nf::Button button;
 	nf::Button button2;
 	nf::Light light;
+	nf::Light light2;
+	nf::Light light3;
 	nf::Cubemap cm;
 
 	nf::Sound sound;

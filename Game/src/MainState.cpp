@@ -14,18 +14,18 @@ void MainState::onEnter() {
 	uiTex.create(nf::BaseAssets::logo, nf::Vec2(0.025, 0.025), 0.5);
 	button.create(nf::Vec2(0.8, 0.025), "Reset");
 	button2.create(nf::Vec2(0.6, 0.025), "Play Sound");
-	light.create(nf::Vec3(-5.0, 10.0, 5.0), nf::Vec3(1.0, 1.0, 1.0));
+	light.create(nf::Vec3(0.0, 20.0, 0.0), nf::Vec3(1.0, 1.0, 1.0));
+	light2.create(nf::Vec3(-10.0, 20.0, -10.0), nf::Vec3(1.0, 1.0, 1.0));
+	light3.create(nf::Vec3(10.0, 20.0, 10.0), nf::Vec3(1.0, 1.0, 1.0));
 	cm.create(nf::BaseAssets::cubemap);
 
 	sound.create(ap["sound.wav"]);
 
 	for (int x = 0; x < 10; x++) {
 		for (int y = 0; y < 10; y++) {
-			for (int z = 0; z < 10; z++) {
 				entities.push_back(new nf::Entity);
 				entities.back()->create(ap["spec.obj"]);
-				entities.back()->setPosition(5.0 + x * 2.1, 0.05 + z * 2.1, -5.0 + y * 2.1);
-			}
+				entities.back()->setPosition(5.0 + x * 2.1, 0.05, -5.0 + y * 2.1);
 		}
 	}
 }
@@ -61,7 +61,7 @@ void MainState::update(double deltaTime) {
 		xrot += offset;
 	if (app->isKeyHeld(NFI_RIGHT))
 		xrot -= offset;
-	plane.setRotation(nf::Vec3(yrot * 10.0, 0.0, yrot * 10.0));
+	light.setPosition(nf::Vec3(0.0, yrot / 20.0 + 5.0, 0.0));
 
 	text.setText("FPS: " + std::to_string(app->getFPS()));
 
@@ -78,6 +78,8 @@ void MainState::render(nf::Renderer& renderer) {
 	renderer.render(test);
 	renderer.render(plane);
 	renderer.render(light);
+	renderer.render(light2);
+	renderer.render(light3);
 	renderer.render(text);
 	renderer.render(uiTex);
 	renderer.render(button);
@@ -91,4 +93,6 @@ void MainState::render(nf::Renderer& renderer) {
 void MainState::onExit() {
 	Log("MainState onExit!");
 	xrot = yrot = 0.0f;
+
+	entities.clear();
 }

@@ -114,7 +114,7 @@ namespace nf {
 		gBufferShader->setUniform("view", view);
 
 		glm::vec3 pos(m_position.x, m_position.y, m_position.z);
-		//lightingShader->setUniform("camera.pos", pos);
+		lightingShader->setUniform("camera.pos", pos);
 
 		glm::mat4 cubemapView = glm::mat4(glm::mat3(view));
 		cubemapShader->setUniform("view", cubemapView);

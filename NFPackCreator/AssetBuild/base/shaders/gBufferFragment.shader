@@ -25,8 +25,10 @@ layout(location = 3) out vec3 specular;
 void main() {
 	pos = fragPos;
 
-	if (material.hasNormTex)
+	if (material.hasNormTex) {
 		normals = texture(material.normalTexture, texCoord).xyz;
+		normals = normalize(normals * 2.0 - 1.0);
+	}
 	else
 		normals = normalize(normal);
 
@@ -40,4 +42,5 @@ void main() {
 		specular.g = texture(material.specularTexture, texCoord).r;
 	else
 		specular.g = 1.0;
+	specular.b = 1.0;
 }

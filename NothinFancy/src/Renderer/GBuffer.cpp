@@ -54,9 +54,6 @@ namespace nf {
 		//TODO: Blit depth buffer for transparent objects later
 
 		glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_textures[1]);
 	}
 
 	void GBuffer::bindTextures(Shader* shader) {

@@ -23,6 +23,7 @@ namespace nf {
 	class Drawable;
 	class Shader;
 	class Model;
+	class GBuffer;
 	class AudioEngine;
 
 	class Renderer {
@@ -41,7 +42,7 @@ namespace nf {
 
 		~Renderer();
 	private:
-		void renderShadowMaps(unsigned int startingLight, unsigned int count);
+		void renderShadowMaps(unsigned int count);
 
 		void loadBaseAssets();
 		void createShadowMaps();
@@ -52,6 +53,8 @@ namespace nf {
 		HGLRC m_hglrc;
 
 		AssetPack m_baseAP;
+
+		GBuffer* m_gBuffer;
 
 		unsigned int m_shadowMapFBO;
 		int m_directionalDepthTexSize;
@@ -65,7 +68,7 @@ namespace nf {
 		Cubemap* m_cubemap;
 		std::vector<UIElement*> m_lUI;
 		Shader* m_gBufferShader;
-		Shader* m_entityShader;
+		Shader* m_lightingShader;
 		Shader* m_textShader;
 		Shader* m_uiTextureShader;
 		Shader* m_cubemapShader;
@@ -77,8 +80,9 @@ namespace nf {
 		bool m_fadeNoText;
 		bool m_fadeOutComplete;
 		Text m_loadingText;
-		VertexArray* m_fadeVAO;
-		IndexBuffer* m_fadeIB;
+
+		VertexArray* m_quadVAO;
+		IndexBuffer* m_quadIB;
 	};
 
 	class Application {

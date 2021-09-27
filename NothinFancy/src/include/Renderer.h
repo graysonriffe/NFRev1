@@ -33,7 +33,7 @@ namespace nf {
 
 		~Renderer();
 	private:
-		void renderShadowMaps(unsigned int startingLight, unsigned int count);
+		void renderShadowMaps(unsigned int count);
 
 		void loadBaseAssets();
 		void createShadowMaps();
@@ -71,7 +71,8 @@ namespace nf {
 		bool m_fadeNoText;
 		bool m_fadeOutComplete;
 		Text m_loadingText;
-		VertexArray* m_fadeVAO;
-		IndexBuffer* m_fadeIB;
+
+		VertexArray* m_quadVAO;
+		IndexBuffer* m_quadIB;
 	};
 }
