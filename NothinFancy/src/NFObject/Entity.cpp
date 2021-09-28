@@ -90,10 +90,11 @@ namespace nf {
 	}
 
 	void Entity::destroy() {
+		if (m_constructed && m_model && !m_model->isBaseAsset()) {
+			Application::getApp()->getCurrentState()->m_modelsToDelete.insert(m_model);
+			m_model = nullptr;
+		}
 		m_constructed = false;
-		if (m_model && !m_model->isBaseAsset())
-			delete m_model;
-		m_model = nullptr;
 		m_position = Vec3(0.0);
 		m_rotation = Vec3(0.0);
 		m_scale = Vec3(1.0);

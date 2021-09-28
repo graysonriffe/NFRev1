@@ -120,17 +120,26 @@ namespace nf {
 	}
 
 	void Button::destroy() {
+		if (m_constructed) {
+			delete m_vao;
+			m_vao = nullptr;
+			if (!m_idleTexture->isBaseAsset()) {
+				delete m_idleTexture;
+				m_idleTexture = nullptr;
+			}
+			if (!m_hoverTexture->isBaseAsset()) {
+				delete m_hoverTexture;
+				m_hoverTexture = nullptr;
+			}
+			if (!m_pressedTexture->isBaseAsset()) {
+				delete m_pressedTexture;
+				m_pressedTexture = nullptr;
+			}
+		}
 		m_constructed = false;
 		m_clicked = false;
 		m_position = Vec2(0.0);
 		m_centeredX = m_centeredY = false;
-		if (!m_idleTexture->isBaseAsset())
-			delete m_idleTexture;
-		if (!m_hoverTexture->isBaseAsset())
-			delete m_hoverTexture;
-		if (!m_pressedTexture->isBaseAsset())
-			delete m_pressedTexture;
-		delete m_vao;
 	}
 
 	Button::~Button() {

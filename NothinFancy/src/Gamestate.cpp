@@ -1,6 +1,7 @@
 #include "Gamestate.h"
 
 #include "Application.h"
+#include "Model.h"
 #include "Utility.h"
 
 namespace nf {
@@ -50,6 +51,10 @@ namespace nf {
 		for (NFObject* curr : m_nfObjects)
 			curr->destroy();
 		m_nfObjects.clear();
+
+		for (Model* curr : m_modelsToDelete)
+			delete curr;
+		m_modelsToDelete.clear();
 
 		delete camera;
 		app = nullptr;

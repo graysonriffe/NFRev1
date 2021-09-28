@@ -168,12 +168,18 @@ namespace nf {
 	}
 
 	void Text::destroy() {
+		if (m_constructed) {
+			delete m_vao;
+			m_vao = nullptr;
+			if (!m_font->isBase) {
+				delete m_font;
+				m_font = nullptr;
+			}
+		}
 		m_constructed = false;
 		m_position = Vec2(0.0);
 		m_centeredX = m_centeredY = false;
 		m_string = std::string();
-		if (!m_font->isBase)
-			delete m_font;
 		m_color = Vec3(0.0);
 		m_scale = 1.0f;
 		m_opacity = 1.0f;

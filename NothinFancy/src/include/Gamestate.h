@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <unordered_set>
 
 #include "Camera.h"
 #include "NFObject.h"
@@ -8,6 +9,8 @@ namespace nf {
 	class Application;
 	class Renderer;
 	class Camera;
+	class Model;
+
 	class Gamestate {
 	public:
 		Gamestate();
@@ -28,6 +31,7 @@ namespace nf {
 		void cleanup();
 
 		std::vector<NFObject*> m_nfObjects;
+		std::unordered_set<Model*> m_modelsToDelete;
 	protected:
 		Application* app;
 		Camera* camera;

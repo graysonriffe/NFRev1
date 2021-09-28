@@ -135,11 +135,13 @@ namespace nf {
 	}
 
 	void Cubemap::destroy() {
-		if (m_constructed)
+		if (m_constructed) {
 			glDeleteTextures(1, &m_id);
+			delete m_vao;
+			m_vao = nullptr;
+		}
 		m_constructed = false;
 		m_id = 0;
-		delete m_vao;
 	}
 
 	Cubemap::~Cubemap() {

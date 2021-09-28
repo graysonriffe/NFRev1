@@ -92,14 +92,19 @@ namespace nf {
 	}
 
 	void UITexture::destroy() {
+		if (m_constructed) {
+			delete m_vao;
+			m_vao = nullptr;
+			if (!m_texture->isBaseAsset()) {
+				delete m_texture;
+				m_texture = nullptr;
+			}
+		}
 		m_constructed = false;
 		m_position = Vec2(0.0);
 		m_centeredX = m_centeredY = false;
-		if (!m_texture->isBaseAsset())
-			delete m_texture;
 		m_scale = 1.0f;
 		m_opacity = 1.0f;
-		delete m_vao;
 	}
 
 	UITexture::~UITexture() {

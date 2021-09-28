@@ -24,11 +24,11 @@ namespace nf {
 		if ((sound = dynamic_cast<ASound*>(soundAsset)) == nullptr)
 			Error("Non-sound asset passed to Sound::create!");
 		std::string data(sound->data, sound->size);
-		if(data.find("RIFF") == std::string::npos)
+		if (data.find("RIFF") == std::string::npos)
 			Error("Sound asset not of correct format!");
 		unsigned int fileSize = *(unsigned int*)&data[4];
 		unsigned int fmtPos;
-		if((fmtPos = data.find("fmt")) == std::string::npos)
+		if ((fmtPos = data.find("fmt")) == std::string::npos)
 			Error("Sound asset not of correct format!");
 		std::memcpy(&m_format, &data[fmtPos + 8], 16);
 		unsigned int dataPos;
@@ -71,11 +71,14 @@ namespace nf {
 	}
 
 	void Sound::destroy() {
+		if (m_constructed) {
+			delete m_buffer;
+			m_buffer = nullptr;
+		}
 		m_constructed = false;
 		m_dataSize = 0;
 		m_volume = 1.0f;
 		m_format = { 0 };
-		delete m_buffer;
 		m_currentVoice = nullptr;
 	}
 

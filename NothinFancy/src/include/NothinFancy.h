@@ -93,6 +93,7 @@ namespace nf {
 
 		void setWindowIcon(HANDLE hIcon);
 		void setWindowCursor(HCURSOR hCursor);
+		AudioEngine* getAudioEngine() const;
 		void addState(Gamestate* state, const std::string& stateName);
 		void addDefaultState(const std::string& stateName);
 		const std::string& getDefaultState();

@@ -77,35 +77,16 @@ float calcShadowPoint(int lightNum, vec3 no, vec3 lDir, vec3 fp) {
 }
 
 void main() {
+	vec3 specTemp = texture(gBSpec, texCoord).rgb;
+	if (specTemp.b != 1.0)
+		discard;
 	vec3 color = vec3(0.0);
 
 	vec3 fragPos = texture(gBPos, texCoord).xyz;
 	vec3 norm = texture(gBNorm, texCoord).xyz;
 	vec3 matDiff = texture(gBDiff, texCoord).rgb;
-	vec3 specTemp = texture(gBSpec, texCoord).rgb;
 	float specPower = specTemp.r;
 	float matSpec = specTemp.g;
-	if (specTemp.b != 1.0)
-		discard;
-
-	/*vec3 matDiff;
-	if (material.hasDiffuseTex)
-		matDiff = texture(material.diffuseTexture, texCoord).rgb;
-	else
-		matDiff = material.diffuseColor;
-
-	vec3 matSpec = vec3(1.0);
-	if (material.hasSpecTex)
-		matSpec = texture(material.specularTexture, texCoord).rgb;
-
-	vec3 norm;
-	if (material.hasNormTex) {
-		norm = texture(material.normalTexture, texCoord).rgb;
-		norm = normalize(norm * 2.0 - 1.0);
-	}
-	else {
-		norm = normalize(normals);
-	}*/
 
 	float ambientStrength = 0.1f;
 	vec3 ambient = ambientStrength * matDiff;

@@ -52,16 +52,8 @@ void MainState::update(double deltaTime) {
 			camera->moveLeft(speed * deltaTime);
 	}
 
-	float offset = 0.5f;
-	if (app->isKeyHeld(NFI_UP))
-		yrot += offset;
-	if (app->isKeyHeld(NFI_DOWN))
-		yrot -= offset;
-	if (app->isKeyHeld(NFI_LEFT))
-		xrot += offset;
-	if (app->isKeyHeld(NFI_RIGHT))
-		xrot -= offset;
-	light.setPosition(nf::Vec3(0.0, yrot / 20.0 + 5.0, 0.0));
+	light.setPosition(nf::Vec3(std::sin(circle) * 10.0, 5.0, std::cos(circle) * 10.0));
+	circle += 2.0 * deltaTime;
 
 	text.setText("FPS: " + std::to_string(app->getFPS()));
 
@@ -92,7 +84,7 @@ void MainState::render(nf::Renderer& renderer) {
 
 void MainState::onExit() {
 	Log("MainState onExit!");
-	xrot = yrot = 0.0f;
+	circle = 0.0;
 
 	entities.clear();
 }

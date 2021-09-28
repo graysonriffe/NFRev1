@@ -24,7 +24,7 @@ private:
 
 	nf::Sound sound;
 
-	float xrot, yrot;
+	double circle;
 
 	std::vector<nf::Entity*> entities;
 };
