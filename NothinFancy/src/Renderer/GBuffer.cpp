@@ -18,10 +18,7 @@ namespace nf {
 
 		m_width = Application::getApp()->getConfig().width;
 		m_height = Application::getApp()->getConfig().height;
-		glGenTextures(1, &m_textures[0]);
-		glGenTextures(1, &m_textures[1]);
-		glGenTextures(1, &m_textures[2]);
-		glGenTextures(1, &m_textures[3]);
+		glGenTextures(m_textures.size(), &m_textures[0]);
 		for (unsigned int i = 0; i < m_textures.size(); i++) {
 			glBindTexture(GL_TEXTURE_2D, m_textures[i]);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_width, m_height, 0, GL_RGB, GL_FLOAT, nullptr);

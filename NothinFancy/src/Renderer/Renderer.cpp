@@ -80,7 +80,7 @@ namespace nf {
 		m_gBuffer = new GBuffer;
 
 		m_directionalDepthTexSize = 4096;
-		m_pointDepthTexSize = 1024;
+		m_pointDepthTexSize = 2048;
 		createShadowMaps();
 
 		if (!m_app->isCustomWindowIcon()) {

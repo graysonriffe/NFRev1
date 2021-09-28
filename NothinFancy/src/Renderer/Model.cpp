@@ -10,7 +10,7 @@
 #include "Utility.h"
 
 namespace nf {
-	Material::Material(const void* vb, const size_t vbSize, const void* tc, const size_t tcSize, const void* vn, const size_t vnSize, const void* ib, const unsigned int ibCount, ATexture* diffTex, Vec3& diffColor, ATexture* specTex, float shininess, ATexture* normalTex) {
+	Material::Material(const void* vb, const size_t vbSize, const void* tc, const size_t tcSize, const void* vn, const size_t vnSize, const void* tan, const size_t tanSize, const void* ib, const unsigned int ibCount, ATexture* diffTex, Vec3& diffColor, ATexture* specTex, float shininess, ATexture* normalTex) {
 		m_vao = new VertexArray();
 		m_vao->addBuffer(vb, vbSize);
 		m_vao->push<float>(3);
@@ -19,6 +19,9 @@ namespace nf {
 		m_vao->push<float>(2);
 		m_vao->finishBufferLayout();
 		m_vao->addBuffer(vn, vnSize);
+		m_vao->push<float>(3);
+		m_vao->finishBufferLayout();
+		m_vao->addBuffer(tan, tanSize);
 		m_vao->push<float>(3);
 		m_vao->finishBufferLayout();
 		m_ib = new IndexBuffer(ib, ibCount);
@@ -103,6 +106,8 @@ namespace nf {
 			std::vector<float> outVN;
 			std::vector<float> unindexedVN;
 			std::vector<unsigned int> vnIndices;
+			std::vector<float> unindexedTan;
+			std::vector<float> outTan;
 			std::vector<unsigned int> outIB;
 			unsigned int ibCount = 0;
 
@@ -243,6 +248,33 @@ namespace nf {
 				mats[curr]->unindexedVN.push_back(vnY);
 				mats[curr]->unindexedVN.push_back(vnZ);
 			}
+
+			for (unsigned int i = 0; i * 9 < mats[curr]->unindexedVB.size(); i++) {
+				glm::vec3 pos1(mats[curr]->unindexedVB[i * 9], mats[curr]->unindexedVB[i * 9 + 1], mats[curr]->unindexedVB[i * 9 + 2]);
+				glm::vec2 uv1(mats[curr]->unindexedTC[i * 6], mats[curr]->unindexedTC[i * 6 + 1]);
+				glm::vec3 pos2(mats[curr]->unindexedVB[i * 9 + 3], mats[curr]->unindexedVB[i * 9 + 4], mats[curr]->unindexedVB[i * 9 + 5]);
+				glm::vec2 uv2(mats[curr]->unindexedTC[i * 6 + 2], mats[curr]->unindexedTC[i * 6 + 3]);
+				glm::vec3 pos3(mats[curr]->unindexedVB[i * 9 + 6], mats[curr]->unindexedVB[i * 9 + 7], mats[curr]->unindexedVB[i * 9 + 8]);
+				glm::vec2 uv3(mats[curr]->unindexedTC[i * 6 + 4], mats[curr]->unindexedTC[i * 6 + 5]);
+
+				glm::vec3 edge1 = pos2 - pos1;
+				glm::vec3 edge2 = pos3 - pos1;
+				glm::vec2 delta1 = uv2 - uv1;
+				glm::vec2 delta2 = uv3 - uv1;
+				float f = 1.0f / (delta1.x * delta2.y - delta2.x * delta1.y);
+				float x = f * (delta2.y * edge1.x - delta1.y * edge2.x);
+				float y = f * (delta2.y * edge1.y - delta1.y * edge2.y);
+				float z = f * (delta2.y * edge1.z - delta1.y * edge2.z);
+				mats[curr]->unindexedTan.push_back(x);
+				mats[curr]->unindexedTan.push_back(y);
+				mats[curr]->unindexedTan.push_back(z);
+				mats[curr]->unindexedTan.push_back(x);
+				mats[curr]->unindexedTan.push_back(y);
+				mats[curr]->unindexedTan.push_back(z);
+				mats[curr]->unindexedTan.push_back(x);
+				mats[curr]->unindexedTan.push_back(y);
+				mats[curr]->unindexedTan.push_back(z);
+			}
 		}
 
 		struct Vertex {
@@ -282,27 +314,27 @@ namespace nf {
 					mats[curr]->outVN.push_back(currVertex.vnX);
 					mats[curr]->outVN.push_back(currVertex.vnY);
 					mats[curr]->outVN.push_back(currVertex.vnZ);
+					mats[curr]->outTan.push_back(mats[curr]->unindexedTan[(i * 3)]);
+					mats[curr]->outTan.push_back(mats[curr]->unindexedTan[(i * 3 + 1)]);
+					mats[curr]->outTan.push_back(mats[curr]->unindexedTan[(i * 3 + 2)]);
 					unsigned int index = (mats[curr]->outVB.size() / 3) - 1;
 					mats[curr]->outIB.push_back(index);
 					vertexMap[currVertex] = index;
 					mats[curr]->ibCount++;
 				}
 			}
-		}
 
-		for (auto& m : mats) {
-			TempMaterial& curr = *m.second;
+			TempMaterial& curr2 = *m.second;
 			ATexture* diff = nullptr;
-			if (curr.diffuseTextureName.size())
-				diff = model->neededTextures[curr.diffuseTextureName];
+			if (curr2.diffuseTextureName.size())
+				diff = model->neededTextures[curr2.diffuseTextureName];
 			ATexture* spec = nullptr;
-			if (curr.specularTextureName.size())
-				spec = model->neededTextures[curr.specularTextureName];
+			if (curr2.specularTextureName.size())
+				spec = model->neededTextures[curr2.specularTextureName];
 			ATexture* norm = nullptr;
-			if (curr.normalTextureName.size())
-				norm = model->neededTextures[curr.normalTextureName];
-			m_materials.push_back(new Material(&curr.outVB[0], curr.outVB.size() * sizeof(float), &curr.outTC[0], curr.outTC.size() * sizeof(float), &curr.outVN[0], curr.outVN.size() * sizeof(float), &curr.outIB[0], curr.ibCount, diff, curr.diffuseColor, spec, curr.shininess, norm));
-
+			if (curr2.normalTextureName.size())
+				norm = model->neededTextures[curr2.normalTextureName];
+			m_materials.push_back(new Material(&curr2.outVB[0], curr2.outVB.size() * sizeof(float), &curr2.outTC[0], curr2.outTC.size() * sizeof(float), &curr2.outVN[0], curr2.outVN.size() * sizeof(float), &curr2.outTan[0], curr2.outTan.size() * sizeof(float), &curr2.outIB[0], curr2.ibCount, diff, curr2.diffuseColor, spec, curr2.shininess, norm));
 			delete m.second;
 		}
 	}
