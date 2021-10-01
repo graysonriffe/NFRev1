@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "Model.h"
+#include "Texture.h"
 #include "Utility.h"
 
 namespace nf {
@@ -53,8 +54,14 @@ namespace nf {
 		m_nfObjects.clear();
 
 		for (Model* curr : m_modelsToDelete)
-			delete curr;
+			if (!curr->isBaseAsset())
+				delete curr;
 		m_modelsToDelete.clear();
+
+		for (Texture* curr : m_texturesToDelete)
+			if (!curr->isBaseAsset())
+				delete curr;
+		m_texturesToDelete.clear();
 
 		delete camera;
 		app = nullptr;

@@ -1,96 +1,22 @@
 #include "Model.h"
 
 #include <map>
+#include <algorithm>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "GL/glew.h"
 
+#include "Application.h"
 #include "Texture.h"
 #include "Shader.h"
 #include "Utility.h"
 
 namespace nf {
-	Material::Material(const void* vb, const size_t vbSize, const void* tc, const size_t tcSize, const void* vn, const size_t vnSize, const void* tan, const size_t tanSize, const void* ib, const unsigned int ibCount, ATexture* diffTex, Vec3& diffColor, ATexture* specTex, float shininess, ATexture* normalTex) {
-		m_vao = new VertexArray();
-		m_vao->addBuffer(vb, vbSize);
-		m_vao->push<float>(3);
-		m_vao->finishBufferLayout();
-		m_vao->addBuffer(tc, tcSize);
-		m_vao->push<float>(2);
-		m_vao->finishBufferLayout();
-		m_vao->addBuffer(vn, vnSize);
-		m_vao->push<float>(3);
-		m_vao->finishBufferLayout();
-		m_vao->addBuffer(tan, tanSize);
-		m_vao->push<float>(3);
-		m_vao->finishBufferLayout();
-		m_ib = new IndexBuffer(ib, ibCount);
-		if (diffTex) {
-			m_hasDiffuse = true;
-			if (diffTex->alreadyLoaded)
-				m_diffuseTexture = diffTex->loadedTexture;
-			else
-				m_diffuseTexture = new Texture(diffTex);
-		}
-		m_diffColor = diffColor;
-		if (specTex) {
-			m_hasSpecular = true;
-			if (specTex->alreadyLoaded)
-				m_specularTexture = specTex->loadedTexture;
-			else
-				m_specularTexture = new Texture(specTex, true);
-		}
-		m_shininess = shininess;
-		if (normalTex) {
-			m_hasNormal = true;
-			if (normalTex->alreadyLoaded)
-				m_normalTexture = normalTex->loadedTexture;
-			else
-				m_normalTexture = new Texture(normalTex, true);
-		}
-	}
-
-	void Material::render(Shader* shader, bool onlyDepth) {
-		m_vao->bind();
-		m_ib->bind();
-		if (!onlyDepth) {
-			if (m_hasDiffuse) {
-				shader->setUniform("material.hasDiffuseTex", true);
-				m_diffuseTexture->bind();
-			}
-			else {
-				shader->setUniform("material.hasDiffuseTex", false);
-				glm::vec3 color(m_diffColor.x, m_diffColor.y, m_diffColor.z);
-				shader->setUniform("material.diffuseColor", color);
-			}
-			if (m_hasSpecular) {
-				shader->setUniform("material.hasSpecTex", true);
-				m_specularTexture->bind(1);
-				shader->setUniform("material.specularTexture", 1);
-			}
-			else
-				shader->setUniform("material.hasSpecTex", false);
-			if (m_hasNormal) {
-				shader->setUniform("material.hasNormTex", true);
-				m_normalTexture->bind(2);
-				shader->setUniform("material.normalTexture", 2);
-			}
-			else
-				shader->setUniform("material.hasNormTex", false);
-			shader->setUniform("material.specPower", m_shininess);
-		}
-		glDrawElements(GL_TRIANGLES, m_ib->getCount(), GL_UNSIGNED_INT, nullptr);
-	}
-
-	Material::~Material() {
-		delete m_diffuseTexture;
-		delete m_specularTexture;
-		delete m_normalTexture;
-	}
-
 	Model::Model(AModel* model) :
 		m_base(model->isBaseAsset)
 	{
+		if (model->neededTextures.size() > 32)
+			Error("Model exceedes 32 texture limit!");
 		std::string obj = model->data;
 		unsigned int startMtlPos = obj.find("newmtl");
 		if (startMtlPos == std::string::npos)
@@ -293,6 +219,13 @@ namespace nf {
 				return std::memcmp((void*)this, (void*)&other, sizeof(Vertex)) > 0;
 			}
 		};
+		std::vector<float> vboPositions;
+		std::vector<float> vboTexCoords;
+		std::vector<float> vboNormals;
+		std::vector<float> vboTangents;
+		std::vector<int> vboMaterialIndices;
+		std::vector<unsigned int> vboIndices;
+		int matCount = 0;
 		for (auto& m : mats) {
 			std::string curr = m.first;
 			std::map<Vertex, unsigned int> vertexMap;
@@ -325,23 +258,101 @@ namespace nf {
 			}
 
 			TempMaterial& curr2 = *m.second;
-			ATexture* diff = nullptr;
-			if (curr2.diffuseTextureName.size())
-				diff = model->neededTextures[curr2.diffuseTextureName];
-			ATexture* spec = nullptr;
-			if (curr2.specularTextureName.size())
-				spec = model->neededTextures[curr2.specularTextureName];
-			ATexture* norm = nullptr;
-			if (curr2.normalTextureName.size())
-				norm = model->neededTextures[curr2.normalTextureName];
-			m_materials.push_back(new Material(&curr2.outVB[0], curr2.outVB.size() * sizeof(float), &curr2.outTC[0], curr2.outTC.size() * sizeof(float), &curr2.outVN[0], curr2.outVN.size() * sizeof(float), &curr2.outTan[0], curr2.outTan.size() * sizeof(float), &curr2.outIB[0], curr2.ibCount, diff, curr2.diffuseColor, spec, curr2.shininess, norm));
+			ATexture* diffA = nullptr;
+			Texture* diff = nullptr;
+			if (curr2.diffuseTextureName.size()) {
+				diffA = model->neededTextures[curr2.diffuseTextureName];
+				diff = new Texture(diffA);
+			}
+			ATexture* specA = nullptr;
+			Texture* spec = nullptr;
+			if (curr2.specularTextureName.size()) {
+				specA = model->neededTextures[curr2.specularTextureName];
+				spec = new Texture(specA, true);
+			}
+			ATexture* normA = nullptr;
+			Texture* norm = nullptr;
+			if (curr2.normalTextureName.size()) {
+				normA = model->neededTextures[curr2.normalTextureName];
+				norm = new Texture(normA, true);
+			}
+			m_materials.push_back(std::make_tuple(diff, spec, norm, (float)curr2.diffuseColor.x, (float)curr2.diffuseColor.y, (float)curr2.diffuseColor.z, curr2.shininess));
+			unsigned int offset = vboPositions.size() / 3;
+			vboPositions.insert(vboPositions.end(), curr2.outVB.begin(), curr2.outVB.end());
+			vboTexCoords.insert(vboTexCoords.end(), curr2.outTC.begin(), curr2.outTC.end());
+			vboNormals.insert(vboNormals.end(), curr2.outVN.begin(), curr2.outVN.end());
+			vboTangents.insert(vboTangents.end(), curr2.outTan.begin(), curr2.outTan.end());
+			vboMaterialIndices.insert(vboMaterialIndices.end(), curr2.outVB.size() / 3, matCount);
+			if (offset)
+				std::for_each(curr2.outIB.begin(), curr2.outIB.end(), [offset](unsigned int& out) { out += offset; });
+			vboIndices.insert(vboIndices.end(), curr2.outIB.begin(), curr2.outIB.end());
 			delete m.second;
+			matCount++;
 		}
+		if (m_materials.size() > 32)
+			Error("Model exceedes 32 material limit!");
+		m_vao = new VertexArray;
+		m_vao->addBuffer(&vboPositions[0], vboPositions.size() * sizeof(float));
+		m_vao->pushFloat(3);
+		m_vao->finishBufferLayout();
+		m_vao->addBuffer(&vboTexCoords[0], vboTexCoords.size() * sizeof(float));
+		m_vao->pushFloat(2);
+		m_vao->finishBufferLayout();
+		m_vao->addBuffer(&vboNormals[0], vboNormals.size() * sizeof(float));
+		m_vao->pushFloat(3);
+		m_vao->finishBufferLayout();
+		m_vao->addBuffer(&vboTangents[0], vboTangents.size() * sizeof(float));
+		m_vao->pushFloat(3);
+		m_vao->finishBufferLayout();
+		m_vao->addBuffer(&vboMaterialIndices[0], vboMaterialIndices.size() * sizeof(int));
+		m_vao->pushInt(1);
+		m_vao->finishBufferLayout();
+		m_ib = new IndexBuffer(&vboIndices[0], vboIndices.size());
 	}
 
 	void Model::render(Shader* shader, bool onlyDepth) {
-		for (Material* curr : m_materials) {
-			curr->render(shader, onlyDepth);
+		m_vao->bind();
+		m_ib->bind();
+		if (!onlyDepth)
+			bindMaterials(shader);
+		glDrawElements(GL_TRIANGLES, m_ib->getCount(), GL_UNSIGNED_INT, nullptr);
+	}
+
+	void Model::bindMaterials(Shader* shader) {
+		int texSlot = 0;
+		for (unsigned int i = 0; i < m_materials.size(); i++) {
+			std::string currMatSuffix = std::to_string(i) + (std::string)"]";
+			Texture* diff;
+			if ((diff = std::get<0>(m_materials[i])) != nullptr) {
+				shader->setUniform(m_hasDiffString + currMatSuffix, true);
+				diff->bind(texSlot);
+				shader->setUniform(m_diffString + currMatSuffix, texSlot);
+				texSlot++;
+			}
+			else {
+				shader->setUniform(m_hasDiffString + currMatSuffix, false);
+				glm::vec3 color(std::get<3>(m_materials[i]), std::get<4>(m_materials[i]), std::get<5>(m_materials[i]));
+				shader->setUniform(m_diffColorString + currMatSuffix, color);
+			}
+			Texture* spec;
+			if ((spec = std::get<1>(m_materials[i])) != nullptr) {
+				shader->setUniform(m_hasSpecString + currMatSuffix, true);
+				spec->bind(texSlot);
+				shader->setUniform(m_specString + currMatSuffix, texSlot);
+				texSlot++;
+			}
+			else
+				shader->setUniform(m_hasSpecString + currMatSuffix, false);
+			Texture* norm;
+			if ((norm = std::get<2>(m_materials[i])) != nullptr) {
+				shader->setUniform(m_hasNormString + currMatSuffix, true);
+				norm->bind(texSlot);
+				shader->setUniform(m_normString + currMatSuffix, texSlot);
+				texSlot++;
+			}
+			else
+				shader->setUniform(m_hasNormString + currMatSuffix, false);
+			shader->setUniform(m_specPowerString + currMatSuffix, std::get<6>(m_materials[i]));
 		}
 	}
 
@@ -350,8 +361,14 @@ namespace nf {
 	}
 
 	Model::~Model() {
-		for (Material* curr : m_materials) {
-			delete curr;
+		for (unsigned int i = 0; i < m_materials.size(); i++) {
+			Texture* curr;
+			if ((curr = std::get<0>(m_materials[i])) != nullptr)
+				Application::getApp()->getCurrentState()->m_texturesToDelete.insert(std::get<0>(m_materials[i]));
+			if ((curr = std::get<1>(m_materials[i])) != nullptr)
+				Application::getApp()->getCurrentState()->m_texturesToDelete.insert(std::get<1>(m_materials[i]));
+			if ((curr = std::get<2>(m_materials[i])) != nullptr)
+				Application::getApp()->getCurrentState()->m_texturesToDelete.insert(std::get<2>(m_materials[i]));
 		}
 	}
 }

@@ -44,8 +44,16 @@ namespace nf {
 		glAttachShader(m_id, fs);
 		if (gs) glAttachShader(m_id, gs);
 		glLinkProgram(m_id);
-		glValidateProgram(m_id);
 		int result;
+		glGetProgramiv(m_id, GL_LINK_STATUS, &result);
+		if (result != GL_TRUE) {
+			int length;
+			glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &length);
+			char* message = new char[length];
+			glGetProgramInfoLog(m_id, length, &length, message);
+			Error("OpenGL Error: " + (std::string)message);
+		}
+		glValidateProgram(m_id);
 		glGetProgramiv(m_id, GL_VALIDATE_STATUS, &result);
 		if (result != GL_TRUE) {
 			int length;

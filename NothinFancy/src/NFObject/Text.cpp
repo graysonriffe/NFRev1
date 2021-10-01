@@ -60,10 +60,10 @@ namespace nf {
 		}
 		m_vao = new VertexArray;
 		m_vao->addBuffer(nullptr, 0);
-		m_vao->push<float>(2);
+		m_vao->pushFloat(2);
 		m_vao->finishBufferLayout();
 		m_vao->addBuffer(nullptr, 0);
-		m_vao->push<float>(2);
+		m_vao->pushFloat(2);
 		m_vao->finishBufferLayout();
 
 		if (m_string == "NFLoadingText") {

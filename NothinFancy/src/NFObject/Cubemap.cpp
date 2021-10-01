@@ -113,7 +113,7 @@ namespace nf {
 		};
 		m_vao = new VertexArray;
 		m_vao->addBuffer(vb, sizeof(vb));
-		m_vao->push<float>(3);
+		m_vao->pushFloat(3);
 		m_vao->finishBufferLayout();
 
 		if (!Application::getApp()->getCurrentState()->isRunning())

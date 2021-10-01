@@ -90,7 +90,7 @@ namespace nf {
 	}
 
 	void Entity::destroy() {
-		if (m_constructed && m_model && !m_model->isBaseAsset()) {
+		if (m_constructed && m_model) {
 			Application::getApp()->getCurrentState()->m_modelsToDelete.insert(m_model);
 			m_model = nullptr;
 		}

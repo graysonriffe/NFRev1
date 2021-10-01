@@ -4,39 +4,29 @@
 #include "Utility.h"
 
 namespace nf {
-	class Drawable;
 	class Texture;
 	class Shader;
 
-	class Material : public Drawable {
-	public:
-		Material(const void* vb, const size_t vbSize, const void* tc, const size_t tcSize, const void* vn, const size_t vnSize, const void* tan, const size_t tanSize, const void* ib, const unsigned int ibCount, ATexture* diffTex, Vec3& diffColor, ATexture* specTex, float shininess, ATexture* normalTex);
-
-		void render(Shader* shader, bool onlyDepth);
-
-		~Material();
-	private:
-		bool m_hasDiffuse = false;
-		Texture* m_diffuseTexture = nullptr;
-		Vec3 m_diffColor;
-		bool m_hasSpecular = false;
-		Texture* m_specularTexture = nullptr;
-		float m_shininess;
-		bool m_hasNormal = false;
-		Texture* m_normalTexture = nullptr;
-	};
-
-	class Model {
+	class Model : public Drawable {
 	public:
 		Model(AModel* model);
 
 		void render(Shader* shader, bool onlyDepth);
+		void bindMaterials(Shader* shader);
 
 		bool isBaseAsset();
 
 		~Model();
 	private:
 		bool m_base;
-		std::vector<Material*> m_materials;
+		std::vector<std::tuple<Texture*, Texture*, Texture*, float, float, float, float>> m_materials;
+		const std::string m_hasDiffString = "hasDiffuseTex[";
+		const std::string m_diffString = "diffuseTexture[";
+		const std::string m_diffColorString = "diffuseColor[";
+		const std::string m_hasSpecString = "hasSpecTex[";
+		const std::string m_specString = "specularTexture[";
+		const std::string m_hasNormString = "hasNormTex[";
+		const std::string m_normString = "normalTexture[";
+		const std::string m_specPowerString = "specPower[";
 	};
 }

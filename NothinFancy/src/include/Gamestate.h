@@ -10,6 +10,7 @@ namespace nf {
 	class Renderer;
 	class Camera;
 	class Model;
+	class Texture;
 
 	class Gamestate {
 	public:
@@ -32,6 +33,7 @@ namespace nf {
 
 		std::vector<NFObject*> m_nfObjects;
 		std::unordered_set<Model*> m_modelsToDelete;
+		std::unordered_set<Texture*> m_texturesToDelete;
 	protected:
 		Application* app;
 		Camera* camera;

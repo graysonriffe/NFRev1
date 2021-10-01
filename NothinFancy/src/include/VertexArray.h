@@ -15,8 +15,8 @@ namespace nf {
 		VertexArray();
 
 		void addBuffer(const void* data, const size_t size);
-		template<typename T>
-		void push(unsigned int count);
+		void pushFloat(unsigned int count);
+		void pushInt(unsigned int count);
 		void finishBufferLayout();
 		void bind();
 		void setBufferData(unsigned int buffer, const void* data, const size_t dataSize);

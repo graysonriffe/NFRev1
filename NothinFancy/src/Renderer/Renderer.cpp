@@ -111,8 +111,8 @@ namespace nf {
 		};
 		m_quadVAO = new VertexArray;
 		m_quadVAO->addBuffer(quadVB, sizeof(quadVB));
-		m_quadVAO->push<float>(2);
-		m_quadVAO->push<float>(2);
+		m_quadVAO->pushFloat(2);
+		m_quadVAO->pushFloat(2);
 		m_quadVAO->finishBufferLayout();
 		m_quadIB = new IndexBuffer(quadIB, 6);
 		m_loadingText.create("NFLoadingText", Vec2(0.025, 0.044), Vec3(0.7, 0.7, 0.7));

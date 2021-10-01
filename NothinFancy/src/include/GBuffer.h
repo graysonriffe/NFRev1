@@ -17,7 +17,7 @@ namespace nf {
 	private:
 		void resize();
 		unsigned int m_FBO;
-		std::array<unsigned int, 4> m_textures; //TODO: Check this number
+		std::array<unsigned int, 4> m_textures;
 		unsigned int m_depth;
 
 		unsigned int m_width, m_height;

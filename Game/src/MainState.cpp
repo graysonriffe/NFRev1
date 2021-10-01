@@ -4,7 +4,7 @@ void MainState::onEnter() {
 	Log("MainState onEnter!");
 	camera->setType(nf::Camera::Type::FIRST_PERSON);
 	ap.load("example.nfpack");
-	test.create(ap["normal.obj"]);
+	test.create(ap["2mats.obj"]);
 	test.setPosition(0.0, 0.05, -5.0);
 	plane.create(nf::BaseAssets::cube);
 	plane.setPosition(0.0, -1.0, 0.0);
@@ -57,7 +57,7 @@ void MainState::update(double deltaTime) {
 		offset += 2.0 * deltaTime;
 	if (app->isKeyHeld(NFI_DOWN))
 		offset -= 2.0 * deltaTime;
-	test.setRotation(offset * 10.0, 0.0, 0.0);
+	test.setRotation(0.0, 0.0, -offset * 20.0);
 
 	light.setPosition(nf::Vec3(std::sin(circle) * 10.0, 5.0, std::cos(circle) * 10.0));
 	circle += 2.0 * deltaTime;
@@ -77,8 +77,8 @@ void MainState::render(nf::Renderer& renderer) {
 	renderer.render(test);
 	renderer.render(plane);
 	renderer.render(light);
-	/*renderer.render(light2);
-	renderer.render(light3);*/
+	renderer.render(light2);
+	renderer.render(light3);
 	renderer.render(text);
 	renderer.render(uiTex);
 	renderer.render(button);

@@ -22,12 +22,18 @@ namespace nf {
 		m_lastStride = 0;
 	}
 
-	template<>
-	void VertexArray::push<float>(unsigned int count) {
+	void VertexArray::pushFloat(unsigned int count) {
 		if (m_lastBufferHasLayout)
 			Error("Tried to modify a vertex array's buffer after the layout was final!");
 		m_lastBufferLayout.push_back({ GL_FLOAT, count, GL_FALSE });
 		m_lastStride += count * sizeof(GL_FLOAT);
+	}
+
+	void VertexArray::pushInt(unsigned int count) {
+		if (m_lastBufferHasLayout)
+			Error("Tried to modify a vertex array's buffer after the layout was final!");
+		m_lastBufferLayout.push_back({ GL_INT, count, GL_FALSE });
+		m_lastStride += count * sizeof(GL_INT);
 	}
 
 	void VertexArray::finishBufferLayout() {
@@ -35,7 +41,10 @@ namespace nf {
 		for (; m_attribute < m_lastBufferLayout.size(); m_attribute++) {
 			const VertexBufferElement& curr = m_lastBufferLayout[m_attribute];
 			glEnableVertexAttribArray(m_attribute);
-			glVertexAttribPointer(m_attribute, curr.count, curr.type, curr.normalized, m_lastStride, (const void*)offset);
+			if (curr.type != GL_INT)
+				glVertexAttribPointer(m_attribute, curr.count, curr.type, curr.normalized, m_lastStride, (const void*)offset);
+			else
+				glVertexAttribIPointer(m_attribute, curr.count, curr.type, m_lastStride, (const void*)offset);
 			offset += sizeof(curr.type) * curr.count;
 		}
 		m_lastBufferHasLayout = true;
