@@ -4,6 +4,7 @@
 
 #include "Application.h"
 #include "Entity.h"
+#include "Model.h"
 #include "Shader.h"
 
 namespace nf {
@@ -44,8 +45,29 @@ namespace nf {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDisable(GL_BLEND);
 
-		for (Entity* curr : entites)
-			curr->render(shader);
+		for (Entity* curr : entites) {
+			m_modelsToDraw[curr->getModel()].push_back(curr->getModelMatrix());
+		}
+		for (auto& curr : m_modelsToDraw) {
+			std::vector<glm::mat4>& mats = curr.second;
+			std::string pos;
+			unsigned int modelsRemaining = mats.size();
+			while (modelsRemaining != 0) {
+				unsigned int modelCount;
+				if (modelsRemaining > 60)
+					modelCount = 60;
+				else
+					modelCount = modelsRemaining;
+				modelsRemaining -= modelCount;
+				for (unsigned int i = 0; i < modelCount; i++) {
+					pos = std::to_string(i) + "]";
+					shader->setUniform(m_modelString + pos, mats[i]);
+				}
+				curr.first->render(shader, false, modelCount);
+				mats.erase(mats.begin(), mats.begin() + modelCount);
+			}
+		}
+		m_modelsToDraw.clear();
 		glEnable(GL_BLEND);
 
 		//TODO: Blit depth buffer for transparent objects later

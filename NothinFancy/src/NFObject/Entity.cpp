@@ -71,22 +71,23 @@ namespace nf {
 
 	void Entity::render(Shader* shader, bool onlyDepth) {
 		shader->bind();
-		setModelMatrix(shader);
-		m_model->render(shader, onlyDepth);
+		glm::mat4 model = getModelMatrix();
+		shader->setUniform("model[0]", model);
+		m_model->render(shader, onlyDepth, 1);
 	}
 
 	Model* Entity::getModel() const {
 		return m_model;
 	}
 
-	void Entity::setModelMatrix(Shader* shader) {
+	const glm::mat4 Entity::getModelMatrix() {
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, glm::vec3(m_position.x, m_position.y, m_position.z));
 		model = glm::rotate(model, glm::radians((float)m_rotation.x), glm::vec3(1.0, 0.0, 0.0));
 		model = glm::rotate(model, glm::radians((float)m_rotation.y), glm::vec3(0.0, 1.0, 0.0));
 		model = glm::rotate(model, glm::radians((float)m_rotation.z), glm::vec3(0.0, 0.0, 1.0));
 		model = glm::scale(model, glm::vec3(m_scale.x, m_scale.y, m_scale.z));
-		shader->setUniform("model", model);
+		return model;
 	}
 
 	void Entity::destroy() {

@@ -11,7 +11,7 @@ namespace nf {
 	public:
 		Model(AModel* model);
 
-		void render(Shader* shader, bool onlyDepth);
+		void render(Shader* shader, bool onlyDepth, unsigned int count);
 		void bindMaterials(Shader* shader);
 
 		bool isBaseAsset();

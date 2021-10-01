@@ -25,6 +25,6 @@ void main() {
 	normals = hasNormTex[matNum] ? normalize(tbn * (texture(normalTexture[matNum], texCoord).xyz * 2.0 - 1.0)) : normal;
 	diffuse = hasDiffuseTex[matNum] ? texture(diffuseTexture[matNum], texCoord).rgb : diffuseColor[matNum];
 	specular.r = specPower[matNum];
-	specular.g = hasSpecTex[matNum] ? texture(specularTexture[matNum], texCoord).r : 1.0;
+	specular.g = hasSpecTex[matNum] ? texture(specularTexture[matNum], texCoord).r : 0.2;
 	specular.b = 1.0;
 }

@@ -310,12 +310,12 @@ namespace nf {
 		m_ib = new IndexBuffer(&vboIndices[0], vboIndices.size());
 	}
 
-	void Model::render(Shader* shader, bool onlyDepth) {
+	void Model::render(Shader* shader, bool onlyDepth, unsigned int count) {
 		m_vao->bind();
 		m_ib->bind();
 		if (!onlyDepth)
 			bindMaterials(shader);
-		glDrawElements(GL_TRIANGLES, m_ib->getCount(), GL_UNSIGNED_INT, nullptr);
+		glDrawElementsInstanced(GL_TRIANGLES, m_ib->getCount(), GL_UNSIGNED_INT, nullptr, count);
 	}
 
 	void Model::bindMaterials(Shader* shader) {

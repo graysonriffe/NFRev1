@@ -2,6 +2,9 @@
 #include "Assets.h"
 #include "NFObject.h"
 #include "Utility.h"
+#ifdef NFENGINE
+#include "glm/glm.hpp"
+#endif
 
 namespace nf {
 	class Shader;
@@ -22,13 +25,14 @@ namespace nf {
 		void setScale(double x, double y, double z);
 		void setScale(const Vec3& scale);
 
-		void render(Shader* shader, bool onlyDepth = false);
+		void render(Shader* shader, bool onlyDepth);
 		Model* getModel() const;
-
+#ifdef NFENGINE
+		const glm::mat4 getModelMatrix();
+#endif
 		void destroy() override;
 		~Entity();
 	private:
-		void setModelMatrix(Shader* shader);
 
 		bool m_constructed;
 		Model* m_model;

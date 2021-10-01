@@ -24,7 +24,7 @@ void MainState::onEnter() {
 	for (int x = 0; x < 10; x++) {
 		for (int y = 0; y < 10; y++) {
 				entities.push_back(new nf::Entity);
-				entities.back()->create(ap["spec.obj"]);
+				entities.back()->create(ap["2mats.obj"]);
 				entities.back()->setPosition(5.0 + x * 2.1, 0.05, -5.0 + y * 2.1);
 		}
 	}
