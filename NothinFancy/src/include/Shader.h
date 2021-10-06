@@ -8,6 +8,7 @@ namespace nf {
 	public:
 		Shader(const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr);
 
+		void validate();
 		void bind();
 		void setUniform(const std::string& name, glm::mat4& data);
 		void setUniform(const std::string& name, glm::vec3& data);

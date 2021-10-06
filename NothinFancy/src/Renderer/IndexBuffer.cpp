@@ -4,7 +4,7 @@
 
 namespace nf {
 	IndexBuffer::IndexBuffer(const void* data, size_t count) {
-		m_count = count;
+		m_count = (unsigned int)count;
 		glGenBuffers(1, &m_id);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW);

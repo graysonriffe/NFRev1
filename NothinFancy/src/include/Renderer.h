@@ -33,7 +33,7 @@ namespace nf {
 
 		~Renderer();
 	private:
-		void renderShadowMaps(unsigned int count);
+		void renderShadowMaps(size_t count);
 
 		void loadBaseAssets();
 		void createShadowMaps();
@@ -50,7 +50,7 @@ namespace nf {
 		unsigned int m_shadowMapFBO;
 		int m_directionalDepthTexSize;
 		int m_pointDepthTexSize;
-		std::vector<unsigned int> m_directionalShadowMaps;
+		unsigned int m_directionalShadowMap;
 		std::vector<unsigned int> m_pointShadowMaps;
 		unsigned int m_texSlots;
 

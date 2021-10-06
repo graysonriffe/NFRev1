@@ -69,6 +69,10 @@ namespace nf {
 		m_scale = scale;
 	}
 
+	const Vec3& Entity::getPosition() {
+		return m_position;
+	}
+
 	void Entity::render(Shader* shader, bool onlyDepth) {
 		shader->bind();
 		glm::mat4 model = getModelMatrix();

@@ -66,7 +66,7 @@ void writeFile(const std::string& filename, const std::string& in, bool encrypte
 
 void getNeededImages(std::string mtl, std::set<std::string>& set) {
 	while (mtl.size()) {
-		unsigned int pos = mtl.find("map_");
+		size_t pos = mtl.find("map_");
 		if (pos == std::string::npos)
 			break;
 		if (pos == mtl.find("map_Kd") || pos == mtl.find("map_Ks"))
@@ -76,7 +76,7 @@ void getNeededImages(std::string mtl, std::set<std::string>& set) {
 		std::stringstream ss(mtl);
 		std::string temp;
 		ss >> temp;
-		unsigned int pos2 = temp.find_last_of("/\\");
+		size_t pos2 = temp.find_last_of("/\\");
 		if (pos2 != std::string::npos)
 			temp = temp.substr(pos2 + 1);
 		set.insert(temp);

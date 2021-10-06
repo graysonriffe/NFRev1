@@ -16,7 +16,7 @@ namespace nf {
 	{
 		int nChannels;
 		stbi_set_flip_vertically_on_load(true);
-		unsigned char* texture = stbi_load_from_memory((unsigned char*)tex->data, tex->size, &m_x, &m_y, &nChannels, 0);
+		unsigned char* texture = stbi_load_from_memory((unsigned char*)tex->data, (unsigned int)tex->size, &m_x, &m_y, &nChannels, 0);
 		if (!texture)
 			Error("Texture failed to load from memory!");
 		glGenTextures(1, &m_id);

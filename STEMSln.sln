@@ -15,29 +15,21 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1B9C5361-E301-41BF-97E7-56D65F11E2BB}.Debug|x64.ActiveCfg = Debug|x64
-		{1B9C5361-E301-41BF-97E7-56D65F11E2BB}.Debug|x86.ActiveCfg = Debug|Win32
-		{1B9C5361-E301-41BF-97E7-56D65F11E2BB}.Debug|x86.Build.0 = Debug|Win32
+		{1B9C5361-E301-41BF-97E7-56D65F11E2BB}.Debug|x64.Build.0 = Debug|x64
 		{1B9C5361-E301-41BF-97E7-56D65F11E2BB}.Release|x64.ActiveCfg = Release|x64
-		{1B9C5361-E301-41BF-97E7-56D65F11E2BB}.Release|x86.ActiveCfg = Release|Win32
-		{1B9C5361-E301-41BF-97E7-56D65F11E2BB}.Release|x86.Build.0 = Release|Win32
+		{1B9C5361-E301-41BF-97E7-56D65F11E2BB}.Release|x64.Build.0 = Release|x64
 		{B7FEC2D6-1D8F-487E-89CB-FD611FD1AEB6}.Debug|x64.ActiveCfg = Debug|x64
-		{B7FEC2D6-1D8F-487E-89CB-FD611FD1AEB6}.Debug|x86.ActiveCfg = Debug|Win32
-		{B7FEC2D6-1D8F-487E-89CB-FD611FD1AEB6}.Debug|x86.Build.0 = Debug|Win32
+		{B7FEC2D6-1D8F-487E-89CB-FD611FD1AEB6}.Debug|x64.Build.0 = Debug|x64
 		{B7FEC2D6-1D8F-487E-89CB-FD611FD1AEB6}.Release|x64.ActiveCfg = Release|x64
-		{B7FEC2D6-1D8F-487E-89CB-FD611FD1AEB6}.Release|x86.ActiveCfg = Release|Win32
-		{B7FEC2D6-1D8F-487E-89CB-FD611FD1AEB6}.Release|x86.Build.0 = Release|Win32
-		{771B4AEE-E2C6-4745-AC40-1EF57149612E}.Debug|x64.ActiveCfg = Debug|Win32
-		{771B4AEE-E2C6-4745-AC40-1EF57149612E}.Debug|x86.ActiveCfg = Debug|Win32
-		{771B4AEE-E2C6-4745-AC40-1EF57149612E}.Debug|x86.Build.0 = Debug|Win32
-		{771B4AEE-E2C6-4745-AC40-1EF57149612E}.Release|x64.ActiveCfg = Release|Win32
-		{771B4AEE-E2C6-4745-AC40-1EF57149612E}.Release|x86.ActiveCfg = Release|Win32
-		{771B4AEE-E2C6-4745-AC40-1EF57149612E}.Release|x86.Build.0 = Release|Win32
+		{B7FEC2D6-1D8F-487E-89CB-FD611FD1AEB6}.Release|x64.Build.0 = Release|x64
+		{771B4AEE-E2C6-4745-AC40-1EF57149612E}.Debug|x64.ActiveCfg = Debug|x64
+		{771B4AEE-E2C6-4745-AC40-1EF57149612E}.Debug|x64.Build.0 = Debug|x64
+		{771B4AEE-E2C6-4745-AC40-1EF57149612E}.Release|x64.ActiveCfg = Release|x64
+		{771B4AEE-E2C6-4745-AC40-1EF57149612E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

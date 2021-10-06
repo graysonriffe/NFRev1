@@ -24,6 +24,7 @@ namespace nf {
 		m_shadowMapFBO(0),
 		m_directionalDepthTexSize(0),
 		m_pointDepthTexSize(0),
+		m_directionalShadowMap(0),
 		m_cubemap(nullptr),
 		m_fadeIn(false),
 		m_fadeOut(false),
@@ -86,7 +87,7 @@ namespace nf {
 		if (!m_app->isCustomWindowIcon()) {
 			ATexture& windowTex = *(ATexture*)m_baseAP["defaultwindowicon.png"];
 			int width, height, nChannels;
-			unsigned char* tex = stbi_load_from_memory((const unsigned char*)windowTex.data, windowTex.size, &width, &height, &nChannels, 0);
+			unsigned char* tex = stbi_load_from_memory((const unsigned char*)windowTex.data, (unsigned int)windowTex.size, &width, &height, &nChannels, 0);
 			std::vector<unsigned char> pixels(width * height * 4);
 			for (unsigned int i = 0; i < pixels.size() / 4; i++) {
 				pixels[i * 4 + 0] = tex[i * 4 + 2];
@@ -163,7 +164,7 @@ namespace nf {
 		m_gBuffer->render(m_lGame, m_gBufferShader);
 
 		//Light entities using the gBuffer
-		unsigned int lightsRemaining = m_lights.size();
+		size_t lightsRemaining = m_lights.size();
 		if (!lightsRemaining) {
 			m_quadVAO->bind();
 			m_quadIB->bind();
@@ -173,7 +174,7 @@ namespace nf {
 		}
 		unsigned int drawCount = 0;
 		while (lightsRemaining > 0) {
-			unsigned int currLightsDrawn;
+			size_t currLightsDrawn;
 			if (lightsRemaining > m_texSlots)
 				currLightsDrawn = m_texSlots;
 			else
@@ -285,18 +286,21 @@ namespace nf {
 		SwapBuffers(m_hdc);
 	}
 
-	void Renderer::renderShadowMaps(unsigned int count) {
+	void Renderer::renderShadowMaps(size_t count) {
 		float nearP = 0.1f, farP = 400.0f;
 		glm::mat4 directionalLightProj = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, nearP, farP);
 		glm::mat4 pointLightProj = glm::perspective(glm::radians(90.0f), 1.0f, nearP, farP);
 		glm::mat4 lightView;
 		glm::mat4 lightSpaceMat;
+		bool directionalRendered = false;
+		unsigned int directionalSlot = 0; //TODO: Test this
 		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
 		for (unsigned int i = 0; i < count; i++) {
 			Light::Type type = m_lights[i]->getType();
-			unsigned int tex = type == Light::Type::DIRECTIONAL ? m_directionalShadowMaps[i] : m_pointShadowMaps[i];
+			unsigned int tex = type == Light::Type::DIRECTIONAL ? m_directionalShadowMap : m_pointShadowMaps[i];
 			switch (type) {
 				case Light::Type::DIRECTIONAL: {
+					std::string stringPos;
 					glViewport(0, 0, m_directionalDepthTexSize, m_directionalDepthTexSize);
 					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex, 0);
 					glDrawBuffer(GL_NONE);
@@ -307,7 +311,7 @@ namespace nf {
 					lightView = glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
 					lightSpaceMat = directionalLightProj * lightView;
 					m_directionalShadowShader->setUniform("lightSpace", lightSpaceMat);
-					std::string stringPos = "lightSpaceMat[";
+					stringPos = "lightSpaceMat[";
 					stringPos += std::to_string(i);
 					stringPos += "]";
 					m_lightingShader->setUniform(stringPos, lightSpaceMat);
@@ -320,6 +324,7 @@ namespace nf {
 					glActiveTexture(GL_TEXTURE4 + i);
 					glBindTexture(GL_TEXTURE_2D, tex);
 					m_lightingShader->setUniform(stringPos, 4 + (int)i);
+					directionalRendered = true;
 					break;
 				}
 				case Light::Type::POINT: {
@@ -406,18 +411,8 @@ namespace nf {
 		m_texSlots = 12;
 		glGenFramebuffers(1, &m_shadowMapFBO);
 		for (unsigned int i = 0; i < m_texSlots; i++) {
-			unsigned int directionalDepthMap, pointDepthMap;
-			glGenTextures(1, &directionalDepthMap);
+			unsigned int pointDepthMap;
 			glGenTextures(1, &pointDepthMap);
-			glBindTexture(GL_TEXTURE_2D, directionalDepthMap);
-			glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT24, m_directionalDepthTexSize, m_directionalDepthTexSize);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-			float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-			glBindTexture(GL_TEXTURE_2D, 0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, pointDepthMap);
 			glTexStorage2D(GL_TEXTURE_CUBE_MAP, 1, GL_DEPTH_COMPONENT24, m_pointDepthTexSize, m_pointDepthTexSize);
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -426,10 +421,18 @@ namespace nf {
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-			m_directionalShadowMaps.push_back(directionalDepthMap);
 			m_pointShadowMaps.push_back(pointDepthMap);
 		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glGenTextures(1, &m_directionalShadowMap);
+		glBindTexture(GL_TEXTURE_2D, m_directionalShadowMap);
+		glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT24, m_directionalDepthTexSize, m_directionalDepthTexSize);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	Renderer::~Renderer() {

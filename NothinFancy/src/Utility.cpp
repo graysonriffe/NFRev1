@@ -53,14 +53,14 @@ namespace nf {
 #endif
 
 	const wchar_t* toWide(const char* in) {
-		int length = std::strlen(in) + 1;
+		unsigned int length = (unsigned int)std::strlen(in) + 1;
 		wchar_t* out = new wchar_t[length];
 		MultiByteToWideChar(CP_ACP, NULL, in, -1, out, length);
 		return out;
 	}
 	const wchar_t* toWide(const std::string& in) {
 		const char* cstr = in.c_str();
-		int length = std::strlen(cstr) + 1;
+		unsigned int length = (unsigned int)std::strlen(cstr) + 1;
 		wchar_t* out = new wchar_t[length];
 		MultiByteToWideChar(CP_ACP, NULL, cstr, -1, out, length);
 		return out;
@@ -68,7 +68,7 @@ namespace nf {
 
 	void writeFile(const std::string& filename, const std::string& in, bool encrypted) {
 		if (filename.find('/') != std::string::npos || filename.find('\\') != std::string::npos) {
-			int pos = filename.find_last_of("/\\");
+			size_t pos = filename.find_last_of("/\\");
 			std::string temp = filename.substr(0, pos);
 			std::wstring folders(temp.begin(), temp.end());
 			WCHAR exe[MAX_PATH];

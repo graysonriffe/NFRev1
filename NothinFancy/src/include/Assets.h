@@ -31,17 +31,17 @@ namespace nf {
 
 	struct ACubemap : Asset {
 		char* frontData = nullptr;
-		size_t frontSize = 0;
+		unsigned int frontSize = 0;
 		char* backData = nullptr;
-		size_t backSize = 0;
+		unsigned int backSize = 0;
 		char* topData = nullptr;
-		size_t topSize = 0;
+		unsigned int topSize = 0;
 		char* bottomData = nullptr;
-		size_t bottomSize = 0;
+		unsigned int bottomSize = 0;
 		char* leftData = nullptr;
-		size_t leftSize = 0;
+		unsigned int leftSize = 0;
 		char* rightData = nullptr;
-		size_t rightSize = 0;
+		unsigned int rightSize = 0;
 
 		unsigned int numImages = 0;
 

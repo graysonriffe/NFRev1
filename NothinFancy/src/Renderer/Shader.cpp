@@ -53,15 +53,6 @@ namespace nf {
 			glGetProgramInfoLog(m_id, length, &length, message);
 			Error("OpenGL Error: " + (std::string)message);
 		}
-		glValidateProgram(m_id);
-		glGetProgramiv(m_id, GL_VALIDATE_STATUS, &result);
-		if (result != GL_TRUE) {
-			int length;
-			glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &length);
-			char* message = new char[length];
-			glGetProgramInfoLog(m_id, length, &length, message);
-			Error("OpenGL Error: " + (std::string)message);
-		}
 		glDetachShader(m_id, vs);
 		glDetachShader(m_id, fs);
 		glDeleteShader(vs);
@@ -69,6 +60,19 @@ namespace nf {
 		if (gs) {
 			glDetachShader(m_id, gs);
 			glDeleteShader(gs);
+		}
+	}
+
+	void Shader::validate() {
+		glValidateProgram(m_id);
+		int result;
+		glGetProgramiv(m_id, GL_VALIDATE_STATUS, &result);
+		if (result != GL_TRUE) {
+			int length;
+			glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &length);
+			char* message = new char[length];
+			glGetProgramInfoLog(m_id, length, &length, message);
+			Error("OpenGL Error: " + (std::string)message);
 		}
 	}
 

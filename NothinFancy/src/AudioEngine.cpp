@@ -15,6 +15,9 @@ namespace nf {
 		debug.BreakMask = XAUDIO2_LOG_ERRORS;
 		m_engine->SetDebugConfiguration(&debug, 0);
 		m_engine->CreateMasteringVoice(&m_masterVoice);
+		DWORD channelMask;
+		m_masterVoice->GetChannelMask(&channelMask);
+		X3DAudioInitialize(channelMask, X3DAUDIO_SPEED_OF_SOUND, m_x3d);
 	}
 
 	void AudioEngine::updateSources() {
@@ -33,9 +36,17 @@ namespace nf {
 
 	IXAudio2SourceVoice* AudioEngine::getNewSourceVoice(WAVEFORMATEXTENSIBLE* fmt) {
 		IXAudio2SourceVoice* s;
-		HRESULT hr = m_engine->CreateSourceVoice(&s, &fmt->Format);
+		HRESULT hr = m_engine->CreateSourceVoice(&s, &fmt->Format, XAUDIO2_VOICE_USEFILTER);
 		m_voices.push_back(s);
 		return s;
+	}
+
+	IXAudio2MasteringVoice* AudioEngine::getMasterVoice() {
+		return m_masterVoice;
+	}
+
+	X3DAUDIO_HANDLE* AudioEngine::getX3DAudioInstance() {
+		return &m_x3d;
 	}
 
 	void AudioEngine::cleanup() {

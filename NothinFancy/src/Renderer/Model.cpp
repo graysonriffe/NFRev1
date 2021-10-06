@@ -18,7 +18,7 @@ namespace nf {
 		if (model->neededTextures.size() > 32)
 			Error("Model exceedes 32 texture limit!");
 		std::string obj = model->data;
-		unsigned int startMtlPos = obj.find("newmtl");
+		size_t startMtlPos = obj.find("newmtl");
 		if (startMtlPos == std::string::npos)
 			Error("No materials found in model!");
 		std::string mtl = obj.substr(startMtlPos);
@@ -81,7 +81,7 @@ namespace nf {
 				sscanf_s(mtl.c_str(), "\nNs %f\n", &s);
 				mats[currMat]->shininess = s;
 			}
-			unsigned int pos = mtl.find(line) + strlen(line);
+			size_t pos = mtl.find(line) + strlen(line);
 			mtl = mtl.substr(pos);
 		}
 
@@ -142,7 +142,7 @@ namespace nf {
 				mats[usingMat]->vnIndices.push_back(vnIndex[2]);
 			}
 
-			unsigned int pos = file.find(line) + strlen(line) + remove;
+			size_t pos = file.find(line) + strlen(line) + remove;
 			file = file.substr(pos);
 		}
 
@@ -250,9 +250,9 @@ namespace nf {
 					mats[curr]->outTan.push_back(mats[curr]->unindexedTan[(i * 3)]);
 					mats[curr]->outTan.push_back(mats[curr]->unindexedTan[(i * 3 + 1)]);
 					mats[curr]->outTan.push_back(mats[curr]->unindexedTan[(i * 3 + 2)]);
-					unsigned int index = (mats[curr]->outVB.size() / 3) - 1;
-					mats[curr]->outIB.push_back(index);
-					vertexMap[currVertex] = index;
+					size_t index = (mats[curr]->outVB.size() / 3) - 1;
+					mats[curr]->outIB.push_back((unsigned int)index);
+					vertexMap[currVertex] = (unsigned int)index;
 					mats[curr]->ibCount++;
 				}
 			}
@@ -277,14 +277,14 @@ namespace nf {
 				norm = new Texture(normA, true);
 			}
 			m_materials.push_back(std::make_tuple(diff, spec, norm, (float)curr2.diffuseColor.x, (float)curr2.diffuseColor.y, (float)curr2.diffuseColor.z, curr2.shininess));
-			unsigned int offset = vboPositions.size() / 3;
+			size_t offset = vboPositions.size() / 3;
 			vboPositions.insert(vboPositions.end(), curr2.outVB.begin(), curr2.outVB.end());
 			vboTexCoords.insert(vboTexCoords.end(), curr2.outTC.begin(), curr2.outTC.end());
 			vboNormals.insert(vboNormals.end(), curr2.outVN.begin(), curr2.outVN.end());
 			vboTangents.insert(vboTangents.end(), curr2.outTan.begin(), curr2.outTan.end());
 			vboMaterialIndices.insert(vboMaterialIndices.end(), curr2.outVB.size() / 3, matCount);
 			if (offset)
-				std::for_each(curr2.outIB.begin(), curr2.outIB.end(), [offset](unsigned int& out) { out += offset; });
+				std::for_each(curr2.outIB.begin(), curr2.outIB.end(), [offset](unsigned int& out) { out += (unsigned int)offset; });
 			vboIndices.insert(vboIndices.end(), curr2.outIB.begin(), curr2.outIB.end());
 			delete m.second;
 			matCount++;
@@ -315,6 +315,9 @@ namespace nf {
 		m_ib->bind();
 		if (!onlyDepth)
 			bindMaterials(shader);
+#ifdef _DEBUG
+		shader->validate();
+#endif
 		glDrawElementsInstanced(GL_TRIANGLES, m_ib->getCount(), GL_UNSIGNED_INT, nullptr, count);
 	}
 

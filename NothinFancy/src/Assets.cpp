@@ -57,15 +57,15 @@ namespace nf {
 		unsigned int cubemapCount = 0;
 		unsigned int buttonCount = 0;
 		while (packContents.size()) {
-			unsigned int startingPos = packContents.find_first_of("#NFASSET ") + 9;
+			size_t startingPos = packContents.find_first_of("#NFASSET ") + 9;
 			packContents = packContents.substr(9);
-			unsigned int endAssetNamePos = packContents.find_first_of('\n');
+			size_t endAssetNamePos = packContents.find_first_of('\n');
 			std::string assetName = packContents.substr(0, endAssetNamePos);
 			packContents = packContents.substr(endAssetNamePos + 1);
-			unsigned int extensionPos = assetName.find_first_of('.');
+			size_t extensionPos = assetName.find_first_of('.');
 			std::string extension = assetName.substr(extensionPos + 1);
 			std::string assetContents;
-			unsigned int nextAssetPos = packContents.find("#NFASSET ");
+			size_t nextAssetPos = packContents.find("#NFASSET ");
 			if (nextAssetPos != std::string::npos) {
 				assetContents = packContents.substr(0, nextAssetPos - 1);
 				packContents = packContents.substr(nextAssetPos);
@@ -74,7 +74,7 @@ namespace nf {
 				assetContents = packContents;
 				packContents = "";
 			}
-			size_t assetSize = assetContents.size();
+			unsigned int assetSize = (unsigned int)assetContents.size();
 
 			if (extension == "obj")
 				continue;
@@ -204,15 +204,15 @@ namespace nf {
 			Error("Could not find full button set in pack \"" + (std::string)packName + (std::string)"\"!");
 
 		while (packContentsOBJ.size()) {
-			unsigned int startingPos = packContentsOBJ.find_first_of("#NFASSET ") + 9;
+			size_t startingPos = packContentsOBJ.find_first_of("#NFASSET ") + 9;
 			packContentsOBJ = packContentsOBJ.substr(9);
-			unsigned int endAssetNamePos = packContentsOBJ.find_first_of('\n');
+			size_t endAssetNamePos = packContentsOBJ.find_first_of('\n');
 			std::string assetName = packContentsOBJ.substr(0, endAssetNamePos);
 			packContentsOBJ = packContentsOBJ.substr(endAssetNamePos + 1);
-			unsigned int extensionPos = assetName.find_first_of('.');
+			size_t extensionPos = assetName.find_first_of('.');
 			std::string extension = assetName.substr(extensionPos + 1);
 			std::string assetContents;
-			unsigned int nextAssetPos = packContentsOBJ.find("#NFASSET ");
+			size_t nextAssetPos = packContentsOBJ.find("#NFASSET ");
 			if (nextAssetPos != std::string::npos) {
 				assetContents = packContentsOBJ.substr(0, nextAssetPos - 1);
 				packContentsOBJ = packContentsOBJ.substr(nextAssetPos);

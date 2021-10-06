@@ -37,7 +37,7 @@ namespace nf {
 	}
 
 	void VertexArray::finishBufferLayout() {
-		unsigned int offset = 0;
+		size_t offset = 0;
 		for (; m_attribute < m_lastBufferLayout.size(); m_attribute++) {
 			const VertexBufferElement& curr = m_lastBufferLayout[m_attribute];
 			glEnableVertexAttribArray(m_attribute);

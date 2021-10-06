@@ -25,6 +25,7 @@ namespace nf {
 		void setScale(double x, double y, double z);
 		void setScale(const Vec3& scale);
 
+		const Vec3& getPosition();
 		void render(Shader* shader, bool onlyDepth);
 		Model* getModel() const;
 #ifdef NFENGINE

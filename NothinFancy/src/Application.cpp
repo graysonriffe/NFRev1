@@ -312,8 +312,8 @@ namespace nf {
 				}
 			}
 		}
-		m_currentState->onExit();
 		delete m_audio;
+		m_currentState->onExit();
 		m_currentState->cleanup();
 		delete m_renderer;
 	}

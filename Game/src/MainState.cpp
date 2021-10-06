@@ -20,6 +20,7 @@ void MainState::onEnter() {
 	cm.create(nf::BaseAssets::cubemap);
 
 	sound.create(ap["sound.wav"]);
+	sound.setEntity(test);
 
 	for (int x = 0; x < 10; x++) {
 		for (int y = 0; y < 10; y++) {
@@ -66,7 +67,7 @@ void MainState::update(double deltaTime) {
 
 	if (button.isClicked())
 		app->changeState("Main State");
-	if (button2.isClicked())
+	if (app->isKeyPressed(NFI_SPACE))
 		sound.play();
 
 	if (app->isKeyPressed(NFI_ESCAPE))

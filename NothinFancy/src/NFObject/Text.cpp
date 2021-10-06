@@ -36,7 +36,7 @@ namespace nf {
 			if (FT_Init_FreeType(&ft))
 				Error("Could not initialize FreeType!");
 			FT_Face face;
-			if (FT_New_Memory_Face(ft, (const unsigned char*)newFont.data, newFont.size, 0, &face))
+			if (FT_New_Memory_Face(ft, (const unsigned char*)newFont.data, (unsigned int)newFont.size, 0, &face))
 				Error("Could not load font!");
 			FT_Set_Pixel_Sizes(face, 0, 160);
 			for (unsigned char c = 0; c < 128; c++) {
