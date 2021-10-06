@@ -75,6 +75,9 @@ namespace nf {
 	}
 
 	void Application::run() {
+#ifdef _DEBUG
+		SetThreadDescription(GetCurrentThread(), L"Input Thread");
+#endif
 		showWindow(true);
 		m_running = true;
 		MSG msg = { };
@@ -278,6 +281,9 @@ namespace nf {
 	}
 
 	void Application::runMainGameThread() {
+#ifdef _DEBUG
+		SetThreadDescription(GetCurrentThread(), L"Main Engine Thread");
+#endif
 		m_sIntro = new IntroGamestate;
 		m_currentState = m_sIntro;
 		m_audio = new AudioEngine(this);
