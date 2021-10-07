@@ -67,7 +67,7 @@ void MainState::update(double deltaTime) {
 
 	if (button.isClicked())
 		app->changeState("Main State");
-	if (app->isKeyPressed(NFI_SPACE))
+	if (button.isClicked() || app->isKeyPressed(NFI_SPACE))
 		sound.play();
 
 	if (app->isKeyPressed(NFI_ESCAPE))
