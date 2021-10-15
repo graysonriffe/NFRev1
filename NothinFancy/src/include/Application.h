@@ -21,7 +21,7 @@ namespace nf {
 		void setWindowCursor(HCURSOR hCursor);
 		AudioEngine* getAudioEngine() const;
 		void addState(Gamestate* state, const std::string& stateName);
-		void addDefaultState(const std::string& stateName);
+		void setDefaultState(const std::string& stateName);
 		const std::string& getDefaultState();
 		void run();
 		bool isCustomWindowIcon();

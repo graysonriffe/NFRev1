@@ -1,8 +1,6 @@
 #pragma once
-#include <xaudio2.h>
-#include <x3daudio.h>
-
 #include "NFObject.h"
+#include "AudioEngine.h"
 #include "Utility.h"
 
 namespace nf {
@@ -24,15 +22,13 @@ namespace nf {
 		~Sound();
 	private:
 		bool m_constructed;
-		unsigned int m_dataSize;
 		float m_volume;
 		bool m_usePos;
+		bool m_useEntity;
 		WAVEFORMATEXTENSIBLE m_format;
+		XAUDIO2_BUFFER m_xBuffer;
 		unsigned char* m_buffer;
-		IXAudio2SourceVoice* m_currentVoice;
 		Entity* m_targetEntity;
 		Vec3 m_soundPos;
-		X3DAUDIO_EMITTER m_emitter;
-		X3DAUDIO_LISTENER m_listener;
 	};
 }

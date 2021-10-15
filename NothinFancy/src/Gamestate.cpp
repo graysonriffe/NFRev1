@@ -65,5 +65,6 @@ namespace nf {
 
 		delete camera;
 		app = nullptr;
+		m_running = false;
 	}
 }

@@ -57,7 +57,7 @@ namespace nf {
 			Error("State \"" + (std::string)stateName + (std::string)"\" already exists!");
 	}
 
-	void Application::addDefaultState(const std::string& stateName) {
+	void Application::setDefaultState(const std::string& stateName) {
 		if (!m_defaultStateAdded) {
 			if (m_states.find(stateName) != m_states.end()) {
 				m_defaultState = stateName;
@@ -299,7 +299,6 @@ namespace nf {
 			if (m_deltaTime >= m_minFrametime) {
 				lastFrame = std::chrono::steady_clock::now();
 				m_currentState->update(m_deltaTime);
-				m_audio->updateSources();
 				m_currentState->render(*m_renderer);
 				m_renderer->doFrame(m_currentState->getCamera(), m_deltaTime);
 				if (m_stateChange)
@@ -318,9 +317,10 @@ namespace nf {
 				}
 			}
 		}
-		delete m_audio;
+		m_audio->stopAllSounds();
 		m_currentState->onExit();
 		m_currentState->cleanup();
+		delete m_audio;
 		delete m_renderer;
 	}
 
@@ -332,7 +332,7 @@ namespace nf {
 		}
 
 		if (m_renderer->isFadeOutComplete()) {
-			m_audio->cleanup();
+			m_audio->stopAllSounds();
 			m_currentState->onExit();
 			m_currentState->cleanup();
 			m_currentState = m_states[m_nextState];

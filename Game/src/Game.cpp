@@ -7,9 +7,10 @@ int main(int argc, char* argv[]) {
 	//app.setWindowIcon(...);
 	// app.setWindowCursor(...);
 
+	//Has to be on the heap for some reason
 	MainState* test = new MainState;
 	app.addState(test, "Main State");
-	app.addDefaultState("Main State");
+	app.setDefaultState("Main State");
 
 	app.run();
 

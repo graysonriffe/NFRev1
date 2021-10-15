@@ -135,6 +135,6 @@ move "*.nfpack" "$(OutDir)assets\"</Command>
       <_delete Include="$(OutDir)**\*" />
     </ItemGroup>
     <Delete Files="@(_delete)" />
-	<RemoveDir Directories="$(OUTDIR)" />
+    <RemoveDir Directories="$(OUTDIR)" />
   </Target>
 </Project>
