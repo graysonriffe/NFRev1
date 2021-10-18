@@ -2,11 +2,15 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <Windows.h>
+#include <compressapi.h>
 #include "glm/glm.hpp"
 
 #include "Config.h"
 
 namespace nf {
+	static DECOMPRESSOR_HANDLE s_dHandle;
+
 #ifdef _DEBUG
 	void Debug::LogImp(const char* in) {
 		std::chrono::duration<float> time = getCurrentTime();
@@ -93,7 +97,10 @@ namespace nf {
 		out.close();
 	}
 
-	std::string readFile(const std::string& filename) {
+	std::string readFile(const std::string& filename, bool compressed) {
+		if (!s_dHandle)
+			CreateDecompressor(COMPRESS_ALGORITHM_XPRESS_HUFF, NULL, &s_dHandle);
+
 		std::ifstream in;
 		in.open(filename, std::ios::binary);
 		if (!in)
@@ -101,6 +108,16 @@ namespace nf {
 		std::stringstream ss;
 		ss << in.rdbuf();
 		std::string read(ss.str());
+
+		if (compressed) {
+			size_t decompSize;
+			Decompress(s_dHandle, &read[0], read.size(), NULL, 0, &decompSize);
+			char* buff = new char[decompSize];
+			Decompress(s_dHandle, &read[0], read.size(), buff, decompSize, &decompSize);
+			read = std::string(buff, decompSize);
+			delete[] buff;
+		}
+
 		if (read.size() > 4 && read.substr(0, 4) == "NFEF") {
 			read = read.substr(4);
 			for (unsigned int i = 0; i < read.size(); i++)

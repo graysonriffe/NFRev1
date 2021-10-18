@@ -50,7 +50,7 @@ namespace nf {
 
 	void AssetPack::load(const char* packName) {
 		std::string path = "assets/" + (std::string)packName;
-		std::string packContents = readFile(path);
+		std::string packContents = readFile(path, true);
 		std::string packContentsOBJ = packContents;
 		std::unordered_map<std::string, ACubemap*> cubemaps;
 		std::unordered_map<std::string, AButton*> buttons;

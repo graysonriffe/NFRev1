@@ -6,6 +6,11 @@
 #include <filesystem>
 #include <set>
 #include <Windows.h>
+#include <compressapi.h>
+
+#define COMPRESS 1
+
+COMPRESSOR_HANDLE cHandle;
 
 void Log(const std::string& in) {
 	std::cout << "[NFPackCreator] Info: " << in << "\n";
@@ -60,7 +65,18 @@ void writeFile(const std::string& filename, const std::string& in, bool encrypte
 		}
 		write.insert(0, "NFEF");
 	}
+#if COMPRESS
+	Log("Compressing...");
+	size_t compSize;
+	Compress(cHandle, &write[0], write.size(), NULL, 0, &compSize);
+	char* buff = new char[compSize];
+	Compress(cHandle, &write[0], write.size(), buff, compSize, &compSize);
+
+	out.write(buff, compSize);
+	delete[] buff;
+#else
 	out << write;
+#endif
 	out.close();
 }
 
@@ -92,6 +108,8 @@ int main(int argc, char* argv[]) {
 			return 0;
 		}
 	}
+
+	CreateCompressor(COMPRESS_ALGORITHM_XPRESS_HUFF, NULL, &cHandle);
 
 	std::set<std::string> extensions;
 	extensions.insert({ "shader", "obj", "png", "jpg", "ttf", "wav" });

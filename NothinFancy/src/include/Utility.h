@@ -89,5 +89,5 @@ std::exit(-1);}
 	const wchar_t* toWide(const char* in);
 	const wchar_t* toWide(const std::string& in);
 	void writeFile(const std::string& filename, const std::string& in, bool encrypted = false);
-	std::string readFile(const std::string& filename);
+	std::string readFile(const std::string& filename, bool compressed = false);
 }
