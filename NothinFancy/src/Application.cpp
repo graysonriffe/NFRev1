@@ -20,7 +20,7 @@ namespace nf {
 		Log("Creating NF application");
 		Log("Width: " + std::to_string(m_currentConfig.width) + ", Height: " + std::to_string(m_currentConfig.height) + ", Fullscreen: " + std::to_string(m_currentConfig.fullscreen) + ", Title: " + m_currentConfig.title);
 
-		if (getApp() != nullptr)
+		if (getApp(true) != nullptr)
 			Error("Cannot create two NF Application objects!");
 		setApp(this);
 		m_hInst = GetModuleHandle(NULL);
@@ -29,7 +29,7 @@ namespace nf {
 		int x = 0;
 		int y = 0;
 		calculateNewWindowPos(x, y);
-		m_window = CreateWindowEx(NULL, m_wclassName, toWide(m_currentConfig.title), WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX, x, y, windowSize.right, windowSize.bottom, NULL, NULL, m_hInst, NULL);
+		m_window = CreateWindowEx(NULL, m_wclassName, toWide(m_currentConfig.title).data(), WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX, x, y, windowSize.right, windowSize.bottom, NULL, NULL, m_hInst, NULL);
 		m_defaultWindowStyle = GetWindowLong(m_window, GWL_STYLE);
 		SetProp(m_window, L"App", this);
 		if (m_currentConfig.fullscreen) toggleFullscreen();
@@ -126,7 +126,7 @@ namespace nf {
 	}
 	//TODO: Throughly test this
 	void Application::changeConfig(const Config& in) {
-		SetWindowText(m_window, toWide(in.title));
+		SetWindowText(m_window, toWide(in.title).data());
 		bool temp = m_currentConfig.fullscreen;
 		m_currentConfig = in;
 		if (in.fullscreen != temp)
@@ -186,7 +186,9 @@ namespace nf {
 		return Vec2(m_mouseX, m_mouseY);
 	}
 
-	Application* Application::getApp() {
+	Application* Application::getApp(bool first) {
+		if (!currentApp && !first)
+			Error("No Application has been created yet!");
 		return currentApp;
 	}
 
@@ -284,8 +286,8 @@ namespace nf {
 #ifdef _DEBUG
 		SetThreadDescription(GetCurrentThread(), L"Main Engine Thread");
 #endif
-		m_sIntro = new IntroGamestate;
-		m_currentState = m_sIntro;
+		Gamestate* sIntro = new IntroGamestate;
+		m_currentState = sIntro;
 		m_audio = new AudioEngine(this);
 		m_renderer = new Renderer(this);
 		m_currentState->setup(this);
@@ -320,6 +322,7 @@ namespace nf {
 		m_audio->stopAllSounds();
 		m_currentState->onExit();
 		m_currentState->cleanup();
+		delete sIntro;
 		delete m_audio;
 		delete m_renderer;
 	}

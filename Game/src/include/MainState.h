@@ -23,6 +23,7 @@ private:
 	nf::Cubemap cm;
 
 	nf::Sound sound;
+	nf::Sound sound2;
 
 	double circle;
 

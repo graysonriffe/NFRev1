@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
 	CreateCompressor(COMPRESS_ALGORITHM_XPRESS_HUFF, NULL, &cHandle);
 
 	std::set<std::string> extensions;
-	extensions.insert({ "shader", "obj", "png", "jpg", "ttf", "wav" });
+	extensions.insert({ "shader", "obj", "png", "jpg", "ttf", "wav", "ogg" });
 
 	unsigned int dirCount = 0;
 	const std::filesystem::path workingDir = std::filesystem::current_path();

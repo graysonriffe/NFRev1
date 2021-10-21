@@ -56,18 +56,24 @@ namespace nf {
 	}
 #endif
 
-	const wchar_t* toWide(const char* in) {
+	const std::wstring toWide(const char* in) {
 		unsigned int length = (unsigned int)std::strlen(in) + 1;
 		wchar_t* out = new wchar_t[length];
 		MultiByteToWideChar(CP_ACP, NULL, in, -1, out, length);
-		return out;
+		std::wstring str(out, length);
+
+		delete[] out;
+		return str;
 	}
-	const wchar_t* toWide(const std::string& in) {
+	const std::wstring toWide(const std::string& in) {
 		const char* cstr = in.c_str();
 		unsigned int length = (unsigned int)std::strlen(cstr) + 1;
 		wchar_t* out = new wchar_t[length];
 		MultiByteToWideChar(CP_ACP, NULL, cstr, -1, out, length);
-		return out;
+		std::wstring str(out, length);
+
+		delete[] out;
+		return str;
 	}
 
 	void writeFile(const std::string& filename, const std::string& in, bool encrypted) {

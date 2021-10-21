@@ -36,8 +36,6 @@ namespace nf {
 		void stopAllSounds();
 		~AudioEngine();
 	private:
-		void clearSounds();
-
 		Application* m_app;
 		IXAudio2* m_engine;
 		IXAudio2MasteringVoice* m_masterVoice;

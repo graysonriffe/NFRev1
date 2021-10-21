@@ -38,7 +38,7 @@ namespace nf {
 		void trackMouse(bool track);
 		void getMouseDiff(int& x, int& y);
 		Vec2 getMousePos();
-		static Application* getApp();
+		static Application* getApp(bool first = false);
 
 		void quit();
 		~Application();
@@ -76,7 +76,6 @@ namespace nf {
 		//Inactive states to potentially be active during the Application's lifetime
 		//Mapped to const char* to be referenced later in the frontend
 		std::unordered_map<std::string, Gamestate*> m_states;
-		Gamestate* m_sIntro;
 		std::string m_defaultState;
 		bool m_defaultStateAdded;
 		Gamestate* m_currentState;

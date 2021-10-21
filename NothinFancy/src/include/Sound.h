@@ -21,13 +21,16 @@ namespace nf {
 		void destroy() override;
 		~Sound();
 	private:
+		size_t loadOGG(std::string& data);
+		size_t loadWAV(std::string& data);
+
 		bool m_constructed;
 		float m_volume;
 		bool m_usePos;
 		bool m_useEntity;
 		WAVEFORMATEXTENSIBLE m_format;
 		XAUDIO2_BUFFER m_xBuffer;
-		unsigned char* m_buffer;
+		char* m_buffer;
 		Entity* m_targetEntity;
 		Vec3 m_soundPos;
 	};

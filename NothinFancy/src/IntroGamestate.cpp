@@ -16,8 +16,8 @@ namespace nf {
 	void IntroGamestate::update(double deltaTime) {
 		static unsigned int frame = 0;
 		frame++;
-		if (frame < 10) return;
-		if (frame == 10)
+		if (frame < 5) return;
+		if (frame == 5)
 			m_start = std::chrono::steady_clock::now();
 
 		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();

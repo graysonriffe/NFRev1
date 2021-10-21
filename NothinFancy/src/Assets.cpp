@@ -186,7 +186,7 @@ namespace nf {
 				m_assets[assetName] = font;
 				continue;
 			}
-			if (extension == "wav") {
+			if (extension == "ogg" || extension == "wav") {
 				ASound* sound = new ASound;
 				sound->data = new char[assetSize];
 				std::memcpy(sound->data, &assetContents[0], assetSize);

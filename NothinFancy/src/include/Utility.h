@@ -36,7 +36,7 @@ __debugbreak();}
 #define DEBUGINIT
 #define Log(x)
 //Shows error dialog with specified message then exits
-#define Error(x) {MessageBox(FindWindow(L"NFClass", NULL), toWide(x), L"NF Engine Error", MB_OK | MB_ICONERROR);\
+#define Error(x) {MessageBox(FindWindow(L"NFClass", NULL), toWide(x).data(), L"NF Engine Error", MB_OK | MB_ICONERROR);\
 std::exit(-1);}
 #endif
 	struct Vec2 {
@@ -86,8 +86,8 @@ std::exit(-1);}
 		double x, y, z;
 	};
 
-	const wchar_t* toWide(const char* in);
-	const wchar_t* toWide(const std::string& in);
+	const std::wstring toWide(const char* in);
+	const std::wstring toWide(const std::string& in);
 	void writeFile(const std::string& filename, const std::string& in, bool encrypted = false);
 	std::string readFile(const std::string& filename, bool compressed = false);
 }

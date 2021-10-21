@@ -81,8 +81,12 @@ namespace nf {
 		float az[20] = { 0 };
 		emitter.pChannelAzimuths = az;
 		XAUDIO2_FILTER_PARAMETERS filter = { LowPassFilter, 1.0, 1.0 };
-		XAUDIO2_VOICE_STATE state;
 		Vec3 temp;
+		XAUDIO2_VOICE_STATE state;
+		XAUDIO2_VOICE_DETAILS details;
+		m_masterVoice->GetVoiceDetails(&details);
+		unsigned int outChannels = details.InputChannels;
+		x3dSettings.DstChannelCount = outChannels;
 
 		while (m_threadRunning) {
 			if (m_isActive && Application::getApp()->getCurrentState()->isRunning()) {
@@ -94,7 +98,7 @@ namespace nf {
 
 				//Stop all sounds if requested
 				if (m_clear)
-					clearSounds();
+					stopAllSounds();
 
 				//Update sounds
 				for (SoundData& curr : m_sounds) {
@@ -134,13 +138,12 @@ namespace nf {
 						int ch = curr.format->Format.nChannels;
 						emitter.ChannelCount = ch;
 						x3dSettings.SrcChannelCount = ch;
-						x3dSettings.DstChannelCount = ch;
 						emitter.Position = X3DAUDIO_VECTOR((float)temp.x, (float)temp.y, (float)-temp.z);
 						X3DAudioCalculate(x3d, &listener, &emitter, X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB, &x3dSettings);
 						float temp2 = matrix[1];
 						matrix[1] = matrix[2];
 						matrix[2] = temp2;
-						curr.voice->SetOutputMatrix(m_masterVoice, ch, ch, matrix);
+						curr.voice->SetOutputMatrix(m_masterVoice, ch, outChannels, matrix);
 						curr.voice->SetFrequencyRatio(x3dSettings.DopplerFactor);
 						filter.Frequency = 2.0f * std::sinf(X3DAUDIO_PI / 6.0f * x3dSettings.LPFDirectCoefficient);
 						curr.voice->SetFilterParameters(&filter);
@@ -149,7 +152,7 @@ namespace nf {
 
 				//Delete all finished sounds from the list
 				for (size_t i = 0; i < m_sounds.size(); i++) {
-					if (m_sounds[i].finished) {
+					if (m_sounds[i].finished && m_sounds[i].voice) {
 						m_sounds[i].voice->Stop();
 						m_sounds[i].voice->FlushSourceBuffers();
 						m_sounds[i].voice->DestroyVoice();
@@ -161,7 +164,7 @@ namespace nf {
 		}
 
 		//Cleanup
-		clearSounds();
+		stopAllSounds();
 		m_masterVoice->DestroyVoice();
 	}
 
@@ -178,10 +181,6 @@ namespace nf {
 	}
 
 	void AudioEngine::stopAllSounds() {
-		m_clear = true;
-	}
-
-	void AudioEngine::clearSounds() {
 		m_clear = false;
 		for (SoundData& curr : m_sounds) {
 			if (curr.start) continue;

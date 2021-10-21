@@ -114,5 +114,6 @@ namespace nf {
 
 	Shader::~Shader() {
 		glDeleteProgram(m_id);
+		m_uniformLocations.clear();
 	}
 }

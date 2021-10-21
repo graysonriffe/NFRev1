@@ -95,6 +95,7 @@ namespace nf {
 				pixels[i * 4 + 2] = tex[i * 4 + 0];
 				pixels[i * 4 + 3] = tex[i * 4 + 3];
 			}
+			stbi_image_free(tex);
 			HICON windowIcon = CreateIcon(GetModuleHandle(NULL), width, height, 1, 32, NULL, &pixels[0]);
 			SendMessage(m_app->getWindow(), WM_SETICON, ICON_BIG, (LPARAM)windowIcon);
 			SendMessage(m_app->getWindow(), WM_SETICON, ICON_SMALL, (LPARAM)windowIcon);

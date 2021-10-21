@@ -21,6 +21,9 @@ void MainState::onEnter() {
 
 	sound.create(ap["sound.wav"]);
 	sound.setEntity(test);
+	sound2.create(ap["test.ogg"]);
+	sound2.setVolume(3.0);
+	sound2.setEntity(test);
 
 	for (int x = 0; x < 10; x++) {
 		for (int y = 0; y < 10; y++) {
@@ -60,18 +63,23 @@ void MainState::update(double deltaTime) {
 		offset -= 2.0 * deltaTime;
 	test.setRotation(0.0, 0.0, -offset * 20.0);
 
-	light.setPosition(nf::Vec3(std::sin(circle) * 10.0, 5.0, std::cos(circle) * 10.0));
+	test.setPosition(nf::Vec3(std::sin(circle) * 10.0, 5.0, std::cos(circle) * 10.0));
 	circle += 2.0 * deltaTime;
 
 	text.setText("FPS: " + std::to_string(app->getFPS()));
 
 	if (button.isClicked())
 		app->changeState("Main State");
-	if (button2.isClicked() || app->isKeyPressed(NFI_SPACE))
-		sound.play(true);
 
-	if (app->isKeyPressed(NFI_O))
+	if (button2.isClicked() || app->isKeyPressed(NFI_SPACE))
+		sound.play();
+	if (app->isKeyPressed(NFI_M))
+		sound2.play();
+
+	if (app->isKeyPressed(NFI_O)) {
 		sound.stop();
+		sound2.stop();
+	}
 
 	if (app->isKeyPressed(NFI_ESCAPE))
 		app->quit();
