@@ -70,7 +70,7 @@
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)NFPackCreator\AssetBuild"
+      <Command>cd assets
 "$(SolutionDir)NFPackCreator\bin\x64$(Configuration)\NFPackCreator.exe"
 if exist "$(OutDir)assets" (rmdir "$(OutDir)assets" /S /Q &amp;&amp; goto end) else goto end
 :end
@@ -100,7 +100,7 @@ move "*.nfpack" "$(OutDir)assets\"</Command>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)NFPackCreator\AssetBuild"
+      <Command>cd assets
 "$(SolutionDir)NFPackCreator\bin\x64$(Configuration)\NFPackCreator.exe"
 if exist "$(OutDir)assets" (rmdir "$(OutDir)assets" /S /Q &amp;&amp; goto end) else goto end
 :end
