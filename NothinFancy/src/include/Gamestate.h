@@ -18,18 +18,16 @@ namespace nf {
 
 		Gamestate(const Gamestate& other) = delete;
 
-		void setup(Application* app);
-
 		virtual void onEnter();
 		bool isRunning();
-		void setRunning();
+		void run(Application* app);
 
 		virtual void update(double deltaTime);
 		Camera* getCamera();
 		virtual void render(Renderer& renderer);
 
 		virtual void onExit();
-		void cleanup();
+		void stop();
 
 		std::vector<NFObject*> m_nfObjects;
 		std::unordered_set<Model*> m_modelsToDelete;

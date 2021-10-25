@@ -75,7 +75,9 @@
 if exist "$(OutDir)assets" (rmdir "$(OutDir)assets" /S /Q &amp;&amp; goto end) else goto end
 :end
 mkdir "$(OutDir)assets"
-move "*.nfpack" "$(OutDir)assets\"</Command>
+move "*.nfpack" "$(OutDir)assets\"
+cd "$(SolutionDir)NothinFancy\assets"
+if exist "base.nfpack" (copy "base.nfpack" "$(OutDir)assets\")</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -105,7 +107,9 @@ move "*.nfpack" "$(OutDir)assets\"</Command>
 if exist "$(OutDir)assets" (rmdir "$(OutDir)assets" /S /Q &amp;&amp; goto end) else goto end
 :end
 mkdir "$(OutDir)assets"
-move "*.nfpack" "$(OutDir)assets\"</Command>
+move "*.nfpack" "$(OutDir)assets\"
+cd "$(SolutionDir)NothinFancy\assets"
+if exist "base.nfpack" (copy "base.nfpack" "$(OutDir)assets\")</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

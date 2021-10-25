@@ -89,7 +89,7 @@ namespace nf {
 		x3dSettings.DstChannelCount = outChannels;
 
 		while (m_threadRunning) {
-			if (m_isActive && Application::getApp()->getCurrentState()->isRunning()) {
+			if (m_isActive && Application::getApp()->getCurrentState() && Application::getApp()->getCurrentState()->isRunning()) {
 				//Update listener position
 				temp = Application::getApp()->getCurrentState()->getCamera()->getPosition();
 				listener.Position = X3DAUDIO_VECTOR((float)temp.x, (float)temp.y, (float)-temp.z);

@@ -85,9 +85,38 @@ std::exit(-1);}
 		}
 		double x, y, z;
 	};
+	struct Vec4 {
+		Vec4() : x(0.0), y(0.0), z(0.0), w(0.0) {}
+		Vec4(float x1) : x(x1), y(x1), z(x1), w(x1) {}
+		Vec4(float x1, float y1, float z1, float w1) : x(x1), y(y1), z(z1), w(w1) {}
+		Vec4 operator*(const float scalar) {
+			return Vec4(x * scalar, y * scalar, z * scalar, w * scalar);
+		}
+		Vec4& operator+=(const Vec4& rhs) {
+			this->x += rhs.x;
+			this->y += rhs.y;
+			this->z += rhs.z;
+			this->w += rhs.w;
+			return *this;
+		}
+		Vec4& operator-=(const Vec4& rhs) {
+			this->x -= rhs.x;
+			this->y -= rhs.y;
+			this->z -= rhs.z;
+			this->w -= rhs.w;
+			return *this;
+		}
+		bool operator==(const Vec4& rhs) {
+			return this->x == rhs.x && this->y == rhs.y && this->z == rhs.z && this->w == rhs.w;
+		}
+		float x, y, z, w;
+	};
 
 	const std::wstring toWide(const char* in);
 	const std::wstring toWide(const std::string& in);
+
+	Vec4 degToQuat(const Vec3& in);
+
 	void writeFile(const std::string& filename, const std::string& in, bool encrypted = false);
 	std::string readFile(const std::string& filename, bool compressed = false);
 }

@@ -49,6 +49,10 @@ namespace nf {
 		return m_audio;
 	}
 
+	PhysicsEngine* Application::getPhysicsEngine() const {
+		return m_physics;
+	}
+
 	void Application::addState(Gamestate* state, const std::string& stateName) {
 		if (m_states.find(stateName) == m_states.end()) {
 			m_states[stateName] = state;
@@ -286,12 +290,12 @@ namespace nf {
 #ifdef _DEBUG
 		SetThreadDescription(GetCurrentThread(), L"Main Engine Thread");
 #endif
+		m_renderer = new Renderer(this);
+		m_audio = new AudioEngine(this);
+		m_physics = new PhysicsEngine(this);
 		Gamestate* sIntro = new IntroGamestate;
 		m_currentState = sIntro;
-		m_audio = new AudioEngine(this);
-		m_renderer = new Renderer(this);
-		m_currentState->setup(this);
-		m_currentState->onEnter();
+		m_currentState->run(this);
 		m_renderer->setFade(true, false, true);
 		std::chrono::steady_clock::time_point currentFrame = std::chrono::steady_clock::now();
 		std::chrono::steady_clock::time_point lastFrame = std::chrono::steady_clock::now();
@@ -300,6 +304,8 @@ namespace nf {
 			m_deltaTime = std::chrono::duration<double>(currentFrame - lastFrame).count();
 			if (m_deltaTime >= m_minFrametime) {
 				lastFrame = std::chrono::steady_clock::now();
+				//Should the physics update before user code?
+				m_physics->update(m_deltaTime);
 				m_currentState->update(m_deltaTime);
 				m_currentState->render(*m_renderer);
 				m_renderer->doFrame(m_currentState->getCamera(), m_deltaTime);
@@ -320,9 +326,9 @@ namespace nf {
 			}
 		}
 		m_audio->stopAllSounds();
-		m_currentState->onExit();
-		m_currentState->cleanup();
+		m_currentState->stop();
 		delete sIntro;
+		delete m_physics;
 		delete m_audio;
 		delete m_renderer;
 	}
@@ -336,12 +342,9 @@ namespace nf {
 
 		if (m_renderer->isFadeOutComplete()) {
 			m_audio->stopAllSounds();
-			m_currentState->onExit();
-			m_currentState->cleanup();
+			m_currentState->stop();
 			m_currentState = m_states[m_nextState];
-			m_currentState->setup(this);
-			m_currentState->onEnter();
-			m_currentState->setRunning();
+			m_currentState->run(this);
 			m_renderer->setFade(true, false, false);
 			m_stateChange = false;
 			once = true;

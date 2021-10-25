@@ -67,7 +67,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>glew32s.lib;opengl32.lib;freetype.lib;xaudio2.lib;Cabinet.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;freetype.lib;xaudio2.lib;Cabinet.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib;PhysXFoundation.lib;PhysXCommon.lib;PhysX.lib;PhysXCooking.lib;PhysXExtensions.lib;PhysXPvdSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)dep\lib\Shared;$(ProjectDir)dep\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -77,6 +77,10 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>cd assets
+"$(SolutionDir)NFPackCreator\bin\x64$(Configuration)\NFPackCreator.exe"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -96,7 +100,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>glew32s.lib;opengl32.lib;freetype.lib;xaudio2.lib;Cabinet.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;freetype.lib;xaudio2.lib;Cabinet.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib;PhysXFoundation.lib;PhysXCommon.lib;PhysX.lib;PhysXCooking.lib;PhysXExtensions.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)dep\lib\Shared;$(ProjectDir)dep\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -106,6 +110,10 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>cd assets
+"$(SolutionDir)NFPackCreator\bin\x64$(Configuration)\NFPackCreator.exe"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
@@ -113,6 +121,7 @@
     <ClCompile Include="src\AudioEngine.cpp" />
     <ClCompile Include="src\Gamestate.cpp" />
     <ClCompile Include="src\IntroGamestate.cpp" />
+    <ClCompile Include="src\PhysicsEngine.cpp" />
     <ClCompile Include="src\Renderer\Camera.cpp" />
     <ClCompile Include="src\NFObject\Button.cpp" />
     <ClCompile Include="src\NFObject\Cubemap.cpp" />
@@ -152,6 +161,7 @@
     <ClInclude Include="src\include\Model.h" />
     <ClInclude Include="src\include\NFObject.h" />
     <ClInclude Include="src\include\NothinFancy.h" />
+    <ClInclude Include="src\include\PhysicsEngine.h" />
     <ClInclude Include="src\include\Renderer.h" />
     <ClInclude Include="src\include\Shader.h" />
     <ClInclude Include="src\include\Sound.h" />

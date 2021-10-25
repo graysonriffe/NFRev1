@@ -8,9 +8,14 @@
 #include "IntroGamestate.h"
 #include "Renderer.h"
 #include "AudioEngine.h"
-//TODO: Document ALL frontend functions
+#ifdef NFENGINE
+#include "PhysicsEngine.h"
+#endif
+//TODO: Document ALL frontend functions in new include files for the frontend only
 
 namespace nf {
+	class PhysicsEngine;
+
 	class Application {
 	public:
 		Application(Config& conf);
@@ -20,6 +25,7 @@ namespace nf {
 		void setWindowIcon(HANDLE hIcon);
 		void setWindowCursor(HCURSOR hCursor);
 		AudioEngine* getAudioEngine() const;
+		PhysicsEngine* getPhysicsEngine() const;
 		void addState(Gamestate* state, const std::string& stateName);
 		void setDefaultState(const std::string& stateName);
 		const std::string& getDefaultState();
@@ -93,5 +99,7 @@ namespace nf {
 		Renderer* m_renderer;
 
 		AudioEngine* m_audio;
+
+		PhysicsEngine* m_physics;
 	};
 }

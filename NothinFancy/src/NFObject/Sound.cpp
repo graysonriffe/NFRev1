@@ -37,34 +37,33 @@ namespace nf {
 		if (file == nullptr) return -1;
 
 		switch (origin) {
-		case SEEK_SET: {
-			ogg_int64_t actual;
-			if (file->size >= offset)
-				actual = offset;
-			else
-				actual = file->size;
+			case SEEK_SET: {
+				ogg_int64_t actual;
+				if (file->size >= offset)
+					actual = offset;
+				else
+					actual = file->size;
 
-			file->pointer = actual;
-			break;
-		}
-		case SEEK_CUR: {
-			int left = file->size - (int)file->pointer;
+				file->pointer = actual;
+				break;
+			}
+			case SEEK_CUR: {
+				int left = file->size - (int)file->pointer;
 
-			ogg_int64_t actual;
-			if (offset < left)
-				actual = offset;
-			else
-				actual = left;
+				ogg_int64_t actual;
+				if (offset < left)
+					actual = offset;
+				else
+					actual = left;
 
-			file->pointer += actual;
-			break;
+				file->pointer += actual;
+				break;
+			}
+			case SEEK_END: {
+				file->pointer = file->size + 1;
+				break;
+			}
 		}
-		case SEEK_END: {
-			file->pointer = file->size + 1;
-			break;
-		}
-		}
-
 		return 0;
 	}
 

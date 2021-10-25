@@ -1,6 +1,7 @@
 #include "Entity.h"
 
 #include<vector>
+#include "glm/gtx/quaternion.hpp"
 
 #include "Application.h"
 #include "Model.h"
@@ -9,18 +10,21 @@
 namespace nf {
 	Entity::Entity() :
 		m_constructed(false),
+		m_type(Type::STATIC),
 		m_model(nullptr),
 		m_position(0.0),
-		m_rotation(0.0),
-		m_scale(1.0)
+		m_rotation(degToQuat({ 0.0 })),
+		m_scale(1.0),
+		m_update(false)
 	{
 
 	}
 
-	void Entity::create(Asset* modelAsset) {
+	void Entity::create(Asset* modelAsset, Type type) {
 		if (m_constructed)
 			Error("Entity already created!");
 		m_constructed = true;
+		m_type = type;
 		AModel* model;
 		if ((model = dynamic_cast<AModel*>(modelAsset)) == nullptr)
 			Error("Non-model asset passed to Entity::create!");
@@ -28,10 +32,13 @@ namespace nf {
 			m_model = model->loadedModel;
 		}
 		else {
-			m_model = new Model(model);
+			m_model = new Model(model); //Build convex mesh for every model once and store them somehow
 			model->alreadyLoaded = true;
 			model->loadedModel = m_model;
 		}
+
+		if (type != Type::STATIC)
+			Application::getApp()->getPhysicsEngine()->addActor(this);
 
 		if (!Application::getApp()->getCurrentState()->isRunning())
 			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
@@ -41,36 +48,71 @@ namespace nf {
 		return m_constructed;
 	}
 
+	void Entity::setType(Entity::Type type) {
+		//TODO: This function
+	}
+
+	Entity::Type Entity::getType() {
+		return m_type;
+	}
+
 	void Entity::setPosition(double x, double y, double z) {
 		m_position = { x, y, z };
+		m_update = true;
 	}
 
 	void Entity::setPosition(const Vec3& position) {
 		m_position = position;
+		m_update = true;
+	}
+
+	void Entity::setPositionPhysics(const Vec3& position) {
+		m_position = position;
 	}
 
 	void Entity::setRotation(double x, double y, double z) {
-		m_rotation = { x, y, z };
+		m_rotation = degToQuat({ x, y, z });
+		m_update = true;
 	}
 
 	void Entity::setRotation(const Vec3& rotation) {
+		m_rotation = degToQuat(rotation);
+		m_update = true;
+	}
+
+	void Entity::setRotationPhysics(const Vec4& rotation) {
 		m_rotation = rotation;
 	}
 
 	void Entity::setScale(double x) {
 		m_scale = { x, x, x };
+		m_update = true;
 	}
 
 	void Entity::setScale(double x, double y, double z) {
 		m_scale = { x, y, z };
+		m_update = true;
 	}
 
 	void Entity::setScale(const Vec3& scale) {
 		m_scale = scale;
+		m_update = true;
+	}
+
+	bool Entity::needsPhysicsUpdate() {
+		if (m_update) {
+			m_update = false;
+			return true;
+		}
+		return false;
 	}
 
 	const Vec3& Entity::getPosition() {
 		return m_position;
+	}
+
+	const Vec4& Entity::getRotation() {
+		return m_rotation;
 	}
 
 	void Entity::render(Shader* shader, bool onlyDepth) {
@@ -87,9 +129,11 @@ namespace nf {
 	const glm::mat4 Entity::getModelMatrix() {
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, glm::vec3(m_position.x, m_position.y, m_position.z));
-		model = glm::rotate(model, glm::radians((float)m_rotation.x), glm::vec3(1.0, 0.0, 0.0));
-		model = glm::rotate(model, glm::radians((float)m_rotation.y), glm::vec3(0.0, 1.0, 0.0));
-		model = glm::rotate(model, glm::radians((float)m_rotation.z), glm::vec3(0.0, 0.0, 1.0));
+
+		glm::quat rotQ = glm::quat(m_rotation.w, m_rotation.x, m_rotation.y, m_rotation.z);
+		glm::mat4 rot = glm::toMat4(rotQ);
+		model *= rot;
+
 		model = glm::scale(model, glm::vec3(m_scale.x, m_scale.y, m_scale.z));
 		return model;
 	}
@@ -100,8 +144,9 @@ namespace nf {
 			m_model = nullptr;
 		}
 		m_constructed = false;
+		m_type = Type::STATIC;
 		m_position = Vec3(0.0);
-		m_rotation = Vec3(0.0);
+		m_rotation = Vec4(0.0);
 		m_scale = Vec3(1.0);
 	}
 

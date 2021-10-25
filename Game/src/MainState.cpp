@@ -6,9 +6,8 @@ void MainState::onEnter() {
 	ap.load("example.nfpack");
 	test.create(ap["2mats.obj"]);
 	test.setPosition(0.0, 0.05, -5.0);
-	plane.create(nf::BaseAssets::cube);
-	plane.setPosition(0.0, -1.0, 0.0);
-	plane.setScale(50.0, 0.05, 50.0);
+	plane.create(nf::BaseAssets::plane);
+	plane.setScale(20.0);
 	text.create("This is a test text.", nf::Vec2(0.1, 0.025), nf::Vec3(0.8));
 	text.centered(true);
 	uiTex.create(nf::BaseAssets::logo, nf::Vec2(0.025, 0.025), 0.5);
@@ -25,11 +24,13 @@ void MainState::onEnter() {
 	sound2.setVolume(3.0);
 	sound2.setEntity(test);
 
-	for (int x = 0; x < 10; x++) {
-		for (int y = 0; y < 10; y++) {
+	for (int x = 0; x < 5; x++) {
+		for (int y = 0; y < 5; y++) {
+			for (int z = 0; z < 5; z++) {
 				entities.push_back(new nf::Entity);
-				entities.back()->create(ap["2mats.obj"]);
-				entities.back()->setPosition(5.0 + x * 2.1, 0.05, -5.0 + y * 2.1);
+				entities.back()->create(ap["2mats.obj"], nf::Entity::Type::DYNAMIC);
+				entities.back()->setPosition(5.0 + x * 2.1, 1.0 + y * 2.1, -5.0 + z * 2.1);
+			}
 		}
 	}
 }
@@ -86,7 +87,7 @@ void MainState::update(double deltaTime) {
 }
 
 void MainState::render(nf::Renderer& renderer) {
-	renderer.render(test);
+	//renderer.render(test);
 	renderer.render(plane);
 	renderer.render(light);
 	renderer.render(light2);

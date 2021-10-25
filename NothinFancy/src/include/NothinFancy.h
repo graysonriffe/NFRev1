@@ -6,11 +6,10 @@
 #include <array>
 #include <Windows.h>
 
+#include "Config.h"
 #include "Application.h"
 #include "Renderer.h"
-#include "Config.h"
 #include "Utility.h"
-#include "IntroGamestate.h"
 #include "Assets.h"
 #include "Entity.h"
 #include "Light.h"
