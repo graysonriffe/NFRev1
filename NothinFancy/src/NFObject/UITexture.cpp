@@ -16,7 +16,7 @@ namespace nf {
 
 	}
 
-	void UITexture::create(Asset* textureAsset, const Vec2& position, double scale, double opacity) {
+	void UITexture::create(Asset* textureAsset, const Vec2& position, float scale, float opacity) {
 		if (m_constructed)
 			Error("UITexture already created!");
 		m_constructed = true;
@@ -24,8 +24,8 @@ namespace nf {
 		if ((tex = dynamic_cast<ATexture*>(textureAsset)) == nullptr)
 			Error("Non-texture asset passed to UITexture::create!");
 		m_position = position;
-		m_scale = (float)scale;
-		m_opacity = (float)opacity;
+		m_scale = scale;
+		m_opacity = opacity;
 		if (tex->alreadyLoaded) {
 			m_texture = tex->loadedTexture;
 		}
@@ -57,21 +57,21 @@ namespace nf {
 		return "texture";
 	}
 
-	void UITexture::setScale(double scale) {
-		m_scale = (float)scale;
+	void UITexture::setScale(float scale) {
+		m_scale = scale;
 	}
 
-	void UITexture::setOpacity(double opacity) {
-		m_opacity = (float)opacity;
+	void UITexture::setOpacity(float opacity) {
+		m_opacity = opacity;
 	}
 
 	void UITexture::render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight) {
-		float posX = (float)m_position.x * windowWidth, posY = (float)m_position.y * windowHeight;
+		float posX = m_position.x * windowWidth, posY = m_position.y * windowHeight;
 		float scale = windowWidth / 5.0f;
 
 		Vec2 texDim = m_texture->getDimensions();
 		float height = scale * m_scale;
-		float width = ((float)texDim.x / (float)texDim.y) * scale * m_scale;
+		float width = (texDim.x / texDim.y) * scale * m_scale;
 		if (m_centeredX)
 			posX = ((float)windowWidth - width) / 2;
 		if (m_centeredY)

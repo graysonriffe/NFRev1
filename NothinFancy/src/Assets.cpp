@@ -256,9 +256,7 @@ namespace nf {
 		return m_assets[in];
 	}
 	Asset* AssetPack::operator[](std::string& in) {
-		if (m_assets.find(in) == m_assets.end())
-			Error("Could not find asset \"" + in + (std::string)"\" in asset pack!");
-		return m_assets[in];
+		return operator[](in.c_str());
 	}
 
 	void AssetPack::destroy() {

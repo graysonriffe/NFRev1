@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "Entity.h"
+#include "Model.h"
 #include "Utility.h"
 
 //Remove this
@@ -21,14 +22,15 @@ namespace nf {
 
 	PhysicsEngine::PhysicsEngine(Application* app) :
 		m_app(app),
+		m_err(nullptr),
 		m_foundation(nullptr),
 		m_pvd(nullptr),
 		m_phy(nullptr),
 		m_cooking(nullptr),
 		m_dispacher(nullptr),
+		m_defaultMat(nullptr),
 		m_scene(nullptr),
-		m_err(nullptr),
-		m_stepSize(1.0 / 60.0),
+		m_stepSize(1.0f / 60.0f),
 		m_accumulator(0.0)
 	{
 		m_err = new PhysicsErrorCallback;
@@ -50,7 +52,11 @@ namespace nf {
 		if (!m_cooking)
 			Error("Could not initialize physics engine!");
 
-		m_dispacher = PxDefaultCpuDispatcherCreate(2);
+		unsigned int threads = std::thread::hardware_concurrency() - 1;
+		if (threads < 0) threads = 0;
+		m_dispacher = PxDefaultCpuDispatcherCreate(threads);
+
+		m_defaultMat = m_phy->createMaterial(0.5f, 0.5f, 0.0f);
 	}
 
 	void PhysicsEngine::newScene() {
@@ -68,47 +74,52 @@ namespace nf {
 			cli->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 		}
 
-		//TODO: Delete this
-		PxMaterial* mat = m_phy->createMaterial(0.5f, 0.5f, 0.6f);
-		PxRigidStatic* ground = PxCreatePlane(*m_phy, PxPlane(0, 1, 0, 0), *mat);
+		//Ground plane at the very bottom (Is this a good position?)
+		PxRigidStatic* ground = PxCreatePlane(*m_phy, PxPlane(0, 1, 0, 200), *m_defaultMat);
 		m_scene->addActor(*ground);
 	}
 
-	void PhysicsEngine::update(double dt) {
-		//TODO: Remove this
-		static bool start = false;
-		if (m_app->isKeyPressed(NFI_ENTER))
-			start = true;
-		if (!start) return;
+	void PhysicsEngine::update(float dt) {
+		if (!m_scene || !m_scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC)) return;
 
-		if (!m_scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC)) return;
+		unsigned int count = m_scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
+		PxActor** actors = new PxActor*[count];
+		m_scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, actors, count);
 
-		unsigned int count = m_scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
-		PxActor** actors = new PxActor * [count];
-		m_scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, actors, count);
-		//TODO: Add static actors here
-
-		if (m_app->isKeyPressed(NFI_F)) {
+		if (m_app->isMouse(NFI_LEFTMOUSE)) {
 			Vec3 pos = m_app->getCurrentState()->getCamera()->getPosition();
-			PxVec3 camPos((float)pos.x, (float)pos.y, (float)pos.z);
+			PxVec3 camPos(pos.x, pos.y, pos.z);
 			PxQuat q(PxIdentity);
-			((PxRigidDynamic*)actors[0])->setGlobalPose(PxTransform(camPos, q));
+			((PxRigidDynamic*)actors[1])->setGlobalPose(PxTransform(camPos, q));
 
 			Vec3 camDir = m_app->getCurrentState()->getCamera()->getRotation();
 			float speed = 100.0f;
-			PxRigidBodyExt::updateMassAndInertia(*(PxRigidDynamic*)actors[0], 1000.0);
-			((PxRigidDynamic*)actors[0])->setLinearVelocity(PxVec3((float)camDir.x * speed, (float)camDir.y* speed, (float)camDir.z * speed));
+			PxRigidBodyExt::updateMassAndInertia(*(PxRigidDynamic*)actors[1], 1000.0);
+			((PxRigidDynamic*)actors[1])->setAngularVelocity(PxVec3(0.0));
+			((PxRigidDynamic*)actors[1])->setLinearVelocity(PxVec3(camDir.x * speed, camDir.y * speed, camDir.z * speed));
 		}
 
-		for (unsigned int i = 0; i < count; i++) {
+		//TODO: CHANGE THIS 1 TO A 0!!!!
+
+		for (unsigned int i = 1; i < count; i++) {
 			Entity* currEnt = (Entity*)actors[i]->userData;
 			if (!currEnt->needsPhysicsUpdate()) continue;
 
-			Vec3 pos = currEnt->getPosition();
-			PxVec3 pos2((float)pos.x, (float)pos.y, (float)pos.z);
-			Vec4 quat = currEnt->getRotation();
-			PxQuat quat2(quat.x, quat.y, quat.z, quat.w);
-			((PxRigidDynamic*)actors[i])->setGlobalPose(PxTransform(pos2, quat2));
+			Vec3 posTemp = currEnt->getPosition();
+			PxVec3 pos(posTemp.x, posTemp.y, posTemp.z);
+			Vec4 rotTemp = currEnt->getRotation();
+			PxQuat rot(rotTemp.x, rotTemp.y, rotTemp.z, rotTemp.w);
+			PxTransform t(pos, rot);
+			Vec3 scaleTemp = currEnt->getScale();
+			PxVec3 scaleTemp2(scaleTemp.x, scaleTemp.y, scaleTemp.z);
+			PxMeshScale scale(scaleTemp2);
+
+			if (currEnt->getType() == Entity::Type::DYNAMIC) {
+				updateEnt<PxRigidDynamic>(actors[i], t, scale);
+			}
+			else if (currEnt->getType() == Entity::Type::STATIC) {
+				updateEnt<PxRigidStatic>(actors[i], t, scale);
+			}
 		}
 		delete[] actors;
 
@@ -116,12 +127,11 @@ namespace nf {
 		unsigned int stepCount = (unsigned int)(m_accumulator / m_stepSize);
 		m_accumulator -= stepCount * m_stepSize;
 		for (unsigned int i = 0; i < stepCount; i++) {
-			m_scene->simulate((float)m_stepSize);
+			m_scene->simulate(m_stepSize);
 			m_scene->fetchResults(true);
 		}
 
 		PxActor** actives = m_scene->getActiveActors(count);
-		//TODO: Kinematic actors?
 		for (unsigned int i = 0; i < count; i++) {
 			Entity& ent = *(Entity*)actives[i]->userData;
 			PxTransform transform = ((PxRigidActor*)actives[i])->getGlobalPose();
@@ -130,23 +140,79 @@ namespace nf {
 		}
 	}
 
+	void PhysicsEngine::addMesh(Model* model, std::vector<float>& vertices) {
+		PxConvexMeshDesc desc;
+		desc.points.count = (unsigned int)vertices.size() / 3;
+		desc.points.stride = 3 * sizeof(float);
+		desc.points.data = &vertices[0];
+		desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+
+		PxDefaultMemoryOutputStream buf;
+		if (!m_cooking->cookConvexMesh(desc, buf))
+			Error("Could not create convex mesh!");
+
+		PxDefaultMemoryInputData in(buf.getData(), buf.getSize());
+		PxConvexMesh* mesh = m_phy->createConvexMesh(in);
+		m_meshes[model] = mesh;
+	}
+
 	void PhysicsEngine::addActor(Entity* entity) {
 		Entity::Type type = entity->getType();
 
-		Vec3 pos = entity->getPosition();
-		PxMaterial* mat = m_phy->createMaterial(0.5f, 0.5f, 0.0f);
-		PxRigidDynamic* act = PxCreateDynamic(*m_phy, PxTransform(PxVec3((float)pos.x, (float)pos.y, (float)pos.z)), PxBoxGeometry(1.0, 1.0, 1.0), *mat, 100.0f);
-		//act->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
-		act->userData = entity;
-		m_scene->addActor(*act);
+		//TODO: Materials system for physics; Default material if none provided
+		PxMaterial* mat;
+		mat = m_defaultMat;
+		float density = 100.0f;
+
+		//Get mesh
+		if (m_meshes.find(entity->getModel()) == m_meshes.end())
+			Error("No physics mesh found for this entity!");
+		PxConvexMesh* mesh = m_meshes[entity->getModel()];
+
+		//Dynamic or static
+		if (type == Entity::Type::DYNAMIC) {
+			PxRigidDynamic* act = PxCreateDynamic(*m_phy, PxTransform(PxIdentity), PxConvexMeshGeometry(mesh), *mat, density);
+			act->userData = entity;
+			m_scene->addActor(*act);
+		}
+		else if (type == Entity::Type::STATIC) {
+			PxRigidStatic* act = PxCreateStatic(*m_phy, PxTransform(PxIdentity), PxConvexMeshGeometry(mesh), *mat);
+			act->userData = entity;
+			m_scene->addActor(*act);
+		}
 	}
 
 	void PhysicsEngine::closeScene() {
-		m_scene->release();
-		m_scene = nullptr;
+		if (m_scene) {
+			//Does this actually release all of them? Only if the respective shapes have been released?
+			for (auto it = m_meshes.begin(); it != m_meshes.end();) {
+				if (!it->first->isBaseAsset()) {
+					it->second->release();
+					it = m_meshes.erase(it);
+				}
+				else
+					it++;
+			}
+
+			m_scene->release();
+			m_scene = nullptr;
+		}
+	}
+
+	template<typename ActorType>
+	void PhysicsEngine::updateEnt(PxActor* act, PxTransform& transform, PxMeshScale& scale) {
+		((ActorType*)act)->setGlobalPose(transform);
+		PxShape** shape = new PxShape*;
+		((ActorType*)act)->getShapes(shape, sizeof(shape));
+		PxGeometryHolder holder = shape[0]->getGeometry();
+		holder.convexMesh().scale = scale;
+		shape[0]->setGeometry(holder.convexMesh());
+		delete shape;
 	}
 
 	PhysicsEngine::~PhysicsEngine() {
+		closeScene();
+		m_dispacher->release();
 		m_cooking->release();
 		m_phy->release();
 		if (m_pvd) {

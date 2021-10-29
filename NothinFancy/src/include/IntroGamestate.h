@@ -9,12 +9,14 @@ namespace nf {
 	public:
 		void onEnter() override;
 
-		void update(double deltaTime) override;
+		void update(float deltaTime) override;
 		void render(Renderer& renderer) override;
 
 		void onExit() override;
 	private:
 		std::chrono::steady_clock::time_point m_start;
+		unsigned int m_frame;
+		float m_scale;
 		UITexture m_logoTex;
 		Text m_text;
 	};

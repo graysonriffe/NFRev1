@@ -12,7 +12,7 @@
 #include "Utility.h"
 
 namespace nf {
-	Model::Model(AModel* model) :
+	Model::Model(AModel* model, bool physicsExport) :
 		m_base(model->isBaseAsset)
 	{
 		if (model->neededTextures.size() > 32)
@@ -143,7 +143,7 @@ namespace nf {
 			}
 
 			size_t pos = file.find(line) + strlen(line) + remove;
-			file = file.substr(pos);
+			file.erase(0, pos);
 		}
 
 		if (!tcPresent)
@@ -276,7 +276,7 @@ namespace nf {
 				normA = model->neededTextures[curr2.normalTextureName];
 				norm = new Texture(normA, true);
 			}
-			m_materials.push_back(std::make_tuple(diff, spec, norm, (float)curr2.diffuseColor.x, (float)curr2.diffuseColor.y, (float)curr2.diffuseColor.z, curr2.shininess));
+			m_materials.push_back(std::make_tuple(diff, spec, norm, curr2.diffuseColor.x, curr2.diffuseColor.y, curr2.diffuseColor.z, curr2.shininess));
 			size_t offset = vboPositions.size() / 3;
 			vboPositions.insert(vboPositions.end(), curr2.outVB.begin(), curr2.outVB.end());
 			vboTexCoords.insert(vboTexCoords.end(), curr2.outTC.begin(), curr2.outTC.end());
@@ -308,6 +308,9 @@ namespace nf {
 		m_vao->pushInt(1);
 		m_vao->finishBufferLayout();
 		m_ib = new IndexBuffer(&vboIndices[0], vboIndices.size());
+
+		if (physicsExport)
+			Application::getApp()->getPhysicsEngine()->addMesh(this, vboPositions);
 	}
 
 	void Model::render(Shader* shader, bool onlyDepth, unsigned int count) {

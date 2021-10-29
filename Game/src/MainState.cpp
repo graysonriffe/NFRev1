@@ -2,10 +2,11 @@
 
 void MainState::onEnter() {
 	Log("MainState onEnter!");
-	camera->setType(nf::Camera::Type::FIRST_PERSON);
+	currCamType = nf::Camera::Type::FIRST_PERSON;
+	camera->setType(currCamType);
 	ap.load("example.nfpack");
-	test.create(ap["2mats.obj"]);
-	test.setPosition(0.0, 0.05, -5.0);
+	test.create(ap["2mats.obj"], nf::Entity::Type::DYNAMIC);
+	test.setPosition(nf::Vec3(0.0, 1.5, -5.0));
 	plane.create(nf::BaseAssets::plane);
 	plane.setScale(20.0);
 	text.create("This is a test text.", nf::Vec2(0.1, 0.025), nf::Vec3(0.8));
@@ -28,20 +29,23 @@ void MainState::onEnter() {
 		for (int y = 0; y < 5; y++) {
 			for (int z = 0; z < 5; z++) {
 				entities.push_back(new nf::Entity);
-				entities.back()->create(ap["2mats.obj"], nf::Entity::Type::DYNAMIC);
-				entities.back()->setPosition(5.0 + x * 2.1, 1.0 + y * 2.1, -5.0 + z * 2.1);
+				entities.back()->create(nf::BaseAssets::sphere, nf::Entity::Type::DYNAMIC);
+				entities.back()->setPosition(nf::Vec3(5.0 + x * 2.05, 1.0 + y * 2.05, -5.0 + z * 2.05));
 			}
 		}
 	}
+
+	camera->setPosition(-20.0, 5.0, 0.0);
+	camera->setRotation(85.0, 0.0);
 }
 
-void MainState::update(double deltaTime) {
-	if (app->isKeyPressed(NFI_U))
-		camera->setType(nf::Camera::Type::UI);
-	if (app->isKeyPressed(NFI_P))
-		camera->setType(nf::Camera::Type::FIRST_PERSON);
+void MainState::update(float deltaTime) {
+	if (app->isKeyPressed(NFI_E)) {
+		currCamType = currCamType == nf::Camera::Type::FIRST_PERSON ? nf::Camera::Type::UI : nf::Camera::Type::FIRST_PERSON;
+		camera->setType(currCamType);
+	}
 
-	double speed = 5.0;
+	float speed = 5.0;
 	if (camera->getType() == nf::Camera::Type::FIRST_PERSON) {
 		if (app->isKeyHeld(NFI_SHIFT))
 			speed = 20.0;
@@ -57,19 +61,12 @@ void MainState::update(double deltaTime) {
 			camera->moveLeft(speed * deltaTime);
 	}
 
-	static double offset = 0.0;
-	if (app->isKeyHeld(NFI_UP))
-		offset += 2.0 * deltaTime;
-	if (app->isKeyHeld(NFI_DOWN))
-		offset -= 2.0 * deltaTime;
-	test.setRotation(0.0, 0.0, -offset * 20.0);
-
-	test.setPosition(nf::Vec3(std::sin(circle) * 10.0, 5.0, std::cos(circle) * 10.0));
-	circle += 2.0 * deltaTime;
+	//test.setPosition(nf::Vec3(std::sin(circle) * 10.0, 5.0, std::cos(circle) * 10.0));
+	circle += 1.5f * deltaTime;
 
 	text.setText("FPS: " + std::to_string(app->getFPS()));
 
-	if (button.isClicked())
+	if (button.isClicked() || app->isKeyPressed(NFI_R))
 		app->changeState("Main State");
 
 	if (button2.isClicked() || app->isKeyPressed(NFI_SPACE))
@@ -87,7 +84,7 @@ void MainState::update(double deltaTime) {
 }
 
 void MainState::render(nf::Renderer& renderer) {
-	//renderer.render(test);
+	renderer.render(test);
 	renderer.render(plane);
 	renderer.render(light);
 	renderer.render(light2);
@@ -104,7 +101,7 @@ void MainState::render(nf::Renderer& renderer) {
 
 void MainState::onExit() {
 	Log("MainState onExit!");
-	circle = 0.0;
 
+	circle = 0.0f;
 	entities.clear();
 }

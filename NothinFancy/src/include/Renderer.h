@@ -29,7 +29,7 @@ namespace nf {
 		void render(Light& in);
 		void render(Cubemap& in);
 
-		void doFrame(Camera* camera, double dT);
+		void doFrame(Camera* camera, float dT);
 
 		~Renderer();
 	private:

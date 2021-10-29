@@ -11,10 +11,10 @@ namespace nf {
 	public:
 		UITexture();
 
-		void create(Asset* textureAsset, const Vec2& position, double scale = 1.0, double opacity = 1.0);
+		void create(Asset* textureAsset, const Vec2& position, float scale = 1.0f, float opacity = 1.0f);
 		const char* identity() override;
-		void setScale(double scale);
-		void setOpacity(double opacity);
+		void setScale(float scale);
+		void setOpacity(float opacity);
 		void render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight) override;
 
 		void destroy() override;

@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "PhysicsEngine.h"
+#include "Entity.h"
 #include "Model.h"
 #include "Texture.h"
 #include "Utility.h"
@@ -10,18 +11,22 @@ namespace nf {
 	Gamestate::Gamestate() :
 		app(nullptr),
 		camera(nullptr),
+		m_loading(false),
 		m_running(false)
 	{
 
 	}
 
-	void Gamestate::run(Application* app) {
+	void Gamestate::run(Application* app, bool physics) {
+		m_loading = true;
 		this->app = app;
 		camera = new Camera(this->app);
 
-		app->getPhysicsEngine()->newScene();
+		if (physics)
+			app->getPhysicsEngine()->newScene();
 		onEnter();
 
+		m_loading = false;
 		m_running = true;
 	}
 
@@ -33,7 +38,11 @@ namespace nf {
 		return m_running;
 	}
 
-	void Gamestate::update(double deltaTime) {
+	bool Gamestate::isLoading() {
+		return m_loading;
+	}
+
+	void Gamestate::update(float deltaTime) {
 
 	}
 
@@ -56,6 +65,10 @@ namespace nf {
 		for (NFObject* curr : m_nfObjects)
 			curr->destroy();
 		m_nfObjects.clear();
+
+		for (Entity* curr : m_entsToDelete)
+			delete curr;
+		m_entsToDelete.clear();
 
 		for (Model* curr : m_modelsToDelete)
 			if (!curr->isBaseAsset())

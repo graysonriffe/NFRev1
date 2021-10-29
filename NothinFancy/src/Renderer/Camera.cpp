@@ -31,31 +31,31 @@ namespace nf {
 		return m_type;
 	}
 
-	void Camera::moveForward(double speed) {
+	void Camera::moveForward(float speed) {
 		Vec3 temp = m_front * speed;
 		m_position += temp;
 	}
 
-	void Camera::moveBackward(double speed) {
+	void Camera::moveBackward(float speed) {
 		Vec3 temp = m_front * speed;
 		m_position -= temp;
 	}
 
-	void Camera::moveRight(double speed) {
+	void Camera::moveRight(float speed) {
 		glm::vec3 front = { m_front.x, m_front.y, m_front.z };
-		glm::vec3 temp = glm::normalize(glm::cross(front, glm::vec3(0.0, 1.0, 0.0))) * (float)speed;
+		glm::vec3 temp = glm::normalize(glm::cross(front, glm::vec3(0.0, 1.0, 0.0))) * speed;
 		Vec3 move = { temp.x, temp.y, temp.z };
 		m_position += move;
 	}
 
-	void Camera::moveLeft(double speed) {
+	void Camera::moveLeft(float speed) {
 		glm::vec3 front = { m_front.x, m_front.y, m_front.z };
-		glm::vec3 temp = glm::normalize(glm::cross(front, glm::vec3(0.0, 1.0, 0.0))) * (float)speed;
+		glm::vec3 temp = glm::normalize(glm::cross(front, glm::vec3(0.0, 1.0, 0.0))) * speed;
 		Vec3 move = { temp.x, temp.y, temp.z };
 		m_position -= move;
 	}
 
-	void Camera::setPosition(double x, double y, double z) {
+	void Camera::setPosition(float x, float y, float z) {
 		m_position = { x, y, z };
 	}
 
@@ -65,6 +65,16 @@ namespace nf {
 
 	const Vec3& Camera::getPosition() {
 		return m_position;
+	}
+
+	void Camera::setRotation(float x, float y) {
+		m_yaw = x - 90.0f;
+		m_pitch = y;
+	}
+
+	void Camera::setRotation(const Vec2& rotation) {
+		m_yaw = rotation.x - 90.0f;
+		m_pitch = rotation.y;
 	}
 
 	const Vec3& Camera::getRotation() {
@@ -83,7 +93,7 @@ namespace nf {
 				int mouseDiffx = 0;
 				int mouseDiffy = 0;
 				m_app->getMouseDiff(mouseDiffx, mouseDiffy);
-				float mouseX = (float)mouseDiffx * 0.1f; //TODO: Mouse sensitivity
+				float mouseX = (float)mouseDiffx * 0.1f; //TODO: Custom mouse sensitivity
 				float mouseY = (float)mouseDiffy * 0.1f;
 				m_yaw += mouseX;
 				m_pitch += mouseY;

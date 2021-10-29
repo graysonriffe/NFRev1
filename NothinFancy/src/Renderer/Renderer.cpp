@@ -117,7 +117,7 @@ namespace nf {
 		m_quadVAO->pushFloat(2);
 		m_quadVAO->finishBufferLayout();
 		m_quadIB = new IndexBuffer(quadIB, 6);
-		m_loadingText.create("NFLoadingText", Vec2(0.025, 0.044), Vec3(0.7, 0.7, 0.7));
+		m_loadingText.create("NFLoadingText", Vec2(0.025f, 0.044f), Vec3(0.7f));
 	}
 
 	void Renderer::setFade(bool in, bool out, bool noText) {
@@ -152,7 +152,7 @@ namespace nf {
 		m_cubemap = &in;
 	}
 
-	void Renderer::doFrame(Camera* camera, double dT) {
+	void Renderer::doFrame(Camera* camera, float dT) {
 		//Begin frame
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
@@ -239,8 +239,8 @@ namespace nf {
 
 		//Fade over everything when states change
 		if (m_fadeIn) {
-			static double opacity = 1.0;
-			m_fadeShader->setUniform("opacity", (float)opacity);
+			static float opacity = 1.0f;
+			m_fadeShader->setUniform("opacity", opacity);
 			m_quadVAO->bind();
 			m_quadIB->bind();
 			glDrawElements(GL_TRIANGLES, m_quadIB->getCount(), GL_UNSIGNED_INT, nullptr);
@@ -249,9 +249,9 @@ namespace nf {
 				m_loadingText.setOpacity(opacity);
 				m_loadingText.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
 			}
-			if (dT > 1.0 / 60.0)
-				dT = 1.0 / 60.0;
-			opacity -= 2.5 * dT;
+			if (dT > 1.0f / 60.0f)
+				dT = 1.0f / 60.0f;
+			opacity -= 2.5f * dT;
 			if (opacity <= 0.0) {
 				m_fadeIn = false;
 				opacity = 1.0;
@@ -259,8 +259,8 @@ namespace nf {
 			}
 		}
 		else if (m_fadeOut) {
-			static double opacity = 0.0;
-			m_fadeShader->setUniform("opacity", (float)opacity);
+			static float opacity = 0.0f;
+			m_fadeShader->setUniform("opacity", opacity);
 			m_quadVAO->bind();
 			m_quadIB->bind();
 			glDrawElements(GL_TRIANGLES, m_quadIB->getCount(), GL_UNSIGNED_INT, nullptr);
@@ -269,7 +269,7 @@ namespace nf {
 				m_loadingText.setOpacity(opacity);
 				m_loadingText.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
 			}
-			opacity += 3.0 * dT;
+			opacity += 3.0f * dT;
 			if (opacity >= 1.0) {
 				m_fadeIn = false;
 				opacity = 0.0;
@@ -444,6 +444,7 @@ namespace nf {
 		delete m_cubemapShader;
 		delete m_fadeShader;
 		delete m_directionalShadowShader;
+		delete m_pointShadowShader;
 		delete m_gBuffer;
 		delete m_quadVAO;
 		delete m_quadIB;

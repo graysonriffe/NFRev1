@@ -10,6 +10,7 @@
 namespace nf {
 	Entity::Entity() :
 		m_constructed(false),
+		m_createdAtLoad(false),
 		m_type(Type::STATIC),
 		m_model(nullptr),
 		m_position(0.0),
@@ -17,7 +18,9 @@ namespace nf {
 		m_scale(1.0),
 		m_update(false)
 	{
-
+		if (Application::getApp() && Application::getApp()->getCurrentState())
+			if (Application::getApp()->getCurrentState()->isLoading())
+				m_createdAtLoad = true;
 	}
 
 	void Entity::create(Asset* modelAsset, Type type) {
@@ -32,15 +35,21 @@ namespace nf {
 			m_model = model->loadedModel;
 		}
 		else {
-			m_model = new Model(model); //Build convex mesh for every model once and store them somehow
+			bool physics = false;
+			if (m_type != Entity::Type::DETAIL)
+				physics = true;
+			m_model = new Model(model, physics);
 			model->alreadyLoaded = true;
 			model->loadedModel = m_model;
 		}
 
-		if (type != Type::STATIC)
+		if (type != Type::DETAIL)
 			Application::getApp()->getPhysicsEngine()->addActor(this);
 
 		if (!Application::getApp()->getCurrentState()->isRunning())
+			if (m_createdAtLoad)
+				Application::getApp()->getCurrentState()->m_entsToDelete.push_back(this);
+			else
 			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 	}
 
@@ -48,15 +57,11 @@ namespace nf {
 		return m_constructed;
 	}
 
-	void Entity::setType(Entity::Type type) {
-		//TODO: This function
-	}
-
 	Entity::Type Entity::getType() {
 		return m_type;
 	}
 
-	void Entity::setPosition(double x, double y, double z) {
+	void Entity::setPosition(float x, float y, float z) {
 		m_position = { x, y, z };
 		m_update = true;
 	}
@@ -70,7 +75,7 @@ namespace nf {
 		m_position = position;
 	}
 
-	void Entity::setRotation(double x, double y, double z) {
+	void Entity::setRotation(float x, float y, float z) {
 		m_rotation = degToQuat({ x, y, z });
 		m_update = true;
 	}
@@ -84,12 +89,12 @@ namespace nf {
 		m_rotation = rotation;
 	}
 
-	void Entity::setScale(double x) {
+	void Entity::setScale(float x) {
 		m_scale = { x, x, x };
 		m_update = true;
 	}
 
-	void Entity::setScale(double x, double y, double z) {
+	void Entity::setScale(float x, float y, float z) {
 		m_scale = { x, y, z };
 		m_update = true;
 	}
@@ -113,6 +118,10 @@ namespace nf {
 
 	const Vec4& Entity::getRotation() {
 		return m_rotation;
+	}
+
+	const Vec3& Entity::getScale() {
+		return m_scale;
 	}
 
 	void Entity::render(Shader* shader, bool onlyDepth) {
@@ -146,7 +155,7 @@ namespace nf {
 		m_constructed = false;
 		m_type = Type::STATIC;
 		m_position = Vec3(0.0);
-		m_rotation = Vec4(0.0);
+		m_rotation = degToQuat({ 0.0 });
 		m_scale = Vec3(1.0);
 	}
 

@@ -13,7 +13,7 @@ namespace nf {
 		return "none";
 	}
 
-	void UIElement::setPosition(double x, double y) {
+	void UIElement::setPosition(float x, float y) {
 		m_position = Vec2(x, y);
 	}
 	void UIElement::setPosition(const Vec2& position) {

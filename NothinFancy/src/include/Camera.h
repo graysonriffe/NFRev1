@@ -18,13 +18,15 @@ namespace nf {
 		void setType(Type cameraType);
 		Type getType() const;
 
-		void moveForward(double speed);
-		void moveBackward(double speed);
-		void moveRight(double speed);
-		void moveLeft(double speed);
-		void setPosition(double x, double y, double z);
+		void moveForward(float speed);
+		void moveBackward(float speed);
+		void moveRight(float speed);
+		void moveLeft(float speed);
+		void setPosition(float x, float y, float z);
 		void setPosition(const Vec3& position);
 		const Vec3& getPosition();
+		void setRotation(float x, float y);
+		void setRotation(const Vec2& rotation);
 		const Vec3& getRotation();
 
 		void bind(Shader* gBufferShader, Shader* lightingShader, Shader* cubemapShader);

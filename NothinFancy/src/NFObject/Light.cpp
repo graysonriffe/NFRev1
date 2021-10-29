@@ -12,14 +12,14 @@ namespace nf {
 
 	}
 
-	void Light::create(const Vec3& position, const Vec3& color, double strength, Type type) {
+	void Light::create(const Vec3& position, const Vec3& color, float strength, Type type) {
 		if (m_constructed)
 			Error("Light already created!");
 		m_constructed = true;
 		m_position = position;
 		m_color = color;
 		m_type = type;
-		m_strength = (float)strength;
+		m_strength = strength;
 
 		if (!Application::getApp()->getCurrentState()->isRunning())
 			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
@@ -37,8 +37,8 @@ namespace nf {
 		m_color = color;
 	}
 
-	void Light::setStrength(double strength) {
-		m_strength = (float)strength;
+	void Light::setStrength(float strength) {
+		m_strength = strength;
 	}
 
 	void Light::bind(Shader* shader, unsigned int lightNumber) {

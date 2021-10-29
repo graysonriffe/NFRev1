@@ -13,7 +13,7 @@
 namespace nf {
 	static DECOMPRESSOR_HANDLE s_dHandle;
 
-	static const double deg2rad = M_PI / 180.0f;
+	static const float deg2rad = (float)M_PI / 180.0f;
 
 #ifdef _DEBUG
 	void Debug::LogImp(const char* in) {
@@ -32,7 +32,7 @@ namespace nf {
 		std::printf("[%.4f] Debug: %i\n", time.count(), in);
 	}
 
-	void Debug::LogImp(double in) {
+	void Debug::LogImp(float in) {
 		std::chrono::duration<float> time = getCurrentTime();
 		std::printf("[%.4f] Debug: %.4f\n", time.count(), in);
 	}
@@ -83,19 +83,19 @@ namespace nf {
 	Vec4 degToQuat(const Vec3& in) {
 		float outX, outY, outZ, outW;
 
-		float cy = (float)std::cos(in.z * deg2rad * 0.5);
-		float sy = (float)std::sin(in.z * deg2rad * 0.5);
-		float cp = (float)std::cos(in.y * deg2rad * 0.5);
-		float sp = (float)std::sin(in.y * deg2rad * 0.5);
-		float cr = (float)std::cos(in.x * deg2rad * 0.5);
-		float sr = (float)std::sin(in.x * deg2rad * 0.5);
+		float cy = std::cosf(in.z * deg2rad / 2);
+		float sy = std::sinf(in.z * deg2rad / 2);
+		float cp = std::cosf(in.y * deg2rad / 2);
+		float sp = std::sinf(in.y * deg2rad / 2);
+		float cr = std::cosf(in.x * deg2rad / 2);
+		float sr = std::sinf(in.x * deg2rad / 2);
 
 		outW = cr * cp * cy + sr * sp * sy;
 		outX = sr * cp * cy - cr * sp * sy;
 		outY = cr * sp * cy + sr * cp * sy;
 		outZ = cr * cp * sy - sr * sp * cy;
 
-		return {outX, outY, outZ, outW};
+		return { outX, outY, outZ, outW };
 	}
 
 	void writeFile(const std::string& filename, const std::string& in, bool encrypted) {

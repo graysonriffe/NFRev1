@@ -17,18 +17,20 @@ namespace nf {
 
 	}
 
-	void Text::create(const std::string& string, const Vec2& position, const Vec3& color, double opacity, double scale, Asset* font) {
+	void Text::create(const std::string& string, const Vec2& position, const Vec3& color, float opacity, float scale, Asset* fontAsset) {
 		if (m_constructed)
 			Error("Text already created!");
 		m_constructed = true;
 		m_string = string;
 		m_position = position;
 		m_color = color;
-		m_scale = (float)scale;
-		m_opacity = (float)opacity;
-		AFont& newFont = *(AFont*)font;
-		if (newFont.alreadyLoaded) {
-			m_font = newFont.loadedFont;
+		m_scale = scale;
+		m_opacity = opacity;
+		AFont* font;
+		if ((font = dynamic_cast<AFont*>(fontAsset)) == nullptr)
+			Error("Non-font asset passed to Text::create!");
+		if (font->alreadyLoaded) {
+			m_font = font->loadedFont;
 		}
 		else {
 			m_font = new Font;
@@ -36,7 +38,7 @@ namespace nf {
 			if (FT_Init_FreeType(&ft))
 				Error("Could not initialize FreeType!");
 			FT_Face face;
-			if (FT_New_Memory_Face(ft, (const unsigned char*)newFont.data, (unsigned int)newFont.size, 0, &face))
+			if (FT_New_Memory_Face(ft, (const unsigned char*)font->data, (unsigned int)font->size, 0, &face))
 				Error("Could not load font!");
 			FT_Set_Pixel_Sizes(face, 0, 160);
 			for (unsigned char c = 0; c < 128; c++) {
@@ -49,14 +51,14 @@ namespace nf {
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				Character ch = { tex, Vec2((float)face->glyph->bitmap.width, (float)face->glyph->bitmap.rows), Vec2(face->glyph->bitmap_left, face->glyph->bitmap_top), (unsigned int)face->glyph->advance.x };
+				Character ch = { tex, Vec2((float)face->glyph->bitmap.width, (float)face->glyph->bitmap.rows), Vec2((float)face->glyph->bitmap_left, (float)face->glyph->bitmap_top), (unsigned int)face->glyph->advance.x };
 				m_font->m_characters[c] = ch;
 			}
 			FT_Done_Face(face);
 			FT_Done_FreeType(ft);
-			newFont.alreadyLoaded = true;
-			newFont.loadedFont = m_font;
-			m_font->isBase = newFont.isBaseAsset;
+			font->alreadyLoaded = true;
+			font->loadedFont = m_font;
+			m_font->isBase = font->isBaseAsset;
 		}
 		m_vao = new VertexArray;
 		m_vao->addBuffer(nullptr, 0);
@@ -83,12 +85,12 @@ namespace nf {
 		m_color = color;
 	}
 
-	void Text::setScale(double scale) {
-		m_scale = (float)scale;
+	void Text::setScale(float scale) {
+		m_scale = scale;
 	}
 
-	void Text::setOpacity(double opacity) {
-		m_opacity = (float)opacity;
+	void Text::setOpacity(float opacity) {
+		m_opacity = opacity;
 	}
 
 	const char* Text::identity() {
@@ -99,7 +101,7 @@ namespace nf {
 		float scale = windowWidth / 4000.0f;
 		if (onButton)
 			scale *= buttonWidth / 400.0f;
-		float currX = (float)m_position.x * windowWidth, currY = (float)m_position.y * windowHeight;
+		float currX = m_position.x * windowWidth, currY = m_position.y * windowHeight;
 		std::string::const_iterator si;
 		if (m_centeredX || m_centeredY) {
 			float textWidth = 0.0f;
@@ -108,7 +110,7 @@ namespace nf {
 				Character& c = m_font->m_characters[*si];
 				textWidth += (c.advance >> 6) * scale * m_scale;
 				if (c.size.y >= textHeight)
-					textHeight = (float)c.size.y * scale * m_scale;
+					textHeight = c.size.y * scale * m_scale;
 			}
 			if (m_centeredX)
 				currX = ((float)windowWidth - textWidth) / 2;
@@ -123,11 +125,11 @@ namespace nf {
 						Character& c = m_font->m_characters[*si];
 						textWidth += (c.advance >> 6) * scale * m_scale;
 						if (c.size.y >= textHeight)
-							textHeight = (float)c.size.y * scale * m_scale;
+							textHeight = c.size.y * scale * m_scale;
 					}
 				}
-				currX = (((float)buttonWidth - textWidth) / 2) + (float)buttonPos.x;
-				currY = (((float)buttonHeight - textHeight) / 2) + (float)buttonPos.y;
+				currX = (((float)buttonWidth - textWidth) / 2) + buttonPos.x;
+				currY = (((float)buttonHeight - textHeight) / 2) + buttonPos.y;
 			}
 		}
 
@@ -136,10 +138,10 @@ namespace nf {
 		shader->setUniform("opacity", m_opacity);
 		for (si = m_string.begin(); si != m_string.end(); si++) {
 			Character& c = m_font->m_characters[*si];
-			float x = currX + (float)c.bearing.x * scale * m_scale;
+			float x = currX + c.bearing.x * scale * m_scale;
 			float y = currY - float(c.size.y - c.bearing.y) * scale * m_scale;
-			float w = (float)c.size.x * scale * m_scale;
-			float h = (float)c.size.y * scale * m_scale;
+			float w = c.size.x * scale * m_scale;
+			float h = c.size.y * scale * m_scale;
 			float vb[] = {
 				x, y + h,
 				x, y,

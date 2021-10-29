@@ -28,7 +28,7 @@ __debugbreak();}
 		static void LogImp(const char* in);
 		static void LogImp(const std::string& in);
 		static void LogImp(int in);
-		static void LogImp(double in);
+		static void LogImp(float in);
 		static void ErrorImp(const char* in, const char* filename, int line);
 		static void ErrorImp(const std::string& in, const char* filename, int line);
 	};
@@ -41,9 +41,14 @@ std::exit(-1);}
 #endif
 	struct Vec2 {
 		Vec2() : x(0.0), y(0.0) {}
-		Vec2(double x1) : x(x1), y(x1) {}
-		Vec2(double x1, double y1) : x(x1), y(y1) {}
-		Vec2 operator*(const double scalar) {
+		Vec2(float x1) : x(x1), y(x1) {}
+		Vec2(float x1, float y1) : x(x1), y(y1) {}
+		Vec2(double x1) : x((float)x1), y((float)x1) {}
+		Vec2(double x1, double y1) : x((float)x1), y((float)y1) {}
+		Vec2 operator+(const Vec2& rhs) const {
+			return Vec2(x + rhs.x, y + rhs.y);
+		}
+		Vec2 operator*(const float scalar) const {
 			return Vec2(x * scalar, y * scalar);
 		}
 		Vec2& operator+=(const Vec2& rhs) {
@@ -59,13 +64,18 @@ std::exit(-1);}
 		bool operator==(const Vec2& rhs) {
 			return this->x == rhs.x && this->y == rhs.y;
 		}
-		double x, y;
+		float x, y;
 	};
 	struct Vec3 {
 		Vec3() : x(0.0), y(0.0), z(0.0) {}
-		Vec3(double x1) : x(x1), y(x1), z(x1) {}
-		Vec3(double x1, double y1, double z1) : x(x1), y(y1), z(z1) {}
-		Vec3 operator*(const double scalar) {
+		Vec3(float x1) : x(x1), y(x1), z(x1) {}
+		Vec3(float x1, float y1, float z1) : x(x1), y(y1), z(z1) {}
+		Vec3(double x1) : x((float)x1), y((float)x1), z((float)x1) {}
+		Vec3(double x1, double y1, double z1) : x((float)x1), y((float)y1), z((float)z1) {}
+		Vec3 operator+(const Vec3& rhs) const {
+			return Vec3(x + rhs.x, y + rhs.y, z + rhs.z);
+		}
+		Vec3 operator*(const float scalar) const {
 			return Vec3(x * scalar, y * scalar, z * scalar);
 		}
 		Vec3& operator+=(const Vec3& rhs) {
@@ -83,13 +93,18 @@ std::exit(-1);}
 		bool operator==(const Vec3& rhs) {
 			return this->x == rhs.x && this->y == rhs.y && this->z == rhs.z	;
 		}
-		double x, y, z;
+		float x, y, z;
 	};
 	struct Vec4 {
 		Vec4() : x(0.0), y(0.0), z(0.0), w(0.0) {}
 		Vec4(float x1) : x(x1), y(x1), z(x1), w(x1) {}
 		Vec4(float x1, float y1, float z1, float w1) : x(x1), y(y1), z(z1), w(w1) {}
-		Vec4 operator*(const float scalar) {
+		Vec4(double x1) : x((float)x1), y((float)x1), z((float)x1), w((float)x1) {}
+		Vec4(double x1, double y1, double z1, double w1) : x((float)x1), y((float)y1), z((float)z1), w((float)w1) {}
+		Vec4 operator+(const Vec4& rhs) const {
+			return Vec4(x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w);
+		}
+		Vec4 operator*(const float scalar) const {
 			return Vec4(x * scalar, y * scalar, z * scalar, w * scalar);
 		}
 		Vec4& operator+=(const Vec4& rhs) {

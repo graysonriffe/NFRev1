@@ -92,9 +92,9 @@ namespace nf {
 			if (m_isActive && Application::getApp()->getCurrentState() && Application::getApp()->getCurrentState()->isRunning()) {
 				//Update listener position
 				temp = Application::getApp()->getCurrentState()->getCamera()->getPosition();
-				listener.Position = X3DAUDIO_VECTOR((float)temp.x, (float)temp.y, (float)-temp.z);
+				listener.Position = X3DAUDIO_VECTOR(temp.x, temp.y, -temp.z);
 				temp = Application::getApp()->getCurrentState()->getCamera()->getRotation();
-				listener.OrientFront = X3DAUDIO_VECTOR((float)temp.x, 0.0f, (float)-temp.z);
+				listener.OrientFront = X3DAUDIO_VECTOR(temp.x, 0.0f, -temp.z);
 
 				//Stop all sounds if requested
 				if (m_clear)
@@ -138,7 +138,7 @@ namespace nf {
 						int ch = curr.format->Format.nChannels;
 						emitter.ChannelCount = ch;
 						x3dSettings.SrcChannelCount = ch;
-						emitter.Position = X3DAUDIO_VECTOR((float)temp.x, (float)temp.y, (float)-temp.z);
+						emitter.Position = X3DAUDIO_VECTOR(temp.x, temp.y, -temp.z);
 						X3DAudioCalculate(x3d, &listener, &emitter, X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB, &x3dSettings);
 						float temp2 = matrix[1];
 						matrix[1] = matrix[2];

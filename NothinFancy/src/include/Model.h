@@ -6,10 +6,11 @@
 namespace nf {
 	class Texture;
 	class Shader;
+	struct TempMaterial;
 
 	class Model : public Drawable {
 	public:
-		Model(AModel* model);
+		Model(AModel* model, bool physicsExport);
 
 		void render(Shader* shader, bool onlyDepth, unsigned int count);
 		void bindMaterials(Shader* shader);
@@ -18,6 +19,8 @@ namespace nf {
 
 		~Model();
 	private:
+		void parseMaterials(std::unordered_map<std::string, TempMaterial*>& mats, std::string& mtl);
+
 		bool m_base;
 		std::vector<std::tuple<Texture*, Texture*, Texture*, float, float, float, float>> m_materials;
 		const std::string m_hasDiffString = "hasDiffuseTex[";

@@ -179,8 +179,8 @@ namespace nf {
 		return dataSize;
 	}
 
-	void Sound::setVolume(double volume) {
-		m_volume = (float)volume;
+	void Sound::setVolume(float volume) {
+		m_volume = volume;
 	}
 
 	void Sound::setEntity(Entity& entity) {

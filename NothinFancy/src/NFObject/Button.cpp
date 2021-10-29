@@ -21,7 +21,7 @@ namespace nf {
 
 	}
 
-	void Button::create(const Vec2& position, std::string string, Asset* buttonAsset, double scale, double opacity) {
+	void Button::create(const Vec2& position, std::string string, Asset* buttonAsset, float scale, float opacity) {
 		if (m_constructed)
 			Error("Button already created!");
 		m_constructed = true;
@@ -31,8 +31,8 @@ namespace nf {
 			m_text.create(m_string, Vec2(0.0, 0.0));
 			m_text.centered(true);
 		}
-		m_scale = (float)scale * 0.3f;
-		m_opacity = (float)opacity;
+		m_scale = scale * 0.3f;
+		m_opacity = opacity;
 		m_text.setOpacity(m_opacity);
 		AButton* button;
 		if ((button = dynamic_cast<AButton*>(buttonAsset)) == nullptr)
@@ -68,12 +68,12 @@ namespace nf {
 	}
 
 	void Button::render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight, Application* app, Shader* textShader) {
-		float posX = (float)m_position.x * windowWidth, posY = (float)m_position.y * windowHeight;
+		float posX = m_position.x * windowWidth, posY = m_position.y * windowHeight;
 		float scale = windowWidth / 5.0f;
 
 		Vec2 texDim = m_idleTexture->getDimensions();
 		float height = scale * m_scale;
-		float width = ((float)texDim.x / (float)texDim.y) * scale * m_scale;
+		float width = (texDim.x / texDim.y) * scale * m_scale;
 		if (m_centeredX)
 			posX = ((float)windowWidth - width) / 2;
 		if (m_centeredY)

@@ -12,7 +12,7 @@ namespace nf {
 		Sound();
 
 		void create(Asset* soundAsset);
-		void setVolume(double volume);
+		void setVolume(float volume);
 		void setEntity(Entity& entity);
 		void setPosition(const Vec3& position);
 		void play(bool loop = false);

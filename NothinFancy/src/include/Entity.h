@@ -17,28 +17,29 @@ namespace nf {
 			DYNAMIC,
 			DETAIL
 		};
+
 		Entity();
 
 		void create(Asset* modelAsset, Type type = Type::STATIC);
 		bool isConstructed();
 
-		void setType(Type type);
 		Type getType();
 
-		void setPosition(double x, double y, double z);
+		void setPosition(float x, float y, float z);
 		void setPosition(const Vec3& position);
 		void setPositionPhysics(const Vec3& position);
-		void setRotation(double x, double y, double z);
+		void setRotation(float x, float y, float z);
 		void setRotation(const Vec3& rotation);
 		void setRotationPhysics(const Vec4& rotation);
-		void setScale(double x);
-		void setScale(double x, double y, double z);
+		void setScale(float x);
+		void setScale(float x, float y, float z);
 		void setScale(const Vec3& scale);
 
 		bool needsPhysicsUpdate();
 
 		const Vec3& getPosition();
 		const Vec4& getRotation();
+		const Vec3& getScale();
 		void render(Shader* shader, bool onlyDepth);
 		Model* getModel() const;
 #ifdef NFENGINE
@@ -48,6 +49,7 @@ namespace nf {
 		~Entity();
 	private:
 		bool m_constructed;
+		bool m_createdAtLoad;
 		Type m_type;
 		Model* m_model;
 

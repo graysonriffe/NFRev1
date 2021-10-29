@@ -5,11 +5,13 @@ class MainState : public nf::Gamestate {
 public:
 	void onEnter() override;
 
-	void update(double deltaTime) override;
+	void update(float deltaTime) override;
 	void render(nf::Renderer& renderer) override;
 
 	void onExit() override;
 private:
+	nf::Camera::Type currCamType;
+
 	nf::AssetPack ap;
 	nf::Entity test;
 	nf::Entity plane;
@@ -25,7 +27,7 @@ private:
 	nf::Sound sound;
 	nf::Sound sound2;
 
-	double circle;
+	float circle;
 
 	std::vector<nf::Entity*> entities;
 };

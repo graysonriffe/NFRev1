@@ -15,7 +15,8 @@ namespace nf {
 		m_altWidth(1280),
 		m_altHeight(720),
 		m_defaultStateAdded(false),
-		m_stateChange(false)
+		m_stateChange(false),
+		m_stateChangeStarted(false)
 	{
 		Log("Creating NF application");
 		Log("Width: " + std::to_string(m_currentConfig.width) + ", Height: " + std::to_string(m_currentConfig.height) + ", Fullscreen: " + std::to_string(m_currentConfig.fullscreen) + ", Title: " + m_currentConfig.title);
@@ -168,7 +169,7 @@ namespace nf {
 	}
 
 	bool Application::isMouse(unsigned int code) {
-		if (code < 7)
+		if (code < 7 && GetForegroundWindow() == m_window)
 			return GetKeyState(code) & 0x8000;
 		return false;
 	}
@@ -187,7 +188,7 @@ namespace nf {
 	}
 
 	Vec2 Application::getMousePos() {
-		return Vec2(m_mouseX, m_mouseY);
+		return Vec2((float)m_mouseX, (float)m_mouseY);
 	}
 
 	Application* Application::getApp(bool first) {
@@ -284,6 +285,7 @@ namespace nf {
 
 	void Application::quit() {
 		m_quit = true;
+		Log("Exiting NF application");
 	}
 
 	void Application::runMainGameThread() {
@@ -295,22 +297,24 @@ namespace nf {
 		m_physics = new PhysicsEngine(this);
 		Gamestate* sIntro = new IntroGamestate;
 		m_currentState = sIntro;
-		m_currentState->run(this);
+		m_currentState->run(this, false);
 		m_renderer->setFade(true, false, true);
-		std::chrono::steady_clock::time_point currentFrame = std::chrono::steady_clock::now();
-		std::chrono::steady_clock::time_point lastFrame = std::chrono::steady_clock::now();
+		std::chrono::steady_clock::time_point startOfCurrentFrame = std::chrono::steady_clock::now();
+		std::chrono::steady_clock::time_point startOfLastFrame = std::chrono::steady_clock::now();
 		while (m_running) {
-			currentFrame = std::chrono::steady_clock::now();
-			m_deltaTime = std::chrono::duration<double>(currentFrame - lastFrame).count();
+			startOfCurrentFrame = std::chrono::steady_clock::now();
+			m_deltaTime = std::chrono::duration<float>(startOfCurrentFrame - startOfLastFrame).count();
 			if (m_deltaTime >= m_minFrametime) {
-				lastFrame = std::chrono::steady_clock::now();
+				//Don't count loading times into delta time
+				if (m_stateChange)
+					doStateChange();
+				startOfLastFrame = std::chrono::steady_clock::now();
 				//Should the physics update before user code?
 				m_physics->update(m_deltaTime);
 				m_currentState->update(m_deltaTime);
 				m_currentState->render(*m_renderer);
 				m_renderer->doFrame(m_currentState->getCamera(), m_deltaTime);
-				if (m_stateChange)
-					doStateChange();
+
 				m_fpsClock2 = std::chrono::steady_clock::now();
 				m_fpsDuration = m_fpsClock2 - m_fpsClock1;
 				if (m_fpsDuration.count() >= 0.2) {
@@ -334,10 +338,9 @@ namespace nf {
 	}
 
 	void Application::doStateChange() {
-		static bool once = true;
-		if (once) {
+		if (!m_stateChangeStarted) {
 			m_renderer->setFade(false, true, false);
-			once = false;
+			m_stateChangeStarted = true;
 		}
 
 		if (m_renderer->isFadeOutComplete()) {
@@ -347,7 +350,7 @@ namespace nf {
 			m_currentState->run(this);
 			m_renderer->setFade(true, false, false);
 			m_stateChange = false;
-			once = true;
+			m_stateChangeStarted = false;
 		}
 	}
 
@@ -412,8 +415,6 @@ namespace nf {
 	}
 
 	Application::~Application() {
-		Log("Exiting NF application");
-
 		for (std::pair<std::string, Gamestate*> state : m_states) {
 			Gamestate* curr = state.second;
 			delete curr;

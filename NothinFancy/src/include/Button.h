@@ -14,7 +14,7 @@ namespace nf {
 	public:
 		Button();
 
-		void create(const Vec2& position, std::string string = "", Asset* buttonAsset = nf::BaseAssets::button, double scale = 1.0, double opacity = 1.0);
+		void create(const Vec2& position, std::string string = "", Asset* buttonAsset = nf::BaseAssets::button, float scale = 1.0f, float opacity = 1.0f);
 		const char* identity() override;
 		void render(Shader* shader, unsigned int windowWidth, unsigned int windowHeight, Application* app, Shader* textShader);
 		bool isClicked();

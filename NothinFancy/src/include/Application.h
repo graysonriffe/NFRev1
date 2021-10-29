@@ -71,12 +71,12 @@ namespace nf {
 		LONG m_defaultWindowStyle;
 		unsigned int m_altWidth, m_altHeight;
 
-		std::chrono::duration<double> m_fpsDuration;
-		double m_deltaTime;
+		std::chrono::duration<float> m_fpsDuration;
+		float m_deltaTime;
 		std::chrono::steady_clock::time_point m_fpsClock1 = std::chrono::steady_clock::now();
 		std::chrono::steady_clock::time_point m_fpsClock2 = m_fpsClock1;
 		const int m_targetFPS = 60;
-		const double m_minFrametime = 1.0 / m_targetFPS;
+		const float m_minFrametime = 1.0f / m_targetFPS;
 		int m_FPS;
 
 		//Inactive states to potentially be active during the Application's lifetime
@@ -87,6 +87,7 @@ namespace nf {
 		Gamestate* m_currentState;
 		bool m_stateChange;
 		std::string m_nextState;
+		bool m_stateChangeStarted;
 
 		//Array of booleans that represent keyboard and mouse input minus the scrollwheel
 		std::array<bool, 164> m_keysPressed;
