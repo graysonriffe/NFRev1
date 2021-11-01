@@ -3,3 +3,4 @@ bin/
 int/
 *.aps
 *.res
+*.nfpack

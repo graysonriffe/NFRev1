@@ -27,7 +27,5 @@ private:
 	nf::Sound sound;
 	nf::Sound sound2;
 
-	float circle;
-
 	std::vector<nf::Entity*> entities;
 };

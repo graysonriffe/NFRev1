@@ -10,7 +10,7 @@
 namespace nf {
 	Entity::Entity() :
 		m_constructed(false),
-		m_createdAtLoad(false),
+		m_member(false),
 		m_type(Type::STATIC),
 		m_model(nullptr),
 		m_position(0.0),
@@ -18,9 +18,8 @@ namespace nf {
 		m_scale(1.0),
 		m_update(false)
 	{
-		if (Application::getApp() && Application::getApp()->getCurrentState())
-			if (Application::getApp()->getCurrentState()->isLoading())
-				m_createdAtLoad = true;
+		if (!Application::getApp() || !Application::getApp()->getCurrentState())
+			m_member = true;
 	}
 
 	void Entity::create(Asset* modelAsset, Type type) {
@@ -46,11 +45,10 @@ namespace nf {
 		if (type != Type::DETAIL)
 			Application::getApp()->getPhysicsEngine()->addActor(this);
 
-		if (!Application::getApp()->getCurrentState()->isRunning())
-			if (m_createdAtLoad)
-				Application::getApp()->getCurrentState()->m_entsToDelete.push_back(this);
-			else
+		if (m_member)
 			Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
+		else
+			Application::getApp()->getCurrentState()->m_entsToDelete.push_back(this);
 	}
 
 	bool Entity::isConstructed() {

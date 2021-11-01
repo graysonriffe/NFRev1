@@ -61,9 +61,6 @@ void MainState::update(float deltaTime) {
 			camera->moveLeft(speed * deltaTime);
 	}
 
-	//test.setPosition(nf::Vec3(std::sin(circle) * 10.0, 5.0, std::cos(circle) * 10.0));
-	circle += 1.5f * deltaTime;
-
 	text.setText("FPS: " + std::to_string(app->getFPS()));
 
 	if (button.isClicked() || app->isKeyPressed(NFI_R))
@@ -77,6 +74,12 @@ void MainState::update(float deltaTime) {
 	if (app->isKeyPressed(NFI_O)) {
 		sound.stop();
 		sound2.stop();
+	}
+
+	if (app->isKeyPressed(NFI_K)) {
+		entities.push_back(new nf::Entity);
+		entities.back()->create(ap["2mats.obj"], nf::Entity::Type::DYNAMIC);
+		entities.back()->setPosition(camera->getPosition());
 	}
 
 	if (app->isKeyPressed(NFI_ESCAPE))
@@ -102,6 +105,5 @@ void MainState::render(nf::Renderer& renderer) {
 void MainState::onExit() {
 	Log("MainState onExit!");
 
-	circle = 0.0f;
 	entities.clear();
 }

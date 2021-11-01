@@ -19,8 +19,6 @@ namespace nf {
 			Error("Model exceedes 32 texture limit!");
 		std::string obj = model->data;
 		size_t startMtlPos = obj.find("newmtl");
-		if (startMtlPos == std::string::npos)
-			Error("No materials found in model!");
 		std::string mtl = obj.substr(startMtlPos);
 		struct TempMaterial {
 			std::vector<float> outVB;

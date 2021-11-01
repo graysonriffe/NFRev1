@@ -49,7 +49,7 @@ namespace nf {
 		~Entity();
 	private:
 		bool m_constructed;
-		bool m_createdAtLoad;
+		bool m_member;
 		Type m_type;
 		Model* m_model;
 
