@@ -21,7 +21,7 @@ namespace nf {
 	public:
 		Renderer(Application* app);
 
-		void setFade(bool in, bool out, bool noText);
+		void setFade(bool in, bool out, bool text = true);
 		bool isFadeOutComplete();
 
 		void render(Entity& in);
@@ -68,7 +68,8 @@ namespace nf {
 		Shader* m_pointShadowShader;
 
 		bool m_fadeIn, m_fadeOut;
-		bool m_fadeNoText;
+		float m_fadeInOpacity, m_fadeOutOpacity;
+		bool m_fadeText;
 		bool m_fadeOutComplete;
 		Text m_loadingText;
 

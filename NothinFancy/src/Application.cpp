@@ -112,7 +112,7 @@ namespace nf {
 		if (m_states.find(stateName) == m_states.end())
 			Error("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!");
 		m_stateChange = true;
-		m_nextState = stateName;
+		m_nextState = m_states[stateName];
 	}
 
 	Gamestate* Application::getCurrentState() {
@@ -306,7 +306,7 @@ namespace nf {
 		Gamestate* sIntro = new IntroGamestate;
 		m_currentState = sIntro;
 		m_currentState->run(this, false);
-		m_renderer->setFade(true, false, true);
+		m_renderer->setFade(true, false, false);
 		std::chrono::steady_clock::time_point startOfCurrentFrame = std::chrono::steady_clock::now();
 		std::chrono::steady_clock::time_point startOfLastFrame = std::chrono::steady_clock::now();
 		while (m_running) {
@@ -347,16 +347,16 @@ namespace nf {
 
 	void Application::doStateChange() {
 		if (!m_stateChangeStarted) {
-			m_renderer->setFade(false, true, false);
+			m_renderer->setFade(false, true);
 			m_stateChangeStarted = true;
 		}
 
 		if (m_renderer->isFadeOutComplete()) {
 			m_audio->stopAllSounds();
 			m_currentState->stop();
-			m_currentState = m_states[m_nextState];
+			m_currentState = m_nextState;
 			m_currentState->run(this);
-			m_renderer->setFade(true, false, false);
+			m_renderer->setFade(true, false);
 			m_stateChange = false;
 			m_stateChangeStarted = false;
 		}

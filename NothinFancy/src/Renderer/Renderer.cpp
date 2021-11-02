@@ -28,7 +28,9 @@ namespace nf {
 		m_cubemap(nullptr),
 		m_fadeIn(false),
 		m_fadeOut(false),
-		m_fadeNoText(false),
+		m_fadeInOpacity(1.0f),
+		m_fadeOutOpacity(0.0f),
+		m_fadeText(true),
 		m_fadeOutComplete(false)
 	{
 		m_hdc = GetDC(m_app->getWindow());
@@ -120,10 +122,10 @@ namespace nf {
 		m_loadingText.create("NFLoadingText", Vec2(0.025f, 0.044f), Vec3(0.7f));
 	}
 
-	void Renderer::setFade(bool in, bool out, bool noText) {
+	void Renderer::setFade(bool in, bool out, bool text) {
 		m_fadeIn = in;
 		m_fadeOut = out;
-		m_fadeNoText = noText;
+		m_fadeText = text;
 	}
 
 	bool Renderer::isFadeOutComplete() {
@@ -239,42 +241,40 @@ namespace nf {
 
 		//Fade over everything when states change
 		if (m_fadeIn) {
-			static float opacity = 1.0f;
-			m_fadeShader->setUniform("opacity", opacity);
+			m_fadeShader->setUniform("opacity", m_fadeInOpacity);
 			m_quadVAO->bind();
 			m_quadIB->bind();
 			glDrawElements(GL_TRIANGLES, m_quadIB->getCount(), GL_UNSIGNED_INT, nullptr);
-			if (!m_fadeNoText) {
+			if (m_fadeText) {
 				m_textShader->setUniform("proj", proj);
-				m_loadingText.setOpacity(opacity);
+				m_loadingText.setOpacity(m_fadeInOpacity);
 				m_loadingText.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
 			}
-			if (dT > 1.0f / 60.0f)
-				dT = 1.0f / 60.0f;
-			opacity -= 2.5f * dT;
-			if (opacity <= 0.0) {
+			if (m_fadeInOpacity <= 0.0) {
 				m_fadeIn = false;
-				opacity = 1.0;
+				m_fadeInOpacity = 1.0;
 				m_fadeOutComplete = false;
 			}
+			else
+				m_fadeInOpacity -= 2.5f * dT;
 		}
 		else if (m_fadeOut) {
-			static float opacity = 0.0f;
-			m_fadeShader->setUniform("opacity", opacity);
+			m_fadeShader->setUniform("opacity", m_fadeOutOpacity);
 			m_quadVAO->bind();
 			m_quadIB->bind();
 			glDrawElements(GL_TRIANGLES, m_quadIB->getCount(), GL_UNSIGNED_INT, nullptr);
-			if (!m_fadeNoText) {
+			if (m_fadeText) {
 				m_textShader->setUniform("proj", proj);
-				m_loadingText.setOpacity(opacity);
+				m_loadingText.setOpacity(m_fadeOutOpacity);
 				m_loadingText.render(m_textShader, m_app->getConfig().width, m_app->getConfig().height);
 			}
-			opacity += 3.0f * dT;
-			if (opacity >= 1.0) {
-				m_fadeIn = false;
-				opacity = 0.0;
+			if (m_fadeOutOpacity >= 1.0) {
+				m_fadeOut = false;
+				m_fadeOutOpacity = 0.0;
 				m_fadeOutComplete = true;
 			}
+			else
+				m_fadeOutOpacity += 3.0f * dT;
 		}
 		glEnable(GL_DEPTH_TEST);
 

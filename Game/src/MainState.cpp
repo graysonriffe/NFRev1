@@ -97,7 +97,7 @@ void MainState::update(float deltaTime) {
 		setGravity(grav);
 	}
 	if (app->isKeyPressed(NFI_T)) {
-		grav = 1.0f;
+		grav = 2.0f;
 		setGravity(1.0f);
 	}
 	gravText.setText("Gravity Scale: " + std::to_string(grav));

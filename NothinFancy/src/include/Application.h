@@ -87,7 +87,7 @@ namespace nf {
 		bool m_defaultStateAdded;
 		Gamestate* m_currentState;
 		bool m_stateChange;
-		std::string m_nextState;
+		Gamestate* m_nextState;
 		bool m_stateChangeStarted;
 
 		//Array of booleans that represent keyboard and mouse input minus the scrollwheel
