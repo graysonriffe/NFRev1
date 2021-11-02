@@ -77,6 +77,9 @@ namespace nf {
 		glEnable(GL_CULL_FACE);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		//Nvidia drivers take two buffer swaps to do the first flush for some reason
+		SwapBuffers(m_hdc);
+		SwapBuffers(m_hdc);
 
 		loadBaseAssets();
 

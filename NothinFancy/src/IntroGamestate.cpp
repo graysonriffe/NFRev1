@@ -7,20 +7,15 @@
 namespace nf {
 	void IntroGamestate::onEnter() {
 		Log("Intro onEnter!");
-		m_frame = 0;
 		m_scale = 2.0;
 		m_logoTex.create(BaseAssets::logo, Vec2(0.0, 0.0));
 		m_logoTex.centered(true, true);
 		m_text.create("(c) Grayson Riffe 2021", Vec2(0.01f, 0.025f), Vec3(0.8f));
 		m_text.setScale(0.6f);
+		m_start = std::chrono::steady_clock::now();
 	}
 
 	void IntroGamestate::update(float deltaTime) {
-		m_frame++;
-		if (m_frame < 5) return;
-		if (m_frame == 5)
-			m_start = std::chrono::steady_clock::now();
-
 		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 		std::chrono::duration<float, std::ratio<1i64>> dur = now - m_start;
 
