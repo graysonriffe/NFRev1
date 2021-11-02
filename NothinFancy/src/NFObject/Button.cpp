@@ -84,7 +84,7 @@ namespace nf {
 		m_triggered = false;
 		if (mousePos.x >= posX && mousePos.x <= posX + width && mousePos.y <= windowHeight - posY && mousePos.y >= (windowHeight - posY) - height) {
 			m_currentTexture = m_hoverTexture;
-			if (app->isMouse(NFI_LEFTMOUSE))
+			if (app->isMouseHeld(NFI_LEFTMOUSE))
 				m_clicked = true;
 			else if (m_clicked) {
 				m_triggered = true;

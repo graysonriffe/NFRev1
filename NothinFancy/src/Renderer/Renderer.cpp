@@ -157,7 +157,7 @@ namespace nf {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 10000.0f);
+		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 1000.0f);
 		camera->bind(m_gBufferShader, m_lightingShader, m_cubemapShader);
 
 		//First, fill the gBuffer with entities

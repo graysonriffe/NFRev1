@@ -102,6 +102,18 @@ namespace nf {
 		m_update = true;
 	}
 
+	void Entity::setVelocity(float x, float y, float z) {
+		setVelocity(Vec3(x, y, z));
+	}
+
+	void Entity::setVelocity(const Vec3& velocity) {
+		Application::getApp()->getPhysicsEngine()->setActorVelocity(this, velocity);
+	}
+
+	void Entity::setMass(float mass) {
+		Application::getApp()->getPhysicsEngine()->setActorMass(this, mass);
+	}
+
 	bool Entity::needsPhysicsUpdate() {
 		if (m_update) {
 			m_update = false;

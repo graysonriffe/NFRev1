@@ -159,16 +159,24 @@ namespace nf {
 	}
 
 	bool Application::isKeyPressed(unsigned int code) {
-		if (code > 7 && code < 164) {
-			if (m_keysPressed[code]) {
-				m_keysPressed[code] = false;
+		if (code > 7 && code < 164)
+			if (m_inputPressed[code]) {
+				m_inputPressed[code] = false;
 				return true;
 			}
-		}
 		return false;
 	}
 
-	bool Application::isMouse(unsigned int code) {
+	bool Application::isMouseClicked(unsigned int code) {
+		if (code < 7)
+			if (m_inputPressed[code]) {
+				m_inputPressed[code] = false;
+				return true;
+			}
+		return false;
+	}
+
+	bool Application::isMouseHeld(unsigned int code) {
 		if (code < 7 && GetForegroundWindow() == m_window)
 			return GetKeyState(code) & 0x8000;
 		return false;
@@ -385,12 +393,42 @@ namespace nf {
 			}
 			case WM_KEYDOWN: {
 				if (wParam < 164 && !(lParam & (1 << 30)) && GetFocus() == hWnd)
-					app->m_keysPressed[wParam] = true;
+					app->m_inputPressed[wParam] = true;
 				return 0;
 			}
 			case WM_KEYUP: {
 				if (wParam < 164 && GetFocus() == hWnd)
-					app->m_keysPressed[wParam] = false;
+					app->m_inputPressed[wParam] = false;
+				return 0;
+			}
+			case WM_LBUTTONDOWN: {
+				if (GetFocus() == hWnd)
+					app->m_inputPressed[1] = true;
+				return 0;
+			}
+			case WM_LBUTTONUP: {
+				if (GetFocus() == hWnd)
+					app->m_inputPressed[1] = false;
+				return 0;
+			}
+			case WM_RBUTTONDOWN: {
+				if (GetFocus() == hWnd)
+					app->m_inputPressed[2] = true;
+				return 0;
+			}
+			case WM_RBUTTONUP: {
+				if (GetFocus() == hWnd)
+					app->m_inputPressed[2] = false;
+				return 0;
+			}
+			case WM_MBUTTONDOWN: {
+				if (GetFocus() == hWnd)
+					app->m_inputPressed[4] = true;
+				return 0;
+			}
+			case WM_MBUTTONUP: {
+				if (GetFocus() == hWnd)
+					app->m_inputPressed[4] = false;
 				return 0;
 			}
 			case WM_SETCURSOR: {

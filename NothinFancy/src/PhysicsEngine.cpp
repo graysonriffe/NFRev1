@@ -3,7 +3,6 @@
 #include "Application.h"
 #include "Entity.h"
 #include "Model.h"
-#include "Utility.h"
 
 //Remove this
 #include "Input.h"
@@ -79,6 +78,52 @@ namespace nf {
 		m_scene->addActor(*ground);
 	}
 
+	void PhysicsEngine::setGravity(const Vec3& grav) {
+		if (m_scene) {
+			m_scene->setGravity(PxVec3(grav.x, grav.y, grav.z));
+
+			unsigned int count = m_scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
+			PxActor** actors = new PxActor * [count];
+			m_scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, actors, count);
+
+			for (unsigned int i = 0; i < count; i++) {
+				if (((PxRigidDynamic*)actors[i])->isSleeping())
+					((PxRigidDynamic*)actors[i])->wakeUp();
+			}
+			delete[] actors;
+		}
+	}
+
+	void PhysicsEngine::setActorVelocity(Entity* ent, const Vec3& vel) {
+		unsigned int count = m_scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
+		PxActor** actors = new PxActor * [count];
+		m_scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, actors, count);
+
+		for (unsigned int i = 0; i < count; i++) {
+			Entity* curr = (Entity*)actors[i]->userData;
+			if (curr == ent) {
+				((PxRigidDynamic*)actors[i])->setLinearVelocity(PxVec3(vel.x, vel.y, vel.z), true);
+				break;
+			}
+		}
+		delete[] actors;
+	}
+
+	void PhysicsEngine::setActorMass(Entity* ent, float mass) {
+		unsigned int count = m_scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
+		PxActor** actors = new PxActor * [count];
+		m_scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, actors, count);
+
+		for (unsigned int i = 0; i < count; i++) {
+			Entity* curr = (Entity*)actors[i]->userData;
+			if (curr == ent) {
+				((PxRigidDynamic*)actors[i])->setMass(mass);
+				break;
+			}
+		}
+		delete[] actors;
+	}
+
 	void PhysicsEngine::update(float dt) {
 		if (!m_scene || !m_scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC)) return;
 
@@ -86,21 +131,7 @@ namespace nf {
 		PxActor** actors = new PxActor*[count];
 		m_scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, actors, count);
 
-		if (m_app->isMouse(NFI_LEFTMOUSE)) {
-			Vec3 pos = m_app->getCurrentState()->getCamera()->getPosition();
-			PxVec3 camPos(pos.x, pos.y, pos.z);
-			PxQuat q(PxIdentity);
-			((PxRigidDynamic*)actors[1])->setGlobalPose(PxTransform(camPos, q));
-
-			Vec3 camDir = m_app->getCurrentState()->getCamera()->getRotation();
-			float speed = 100.0f;
-			PxRigidBodyExt::updateMassAndInertia(*(PxRigidDynamic*)actors[1], 1000.0);
-			((PxRigidDynamic*)actors[1])->setAngularVelocity(PxVec3(0.0));
-			((PxRigidDynamic*)actors[1])->setLinearVelocity(PxVec3(camDir.x * speed, camDir.y * speed, camDir.z * speed));
-		}
-
-		//TODO: CHANGE THIS 1 TO A 0!!!!
-
+		//Starting at 1 since 0 is the ground plane
 		for (unsigned int i = 1; i < count; i++) {
 			Entity* currEnt = (Entity*)actors[i]->userData;
 			if (!currEnt->needsPhysicsUpdate()) continue;
@@ -193,7 +224,6 @@ namespace nf {
 				else
 					it++;
 			}
-
 			m_scene->release();
 			m_scene = nullptr;
 		}

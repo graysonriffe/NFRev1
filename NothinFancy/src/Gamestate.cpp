@@ -30,10 +30,6 @@ namespace nf {
 		m_running = true;
 	}
 
-	void Gamestate::onEnter() {
-
-	}
-
 	bool Gamestate::isRunning() {
 		return m_running;
 	}
@@ -42,7 +38,15 @@ namespace nf {
 		return m_loading;
 	}
 
+	void Gamestate::onEnter() {
+
+	}
+
 	void Gamestate::update(float deltaTime) {
+
+	}
+
+	void Gamestate::render(Renderer& renderer) {
 
 	}
 
@@ -50,8 +54,12 @@ namespace nf {
 		return camera;
 	}
 
-	void Gamestate::render(Renderer& renderer) {
+	void Gamestate::setGravity(const Vec3& gravity) {
+		app->getPhysicsEngine()->setGravity(gravity * 9.81f);
+	}
 
+	void Gamestate::setGravity(float strength) {
+		app->getPhysicsEngine()->setGravity(Vec3(0.0f, -9.81f * strength, 0.0f));
 	}
 
 	void Gamestate::onExit() {

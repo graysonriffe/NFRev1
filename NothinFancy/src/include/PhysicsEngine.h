@@ -3,6 +3,8 @@
 #include <PxConfig.h>
 #include <PxPhysicsAPI.h>
 
+#include "Utility.h"
+
 using namespace physx;
 
 namespace nf {
@@ -15,6 +17,9 @@ namespace nf {
 		PhysicsEngine(Application* app);
 
 		void newScene();
+		void setGravity(const Vec3& grav);
+		void setActorVelocity(Entity* ent, const Vec3& vel);
+		void setActorMass(Entity* ent, float mass);
 		void update(float dt);
 		void addMesh(Model* model, std::vector<float>& vertices);
 		void addActor(Entity* entity);

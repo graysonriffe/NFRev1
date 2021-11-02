@@ -40,7 +40,8 @@ namespace nf {
 		int getFPS() const;
 		bool isKeyHeld(unsigned int code);
 		bool isKeyPressed(unsigned int code);
-		bool isMouse(unsigned int code);
+		bool isMouseClicked(unsigned int code);
+		bool isMouseHeld(unsigned int code);
 		void trackMouse(bool track);
 		void getMouseDiff(int& x, int& y);
 		Vec2 getMousePos();
@@ -90,7 +91,7 @@ namespace nf {
 		bool m_stateChangeStarted;
 
 		//Array of booleans that represent keyboard and mouse input minus the scrollwheel
-		std::array<bool, 164> m_keysPressed;
+		std::array<bool, 164> m_inputPressed;
 		unsigned int m_mouseX, m_mouseY;
 		bool m_trackingMouse;
 		bool m_mouseTrackFirst;

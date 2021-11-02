@@ -27,19 +27,24 @@ namespace nf {
 
 		void setPosition(float x, float y, float z);
 		void setPosition(const Vec3& position);
-		void setPositionPhysics(const Vec3& position);
 		void setRotation(float x, float y, float z);
 		void setRotation(const Vec3& rotation);
-		void setRotationPhysics(const Vec4& rotation);
-		void setScale(float x);
 		void setScale(float x, float y, float z);
 		void setScale(const Vec3& scale);
+		void setScale(float x);
 
-		bool needsPhysicsUpdate();
+		void setVelocity(float x, float y, float z);
+		void setVelocity(const Vec3& velocity);
+
+		void setMass(float mass);
 
 		const Vec3& getPosition();
 		const Vec4& getRotation();
 		const Vec3& getScale();
+
+		void setPositionPhysics(const Vec3& position);
+		void setRotationPhysics(const Vec4& rotation);
+		bool needsPhysicsUpdate();
 		void render(Shader* shader, bool onlyDepth);
 		Model* getModel() const;
 #ifdef NFENGINE

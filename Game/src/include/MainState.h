@@ -16,6 +16,7 @@ private:
 	nf::Entity test;
 	nf::Entity plane;
 	nf::Text text;
+	nf::Text gravText;
 	nf::UITexture uiTex;
 	nf::Button button;
 	nf::Button button2;
@@ -26,6 +27,8 @@ private:
 
 	nf::Sound sound;
 	nf::Sound sound2;
+
+	float grav;
 
 	std::vector<nf::Entity*> entities;
 };

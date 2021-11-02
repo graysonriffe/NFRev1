@@ -16,17 +16,22 @@ namespace nf {
 	class Gamestate {
 	public:
 		Gamestate();
-
+		//TODO: Add this to other objects
 		Gamestate(const Gamestate& other) = delete;
 
-		virtual void onEnter();
+		void run(Application* app, bool physics = true);
 		bool isRunning();
 		bool isLoading();
-		void run(Application* app, bool physics = true);
+
+		virtual void onEnter();
 
 		virtual void update(float deltaTime);
-		Camera* getCamera();
 		virtual void render(Renderer& renderer);
+
+		Camera* getCamera();
+		//In units of Earth gravity (9.81 m/s^2)
+		void setGravity(const Vec3& gravity);
+		void setGravity(float strength);
 
 		virtual void onExit();
 		void stop();
