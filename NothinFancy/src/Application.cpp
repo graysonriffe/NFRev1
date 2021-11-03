@@ -31,15 +31,14 @@ namespace nf {
 		int y = 0;
 		calculateNewWindowPos(x, y);
 		m_window = CreateWindowEx(NULL, m_wclassName, toWide(m_currentConfig.title).data(), WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX, x, y, windowSize.right, windowSize.bottom, NULL, NULL, m_hInst, NULL);
-		m_defaultWindowStyle = GetWindowLong(m_window, GWL_STYLE);
 		SetProp(m_window, L"App", this);
 		if (m_currentConfig.fullscreen) toggleFullscreen();
 	}
 
-	void Application::setWindowIcon(HANDLE hIcon) {
+	void Application::setWindowIcon(HICON hIcon) {
 		m_customWindowIconSet = true;
+		m_windowIcon = hIcon;
 		SendMessage(m_window, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
-		SendMessage(m_window, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
 	}
 	//TODO: Test these top-level features
 	void Application::setWindowCursor(HCURSOR hCursor) {
@@ -104,7 +103,7 @@ namespace nf {
 		mainThread.join();
 	}
 
-	bool Application::isCustomWindowIcon() {
+	bool Application::hasCustomWindowIcon() {
 		return m_customWindowIconSet;
 	}
 
@@ -255,6 +254,7 @@ namespace nf {
 		else {
 			SetWindowLong(m_window, GWL_STYLE, wndStyle | WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX);
 			SetWindowPos(m_window, HWND_TOP, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE);
+			SendMessage(m_window, WM_SETICON, ICON_SMALL, (LPARAM)m_windowIcon);
 		}
 	}
 
@@ -373,16 +373,14 @@ namespace nf {
 				return 0;
 			}
 			case WM_SYSKEYDOWN: {
-				if (GetKeyState(VK_RETURN) & 0x8000) {
-					if (!(lParam & (1 << 30))) {
-						if (!app->m_currentConfig.fullscreen) {
-							app->m_altWidth = app->m_currentConfig.width;
-							app->m_altHeight = app->m_currentConfig.height;
-						}
-						app->changeConfig({ app->m_currentConfig.width, app->m_currentConfig.height, !app->m_currentConfig.fullscreen, app->m_currentConfig.title });
-						if (!app->m_currentConfig.fullscreen) {
-							app->changeConfig({ app->m_altWidth, app->m_altHeight, app->m_currentConfig.fullscreen, app->m_currentConfig.title });
-						}
+				if (GetKeyState(VK_RETURN) & 0x8000 && !(lParam & (1 << 30))) {
+					if (!app->m_currentConfig.fullscreen) {
+						app->m_altWidth = app->m_currentConfig.width;
+						app->m_altHeight = app->m_currentConfig.height;
+					}
+					app->changeConfig({ app->m_currentConfig.width, app->m_currentConfig.height, !app->m_currentConfig.fullscreen, app->m_currentConfig.title });
+					if (!app->m_currentConfig.fullscreen) {
+						app->changeConfig({ app->m_altWidth, app->m_altHeight, app->m_currentConfig.fullscreen, app->m_currentConfig.title });
 					}
 					return 0;
 				}

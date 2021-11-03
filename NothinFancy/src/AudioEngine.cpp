@@ -58,7 +58,7 @@ namespace nf {
 		SetThreadDescription(GetCurrentThread(), L"Audio Thread");
 #endif
 		//Wait to initialize stuff until the master voice is created if it hasn't been already
-		while (!m_isActive) {
+		while (m_threadRunning && !m_isActive) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 

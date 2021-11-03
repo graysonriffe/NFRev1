@@ -80,7 +80,7 @@ void MainState::update(float deltaTime) {
 		sound2.stop();
 	}
 
-	if (app->isMouseClicked(NFI_LEFTMOUSE) || app->isMouseHeld(NFI_RIGHTMOUSE)) {
+	if (camera->getType() == nf::Camera::Type::FIRST_PERSON && (app->isMouseClicked(NFI_LEFTMOUSE) || app->isMouseHeld(NFI_RIGHTMOUSE))) {
 		entities.push_back(new nf::Entity);
 		entities.back()->create(nf::BaseAssets::sphere, nf::Entity::Type::DYNAMIC);
 		entities.back()->setPosition(camera->getPosition() + camera->getRotation() * 5.0);

@@ -89,7 +89,7 @@ namespace nf {
 		m_pointDepthTexSize = 2048;
 		createShadowMaps();
 
-		if (!m_app->isCustomWindowIcon()) {
+		if (!m_app->hasCustomWindowIcon()) {
 			ATexture& windowTex = *(ATexture*)m_baseAP["defaultwindowicon.png"];
 			int width, height, nChannels;
 			unsigned char* tex = stbi_load_from_memory((const unsigned char*)windowTex.data, (unsigned int)windowTex.size, &width, &height, &nChannels, 0);
@@ -102,8 +102,7 @@ namespace nf {
 			}
 			stbi_image_free(tex);
 			HICON windowIcon = CreateIcon(GetModuleHandle(NULL), width, height, 1, 32, NULL, &pixels[0]);
-			SendMessage(m_app->getWindow(), WM_SETICON, ICON_BIG, (LPARAM)windowIcon);
-			SendMessage(m_app->getWindow(), WM_SETICON, ICON_SMALL, (LPARAM)windowIcon);
+			m_app->setWindowIcon(windowIcon);
 		}
 
 		float quadVB[] = {

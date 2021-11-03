@@ -22,7 +22,7 @@ namespace nf {
 		Application() = delete;
 		Application(Application& other) = delete;
 
-		void setWindowIcon(HANDLE hIcon);
+		void setWindowIcon(HICON hIcon);
 		void setWindowCursor(HCURSOR hCursor);
 		AudioEngine* getAudioEngine() const;
 		PhysicsEngine* getPhysicsEngine() const;
@@ -30,7 +30,7 @@ namespace nf {
 		void setDefaultState(const std::string& stateName);
 		const std::string& getDefaultState();
 		void run();
-		bool isCustomWindowIcon();
+		bool hasCustomWindowIcon();
 		void changeState(const std::string& stateName);
 		Gamestate* getCurrentState();
 		void showWindow(bool show);
@@ -69,7 +69,7 @@ namespace nf {
 		LPCWSTR m_wclassName;
 		HWND m_window;
 		bool m_customWindowIconSet;
-		LONG m_defaultWindowStyle;
+		HICON m_windowIcon;
 		unsigned int m_altWidth, m_altHeight;
 
 		std::chrono::duration<float> m_fpsDuration;
