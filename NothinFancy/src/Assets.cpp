@@ -234,9 +234,9 @@ namespace nf {
 					}
 				}
 				assetContents = assetContents.substr(assetContents.find("\n") + 1);
-				model->data = new char[assetSize + 1];
+				model->data = new char[assetSize];
 				std::memcpy(model->data, &assetContents[0], assetSize);
-				model->data[assetSize] = '\0';
+				model->size = assetSize;
 				if (packName == "base.nfpack")
 					model->isBaseAsset = true;
 				m_assets[assetName] = model;

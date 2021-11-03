@@ -23,7 +23,6 @@ namespace nf {
 
 	struct AModel : Asset {
 		Model* loadedModel = nullptr;
-
 		std::unordered_map<std::string, ATexture*> neededTextures;
 
 		~AModel() override;

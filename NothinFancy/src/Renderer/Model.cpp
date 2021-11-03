@@ -2,6 +2,7 @@
 
 #include <map>
 #include <algorithm>
+#include <sstream>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "GL/glew.h"
@@ -13,122 +14,68 @@
 
 namespace nf {
 	Model::Model(AModel* model, bool physicsExport) :
-		m_base(model->isBaseAsset)
+		m_base(model->isBaseAsset),
+		m_newMtl("newmtl"),
+		m_newLine("\n")
 	{
 		if (model->neededTextures.size() > 32)
 			Error("Model exceedes 32 texture limit!");
-		std::string obj = model->data;
-		size_t startMtlPos = obj.find("newmtl");
-		std::string mtl = obj.substr(startMtlPos);
-		struct TempMaterial {
-			std::vector<float> outVB;
-			std::vector<float> unindexedVB;
-			std::vector<unsigned int> vbIndices;
-			std::vector<float> outTC;
-			std::vector<float> unindexedTC;
-			std::vector<unsigned int> tcIndices;
-			std::vector<float> outVN;
-			std::vector<float> unindexedVN;
-			std::vector<unsigned int> vnIndices;
-			std::vector<float> unindexedTan;
-			std::vector<float> outTan;
-			std::vector<unsigned int> outIB;
-			unsigned int ibCount = 0;
+		std::vector<char> file(model->data, model->data + model->size);
+		size_t mtlPos = std::search(file.begin(), file.end(), m_newMtl, m_newMtl + std::strlen(m_newMtl)) - file.begin();
+		std::vector<char> mtl(&file[mtlPos], &file[0] + file.size());
 
-			std::string diffuseTextureName;
-			Vec3 diffuseColor;
-			std::string specularTextureName;
-			std::string normalTextureName;
-			float shininess = 1.0f;
-		};
 		std::unordered_map<std::string, TempMaterial*> mats;
-		std::string currMat;
-		while (true) {
-			char line[500];
-			int result = sscanf_s(mtl.c_str(), "\n%s", line, (unsigned)_countof(line));
-			if (result == EOF)
-				break;
-			if (std::strcmp(line, "newmtl") == 0) {
-				char matName[100];
-				sscanf_s(mtl.c_str(), "\nnewmtl %s\n", matName, (unsigned)_countof(matName));
-				currMat = matName;
-				mats[currMat] = new TempMaterial;
-			}
-			else if (std::strcmp(line, "Kd") == 0) {
-				float r = 0.0, g = 0.0, b = 0.0;
-				sscanf_s(mtl.c_str(), "\nKd %f %f %f\n", &r, &g, &b);
-				mats[currMat]->diffuseColor = Vec3(r, g, b);
-			}
-			else if (std::strcmp(line, "map_Kd") == 0) {
-				char texName[100];
-				sscanf_s(mtl.c_str(), "\nmap_Kd %s\n", texName, (unsigned)_countof(texName));
-				mats[currMat]->diffuseTextureName = (std::string)texName;
-			}
-			else if (std::strcmp(line, "map_Ks") == 0) {
-				char texName[100];
-				sscanf_s(mtl.c_str(), "\nmap_Ks %s\n", texName, (unsigned)_countof(texName));
-				mats[currMat]->specularTextureName = (std::string)texName;
-			}
-			else if (std::strcmp(line, "map_Bump") == 0) {
-				char texName[100];
-				sscanf_s(mtl.c_str(), "\nmap_Bump %s\n", texName, (unsigned)_countof(texName));
-				mats[currMat]->normalTextureName = (std::string)texName;
-			}
-			else if (std::strcmp(line, "Ns") == 0) {
-				float s = 0.0;
-				sscanf_s(mtl.c_str(), "\nNs %f\n", &s);
-				mats[currMat]->shininess = s;
-			}
-			size_t pos = mtl.find(line) + strlen(line);
-			mtl = mtl.substr(pos);
-		}
+		parseMaterials(mats, mtl);
 
-		std::string file = obj.substr(0, startMtlPos);
+		std::vector<char> obj(&file[0], &file[mtlPos]);
 		std::vector<float> vbRaw, tcRaw, vnRaw;
 		std::string usingMat;
 
 		bool tcPresent = false, vnPresent = false;
+		size_t position = 0;
 		while (true) {
-			char line[500];
-			int remove = 0;
-			int result = sscanf_s(file.c_str(), "\n%s", line, (unsigned)_countof(line));
-			if (result == EOF)
+			size_t nextLine = std::search(obj.begin() + position, obj.end(), m_newLine, m_newLine + std::strlen(m_newLine)) - (obj.begin() + position);
+			if (!nextLine)
 				break;
-			if (std::strcmp(line, "v") == 0) {
-				float x = 0.0, y = 0.0, z = 0.0;
-				sscanf_s(file.c_str(), "\nv %f %f %f\n", &x, &y, &z);
-				remove = 28;
+			std::vector<char> line(&obj[position], &obj[position + nextLine]);
+			position += nextLine + 1;
+			std::stringstream ss(std::string(&line[0], line.size()));
+			std::string firstWord;
+			ss >> firstWord;
+
+			if (std::strcmp(&firstWord[0], "v") == 0) {
+				float x = 0.0f, y = 0.0f, z = 0.0f;
+				ss >> x >> y >> z;
 				vbRaw.push_back(x);
 				vbRaw.push_back(y);
 				vbRaw.push_back(z);
 			}
-			else if (std::strcmp(line, "vt") == 0) {
+			else if (std::strcmp(&firstWord[0], "vt") == 0) {
 				tcPresent = true;
-				float u = 0.0, v = 0.0;
-				sscanf_s(file.c_str(), "\nvt %f %f\n", &u, &v);
-				remove = 18;
+				float u = 0.0f, v = 0.0f;
+				ss >> u >> v;
 				tcRaw.push_back(u);
 				tcRaw.push_back(v);
 			}
-			else if (std::strcmp(line, "vn") == 0) {
+			else if (std::strcmp(&firstWord[0], "vn") == 0) {
 				vnPresent = true;
-				float x = 0.0, y = 0.0, z = 0.0;
-				sscanf_s(file.c_str(), "\nvn %f %f %f\n", &x, &y, &z);
-				remove = 20;
+				float x = 0.0f, y = 0.0f, z = 0.0f;
+				ss >> x >> y >> z;
 				vnRaw.push_back(x);
 				vnRaw.push_back(y);
 				vnRaw.push_back(z);
 			}
-			else if (std::strcmp(line, "usemtl") == 0) {
-				char matName[100];
-				sscanf_s(file.c_str(), "\nusemtl %s\n", matName, (unsigned)_countof(matName));
+			else if (std::strcmp(&firstWord[0], "usemtl") == 0) {
+				std::string matName;
+				ss >> matName;
 				usingMat = matName;
-				remove = 5;
 			}
-			else if (std::strcmp(line, "f") == 0) {
+			else if (std::strcmp(&firstWord[0], "f") == 0) {
 				unsigned int vertexIndex[3], uvIndex[3], vnIndex[3];
-				sscanf_s(file.c_str(), "\nf %d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &vnIndex[0], &vertexIndex[1], &uvIndex[1], &vnIndex[1], &vertexIndex[2], &uvIndex[2], &vnIndex[2]);
-				remove = 15;
+				char temp;
+				ss >> vertexIndex[0] >> temp >> uvIndex[0] >> temp >> vnIndex[0] >> vertexIndex[1] >> temp >> uvIndex[1] >> temp >> vnIndex[1] >> vertexIndex[2] >> temp >> uvIndex[2] >> temp >> vnIndex[2];
+				if (ss.rdbuf()->in_avail() > 1)
+					Error("Model has non-triangle faces!");
 				mats[usingMat]->vbIndices.push_back(vertexIndex[0]);
 				mats[usingMat]->vbIndices.push_back(vertexIndex[1]);
 				mats[usingMat]->vbIndices.push_back(vertexIndex[2]);
@@ -139,9 +86,6 @@ namespace nf {
 				mats[usingMat]->vnIndices.push_back(vnIndex[1]);
 				mats[usingMat]->vnIndices.push_back(vnIndex[2]);
 			}
-
-			size_t pos = file.find(line) + strlen(line) + remove;
-			file.erase(0, pos);
 		}
 
 		if (!tcPresent)
@@ -309,6 +253,53 @@ namespace nf {
 
 		if (physicsExport)
 			Application::getApp()->getPhysicsEngine()->addMesh(this, vboPositions);
+	}
+
+	void Model::parseMaterials(std::unordered_map<std::string, TempMaterial*>& mats, std::vector<char>& mtl) {
+		std::string currMat;
+		size_t position = 0;
+		while (true) {
+			size_t nextLine = std::search(mtl.begin() + position, mtl.end(), m_newLine, m_newLine + std::strlen(m_newLine)) - (mtl.begin() + position);
+			if (position + nextLine >= mtl.size())
+				break;
+			std::vector<char> line(&mtl[position], &mtl[position + nextLine]);
+			position += nextLine + 1;
+			std::stringstream ss(std::string(&line[0], line.size()));
+			std::string firstWord;
+			ss >> firstWord;
+
+			if (std::strcmp(&firstWord[0], "newmtl") == 0) {
+				std::string matName;
+				ss >> matName;
+				currMat = matName;
+				mats[currMat] = new TempMaterial;
+			}
+			else if (std::strcmp(&firstWord[0], "Kd") == 0) {
+				float r = 0.0f, g = 0.0f, b = 0.0f;
+				ss >> r >> g >> b;
+				mats[currMat]->diffuseColor = Vec3(r, g, b);
+			}
+			else if (std::strcmp(&firstWord[0], "map_Kd") == 0) {
+				std::string texName;
+				ss >> texName;
+				mats[currMat]->diffuseTextureName = texName;
+			}
+			else if (std::strcmp(&firstWord[0], "map_Ks") == 0) {
+				std::string texName;
+				ss >> texName;
+				mats[currMat]->specularTextureName = texName;
+			}
+			else if (std::strcmp(&firstWord[0], "map_Bump") == 0) {
+				std::string texName;
+				ss >> texName;
+				mats[currMat]->normalTextureName = texName;
+			}
+			else if (std::strcmp(&firstWord[0], "Ns") == 0) {
+				float s = 0.0f;
+				ss >> s;
+				mats[currMat]->shininess = s;
+			}
+		}
 	}
 
 	void Model::render(Shader* shader, bool onlyDepth, unsigned int count) {
