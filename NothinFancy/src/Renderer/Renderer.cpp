@@ -372,42 +372,42 @@ namespace nf {
 
 	void Renderer::loadBaseAssets() {
 		m_baseAP.load("base.nfpack");
-		const char* gBufferVertex = m_baseAP["gBufferVertex.shader"]->data;
-		const char* gBufferFragment = m_baseAP["gBufferFragment.shader"]->data;
+		const char* gBufferVertex = m_baseAP.get("gBufferVertex.shader")->data;
+		const char* gBufferFragment = m_baseAP.get("gBufferFragment.shader")->data;
 		m_gBufferShader = new Shader(gBufferVertex, gBufferFragment);
-		const char* lightingVertex = m_baseAP["lightingVertex.shader"]->data;
-		const char* lightingFragment = m_baseAP["lightingFragment.shader"]->data;
+		const char* lightingVertex = m_baseAP.get("lightingVertex.shader")->data;
+		const char* lightingFragment = m_baseAP.get("lightingFragment.shader")->data;
 		m_lightingShader = new Shader(lightingVertex, lightingFragment);
-		const char* textVertex = m_baseAP["textVertex.shader"]->data;
-		const char* textFragment = m_baseAP["textFragment.shader"]->data;
+		const char* textVertex = m_baseAP.get("textVertex.shader")->data;
+		const char* textFragment = m_baseAP.get("textFragment.shader")->data;
 		m_textShader = new Shader(textVertex, textFragment);
-		const char* uiTextureVertex = m_baseAP["uiTextureVertex.shader"]->data;
-		const char* uiTextureFragment = m_baseAP["uiTextureFragment.shader"]->data;
+		const char* uiTextureVertex = m_baseAP.get("uiTextureVertex.shader")->data;
+		const char* uiTextureFragment = m_baseAP.get("uiTextureFragment.shader")->data;
 		m_uiTextureShader = new Shader(uiTextureVertex, uiTextureFragment);
-		const char* cubemapVertex = m_baseAP["cubemapVertex.shader"]->data;
-		const char* cubemapFragment = m_baseAP["cubemapFragment.shader"]->data;
+		const char* cubemapVertex = m_baseAP.get("cubemapVertex.shader")->data;
+		const char* cubemapFragment = m_baseAP.get("cubemapFragment.shader")->data;
 		m_cubemapShader = new Shader(cubemapVertex, cubemapFragment);
-		const char* fadeVertex = m_baseAP["fadeVertex.shader"]->data;
-		const char* fadeFragment = m_baseAP["fadeFragment.shader"]->data;
+		const char* fadeVertex = m_baseAP.get("fadeVertex.shader")->data;
+		const char* fadeFragment = m_baseAP.get("fadeFragment.shader")->data;
 		m_fadeShader = new Shader(fadeVertex, fadeFragment);
-		const char* directionalShadowVertex = m_baseAP["directionalShadowVertex.shader"]->data;
-		const char* directionalShadowFragment = m_baseAP["directionalShadowFragment.shader"]->data;
+		const char* directionalShadowVertex = m_baseAP.get("directionalShadowVertex.shader")->data;
+		const char* directionalShadowFragment = m_baseAP.get("directionalShadowFragment.shader")->data;
 		m_directionalShadowShader = new Shader(directionalShadowVertex, directionalShadowFragment);
-		const char* pointShadowVertex = m_baseAP["pointShadowVertex.shader"]->data;
-		const char* pointShadowGeometry = m_baseAP["pointShadowGeometry.shader"]->data;
-		const char* pointShadowFragment = m_baseAP["pointShadowFragment.shader"]->data;
+		const char* pointShadowVertex = m_baseAP.get("pointShadowVertex.shader")->data;
+		const char* pointShadowGeometry = m_baseAP.get("pointShadowGeometry.shader")->data;
+		const char* pointShadowFragment = m_baseAP.get("pointShadowFragment.shader")->data;
 		m_pointShadowShader = new Shader(pointShadowVertex, pointShadowFragment, pointShadowGeometry);
 
-		BaseAssets::cube = (AModel*)m_baseAP["cube.obj"];
-		BaseAssets::plane = (AModel*)m_baseAP["plane.obj"];
-		BaseAssets::sphere = (AModel*)m_baseAP["sphere.obj"];
-		BaseAssets::cone = (AModel*)m_baseAP["cone.obj"];
-		BaseAssets::cylinder = (AModel*)m_baseAP["cylinder.obj"];
-		BaseAssets::torus = (AModel*)m_baseAP["torus.obj"];
-		BaseAssets::logo = (ATexture*)m_baseAP["logo.png"];
-		BaseAssets::cubemap = (ACubemap*)m_baseAP["default.cm"];
-		BaseAssets::font = (AFont*)m_baseAP["default.ttf"];
-		BaseAssets::button = (AButton*)m_baseAP["default.button"];
+		BaseAssets::cube = (AModel*)m_baseAP.get("cube.obj");
+		BaseAssets::plane = (AModel*)m_baseAP.get("plane.obj");
+		BaseAssets::sphere = (AModel*)m_baseAP.get("sphere.obj");
+		BaseAssets::cone = (AModel*)m_baseAP.get("cone.obj");
+		BaseAssets::cylinder = (AModel*)m_baseAP.get("cylinder.obj");
+		BaseAssets::torus = (AModel*)m_baseAP.get("torus.obj");
+		BaseAssets::logo = (ATexture*)m_baseAP.get("logo.png");
+		BaseAssets::cubemap = (ACubemap*)m_baseAP.get("default.cm");
+		BaseAssets::font = (AFont*)m_baseAP.get("default.ttf");
+		BaseAssets::button = (AButton*)m_baseAP.get("default.button");
 	}
 
 	void Renderer::createShadowMaps() {

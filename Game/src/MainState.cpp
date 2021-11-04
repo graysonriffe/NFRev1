@@ -5,10 +5,11 @@ void MainState::onEnter() {
 	currCamType = nf::Camera::Type::FIRST_PERSON;
 	camera->setType(currCamType);
 	ap.load("example.nfpack");
-	test.create(ap["2mats.obj"], nf::Entity::Type::DYNAMIC);
+	test.create(ap.get("2mats.obj"), nf::Entity::Type::DYNAMIC);
 	test.setPosition(nf::Vec3(0.0, 1.5, -5.0));
-	plane.create(nf::BaseAssets::plane);
+	plane.create(ap.get("env.obj"), nf::Entity::Type::ENVIRONMENT);
 	plane.setScale(20.0);
+	plane.setPosition(0.0, -20.0, 0.0);
 	text.create("", nf::Vec2(0.1, 0.025), nf::Vec3(0.8));
 	text.centered(true);
 	gravText.create("", nf::Vec2(0.025, 0.2), nf::Vec3(0.8), 1.0f, 0.5f);
@@ -20,9 +21,9 @@ void MainState::onEnter() {
 	light3.create(nf::Vec3(10.0, 20.0, 10.0), nf::Vec3(1.0, 1.0, 1.0));
 	cm.create(nf::BaseAssets::cubemap);
 
-	sound.create(ap["sound.wav"]);
+	sound.create(ap.get("sound.wav"));
 	sound.setEntity(test);
-	sound2.create(ap["test.ogg"]);
+	sound2.create(ap.get("test.ogg"));
 	sound2.setVolume(3.0);
 	sound2.setEntity(test);
 
@@ -30,7 +31,7 @@ void MainState::onEnter() {
 		for (int y = 0; y < 5; y++) {
 			for (int z = 0; z < 5; z++) {
 				entities.push_back(new nf::Entity);
-				entities.back()->create(ap["2mats.obj"], nf::Entity::Type::DYNAMIC);
+				entities.back()->create(ap.get("2mats.obj"), nf::Entity::Type::DYNAMIC);
 				entities.back()->setPosition(nf::Vec3(5.0 + x * 2.05, 1.0 + y * 2.05, -5.0 + z * 2.05));
 			}
 		}
@@ -39,8 +40,8 @@ void MainState::onEnter() {
 	grav = 2.0f;
 	setGravity(grav);
 
-	camera->setPosition(-20.0, 5.0, 0.0);
-	camera->setRotation(85.0, 0.0);
+	camera->setPosition(-20.0, 15.0, 0.0);
+	camera->setRotation(85.0, -30.0);
 }
 
 void MainState::update(float deltaTime) {

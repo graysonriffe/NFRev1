@@ -77,6 +77,8 @@ namespace nf {
 		AssetPack();
 
 		void load(const char* packName);
+		Asset* get(const char* in);
+		Asset* get(std::string& in);
 		Asset* operator[](const char* in);
 		Asset* operator[](std::string& in);
 

@@ -71,6 +71,11 @@ namespace nf {
 				usingMat = matName;
 			}
 			else if (std::strcmp(&firstWord[0], "f") == 0) {
+				if (!tcPresent)
+					Error("No texture coordinates found in model!");
+				if (!vnPresent)
+					Error("No normals found in model!");
+
 				unsigned int vertexIndex[3], uvIndex[3], vnIndex[3];
 				char temp;
 				ss >> vertexIndex[0] >> temp >> uvIndex[0] >> temp >> vnIndex[0] >> vertexIndex[1] >> temp >> uvIndex[1] >> temp >> vnIndex[1] >> vertexIndex[2] >> temp >> uvIndex[2] >> temp >> vnIndex[2];
@@ -87,11 +92,6 @@ namespace nf {
 				mats[usingMat]->vnIndices.push_back(vnIndex[2]);
 			}
 		}
-
-		if (!tcPresent)
-			Error("No texture coordinates found in model!");
-		if (!vnPresent)
-			Error("No normals found in model!");
 
 		for (auto& m : mats) {
 			std::string curr = m.first;

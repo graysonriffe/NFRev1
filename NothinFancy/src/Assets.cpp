@@ -250,13 +250,21 @@ namespace nf {
 		}
 	}
 
-	Asset* AssetPack::operator[](const char* in) {
+	Asset* AssetPack::get(const char* in) {
 		if (m_assets.find(in) == m_assets.end())
 			Error("Could not find asset \"" + (std::string)in + (std::string)"\" in asset pack!");
 		return m_assets[in];
 	}
+
+	Asset* AssetPack::get(std::string& in) {
+		return get(in.c_str());
+	}
+
+	Asset* AssetPack::operator[](const char* in) {
+		return get(in);
+	}
 	Asset* AssetPack::operator[](std::string& in) {
-		return operator[](in.c_str());
+		return get(in.c_str());
 	}
 
 	void AssetPack::destroy() {
