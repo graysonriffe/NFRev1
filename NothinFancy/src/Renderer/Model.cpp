@@ -13,7 +13,7 @@
 #include "Utility.h"
 
 namespace nf {
-	Model::Model(AModel* model, bool physicsExport) :
+	Model::Model(AModel* model, bool physicsConvex, bool physicsTriangle) :
 		m_base(model->isBaseAsset),
 		m_newMtl("newmtl"),
 		m_newLine("\n")
@@ -251,8 +251,10 @@ namespace nf {
 		m_vao->finishBufferLayout();
 		m_ib = new IndexBuffer(&vboIndices[0], vboIndices.size());
 
-		if (physicsExport)
-			Application::getApp()->getPhysicsEngine()->addMesh(this, vboPositions);
+		if (physicsConvex)
+			Application::getApp()->getPhysicsEngine()->addConvexMesh(this, vboPositions);
+		else if(physicsTriangle)
+			Application::getApp()->getPhysicsEngine()->addTriangleMesh(this, vboPositions, vboIndices);
 	}
 
 	void Model::parseMaterials(std::unordered_map<std::string, TempMaterial*>& mats, std::vector<char>& mtl) {

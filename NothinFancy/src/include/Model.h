@@ -10,7 +10,7 @@ namespace nf {
 
 	class Model : public Drawable {
 	public:
-		Model(AModel* model, bool physicsExport);
+		Model(AModel* model, bool physicsConvex, bool physicsTriangle);
 
 		void render(Shader* shader, bool onlyDepth, unsigned int count);
 		void bindMaterials(Shader* shader);

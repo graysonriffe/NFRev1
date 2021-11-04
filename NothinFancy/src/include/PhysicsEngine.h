@@ -21,7 +21,8 @@ namespace nf {
 		void setActorVelocity(Entity* ent, const Vec3& vel);
 		void setActorMass(Entity* ent, float mass);
 		void update(float dt);
-		void addMesh(Model* model, std::vector<float>& vertices);
+		void addConvexMesh(Model* model, std::vector<float>& vertices);
+		void addTriangleMesh(Model* model, std::vector<float>& vertices, std::vector<unsigned int>& indices);
 		void addActor(Entity* entity);
 		void closeScene();
 
@@ -41,7 +42,8 @@ namespace nf {
 		PxDefaultCpuDispatcher* m_dispacher;
 		PxMaterial* m_defaultMat;
 		PxScene* m_scene;
-		std::unordered_map<Model*, PxConvexMesh*> m_meshes;
+		std::unordered_map<Model*, PxConvexMesh*> m_convexMeshes;
+		std::unordered_map<Model*, PxTriangleMesh*> m_triangleMeshes;
 
 		const float m_stepSize;
 		float m_accumulator;

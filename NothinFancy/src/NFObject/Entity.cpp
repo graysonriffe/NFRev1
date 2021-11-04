@@ -34,10 +34,12 @@ namespace nf {
 			m_model = model->loadedModel;
 		}
 		else {
-			bool physics = false;
-			if (m_type != Entity::Type::DETAIL)
-				physics = true;
-			m_model = new Model(model, physics);
+			bool convex = false, triangle = false;
+			if (m_type == Entity::Type::STATIC || m_type == Entity::Type::DYNAMIC)
+				convex = true;
+			else if (m_type == Entity::Type::ENVIRONMENT)
+				triangle = true;
+			m_model = new Model(model, convex, triangle);
 			model->alreadyLoaded = true;
 			model->loadedModel = m_model;
 		}

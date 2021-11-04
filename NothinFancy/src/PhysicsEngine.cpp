@@ -24,6 +24,7 @@ namespace nf {
 		m_err(nullptr),
 		m_foundation(nullptr),
 		m_pvd(nullptr),
+		m_transport(nullptr),
 		m_phy(nullptr),
 		m_cooking(nullptr),
 		m_dispacher(nullptr),
@@ -83,7 +84,7 @@ namespace nf {
 			m_scene->setGravity(PxVec3(grav.x, grav.y, grav.z));
 
 			unsigned int count = m_scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
-			PxActor** actors = new PxActor * [count];
+			PxActor** actors = new PxActor*[count];
 			m_scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, actors, count);
 
 			for (unsigned int i = 0; i < count; i++) {
@@ -96,7 +97,7 @@ namespace nf {
 
 	void PhysicsEngine::setActorVelocity(Entity* ent, const Vec3& vel) {
 		unsigned int count = m_scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
-		PxActor** actors = new PxActor * [count];
+		PxActor** actors = new PxActor*[count];
 		m_scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, actors, count);
 
 		for (unsigned int i = 0; i < count; i++) {
@@ -111,7 +112,7 @@ namespace nf {
 
 	void PhysicsEngine::setActorMass(Entity* ent, float mass) {
 		unsigned int count = m_scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
-		PxActor** actors = new PxActor * [count];
+		PxActor** actors = new PxActor*[count];
 		m_scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, actors, count);
 
 		for (unsigned int i = 0; i < count; i++) {
@@ -148,9 +149,8 @@ namespace nf {
 			if (currEnt->getType() == Entity::Type::DYNAMIC) {
 				updateEnt<PxRigidDynamic>(actors[i], t, scale);
 			}
-			else if (currEnt->getType() == Entity::Type::STATIC) {
+			else
 				updateEnt<PxRigidStatic>(actors[i], t, scale);
-			}
 		}
 		delete[] actors;
 
@@ -171,7 +171,7 @@ namespace nf {
 		}
 	}
 
-	void PhysicsEngine::addMesh(Model* model, std::vector<float>& vertices) {
+	void PhysicsEngine::addConvexMesh(Model* model, std::vector<float>& vertices) {
 		PxConvexMeshDesc desc;
 		desc.points.count = (unsigned int)vertices.size() / 3;
 		desc.points.stride = 3 * sizeof(float);
@@ -184,7 +184,25 @@ namespace nf {
 
 		PxDefaultMemoryInputData in(buf.getData(), buf.getSize());
 		PxConvexMesh* mesh = m_phy->createConvexMesh(in);
-		m_meshes[model] = mesh;
+		m_convexMeshes[model] = mesh;
+	}
+
+	void PhysicsEngine::addTriangleMesh(Model* model, std::vector<float>& vertices, std::vector<unsigned int>& indices) {
+		PxTriangleMeshDesc desc;
+		desc.points.count = (unsigned int)vertices.size() / 3;
+		desc.points.stride = sizeof(float) * 3;
+		desc.points.data = &vertices[0];
+		desc.triangles.count = (unsigned int)indices.size() / 3;
+		desc.triangles.stride = sizeof(unsigned int) * 3;
+		desc.triangles.data = &indices[0];
+
+		PxDefaultMemoryOutputStream buf;
+		if (!m_cooking->cookTriangleMesh(desc, buf))
+			Error("Could not create triangle mesh!");
+
+		PxDefaultMemoryInputData in(buf.getData(), buf.getSize());
+		PxTriangleMesh* mesh = m_phy->createTriangleMesh(in);
+		m_triangleMeshes[model] = mesh;
 	}
 
 	void PhysicsEngine::addActor(Entity* entity) {
@@ -196,18 +214,28 @@ namespace nf {
 		float density = 100.0f;
 
 		//Get mesh
-		if (m_meshes.find(entity->getModel()) == m_meshes.end())
+		PxConvexMesh* convexMesh = nullptr;
+		PxTriangleMesh* triangleMesh = nullptr;
+		if (m_convexMeshes.find(entity->getModel()) != m_convexMeshes.end())
+			convexMesh = m_convexMeshes[entity->getModel()];
+		else if (m_triangleMeshes.find(entity->getModel()) != m_triangleMeshes.end())
+			triangleMesh = m_triangleMeshes[entity->getModel()];
+		else
 			Error("No physics mesh found for this entity!");
-		PxConvexMesh* mesh = m_meshes[entity->getModel()];
 
 		//Dynamic or static
 		if (type == Entity::Type::DYNAMIC) {
-			PxRigidDynamic* act = PxCreateDynamic(*m_phy, PxTransform(PxIdentity), PxConvexMeshGeometry(mesh), *mat, density);
+			PxRigidDynamic* act = PxCreateDynamic(*m_phy, PxTransform(PxIdentity), PxConvexMeshGeometry(convexMesh), *mat, density);
 			act->userData = entity;
 			m_scene->addActor(*act);
 		}
 		else if (type == Entity::Type::STATIC) {
-			PxRigidStatic* act = PxCreateStatic(*m_phy, PxTransform(PxIdentity), PxConvexMeshGeometry(mesh), *mat);
+			PxRigidStatic* act = PxCreateStatic(*m_phy, PxTransform(PxIdentity), PxConvexMeshGeometry(convexMesh), *mat);
+			act->userData = entity;
+			m_scene->addActor(*act);
+		}
+		else if (type == Entity::Type::ENVIRONMENT) {
+			PxRigidStatic* act = PxCreateStatic(*m_phy, PxTransform(PxIdentity), PxTriangleMeshGeometry(triangleMesh), *mat);
 			act->userData = entity;
 			m_scene->addActor(*act);
 		}
@@ -216,10 +244,18 @@ namespace nf {
 	void PhysicsEngine::closeScene() {
 		if (m_scene) {
 			//Does this actually release all of them? Only if the respective shapes have been released?
-			for (auto it = m_meshes.begin(); it != m_meshes.end();) {
+			for (auto it = m_convexMeshes.begin(); it != m_convexMeshes.end();) {
 				if (!it->first->isBaseAsset()) {
 					it->second->release();
-					it = m_meshes.erase(it);
+					it = m_convexMeshes.erase(it);
+				}
+				else
+					it++;
+			}
+			for (auto it = m_triangleMeshes.begin(); it != m_triangleMeshes.end();) {
+				if (!it->first->isBaseAsset()) {
+					it->second->release();
+					it = m_triangleMeshes.erase(it);
 				}
 				else
 					it++;

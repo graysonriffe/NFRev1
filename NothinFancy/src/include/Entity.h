@@ -15,6 +15,7 @@ namespace nf {
 		enum class Type {
 			STATIC,
 			DYNAMIC,
+			ENVIRONMENT,
 			DETAIL
 		};
 
