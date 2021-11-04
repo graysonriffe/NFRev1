@@ -25,6 +25,5 @@ namespace nf {
 		unsigned int m_width, m_height;
 
 		std::unordered_map<Model*, std::vector<glm::mat4>> m_modelsToDraw;
-		const std::string m_modelString = "model[";
 	};
 }

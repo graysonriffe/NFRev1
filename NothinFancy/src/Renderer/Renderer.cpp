@@ -10,6 +10,7 @@
 #include "Shader.h"
 #include "Light.h"
 #include "Entity.h"
+#include "Model.h"
 #include "Cubemap.h"
 #include "UIElement.h"
 #include "Button.h"
@@ -289,87 +290,6 @@ namespace nf {
 		SwapBuffers(m_hdc);
 	}
 
-	void Renderer::renderShadowMaps(size_t count) {
-		float nearP = 0.1f, farP = 400.0f;
-		glm::mat4 directionalLightProj = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, nearP, farP);
-		glm::mat4 pointLightProj = glm::perspective(glm::radians(90.0f), 1.0f, nearP, farP);
-		glm::mat4 lightView;
-		glm::mat4 lightSpaceMat;
-		bool directionalRendered = false;
-		unsigned int directionalSlot = 0; //TODO: Test this
-		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
-		for (unsigned int i = 0; i < count; i++) {
-			Light::Type type = m_lights[i]->getType();
-			unsigned int tex = type == Light::Type::DIRECTIONAL ? m_directionalShadowMap : m_pointShadowMaps[i];
-			switch (type) {
-				case Light::Type::DIRECTIONAL: {
-					std::string stringPos;
-					glViewport(0, 0, m_directionalDepthTexSize, m_directionalDepthTexSize);
-					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex, 0);
-					glDrawBuffer(GL_NONE);
-					glReadBuffer(GL_NONE);
-					glClear(GL_DEPTH_BUFFER_BIT);
-					Vec3 posTemp = m_lights[i]->getPosition();
-					glm::vec3 lightPos(posTemp.x, posTemp.y, posTemp.z);
-					lightView = glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
-					lightSpaceMat = directionalLightProj * lightView;
-					m_directionalShadowShader->setUniform("lightSpace", lightSpaceMat);
-					stringPos = "lightSpaceMat[";
-					stringPos += std::to_string(i);
-					stringPos += "]";
-					m_lightingShader->setUniform(stringPos, lightSpaceMat);
-					for (Entity* curr : m_lGame) {
-						curr->render(m_directionalShadowShader, true);
-					}
-					stringPos = "light[";
-					stringPos += std::to_string(i);
-					stringPos += "].directionalDepthTex";
-					glActiveTexture(GL_TEXTURE4 + i);
-					glBindTexture(GL_TEXTURE_2D, tex);
-					m_lightingShader->setUniform(stringPos, 4 + (int)i);
-					directionalRendered = true;
-					break;
-				}
-				case Light::Type::POINT: {
-					glViewport(0, 0, m_pointDepthTexSize, m_pointDepthTexSize);
-					glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tex, 0);
-					glDrawBuffer(GL_NONE);
-					glReadBuffer(GL_NONE);
-					glClear(GL_DEPTH_BUFFER_BIT);
-					Vec3 posTemp = m_lights[i]->getPosition();
-					glm::vec3 lightPos(posTemp.x, posTemp.y, posTemp.z);
-					std::vector<glm::mat4> lightSpaceMats;
-					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
-					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
-					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
-					lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
-					for (int j = 0; j < 6; j++) {
-						std::string stringPos = "lightSpaceMat[";
-						stringPos += std::to_string(j);
-						stringPos += "]";
-						m_pointShadowShader->setUniform(stringPos, lightSpaceMats[j]);
-					}
-					m_pointShadowShader->setUniform("farPlane", farP);
-					m_pointShadowShader->setUniform("lightPos", lightPos);
-					for (Entity* curr : m_lGame) {
-						curr->render(m_pointShadowShader, true);
-					}
-					std::string stringPos = "light[";
-					stringPos += std::to_string(i);
-					stringPos += "].pointDepthTex";
-					glActiveTexture(GL_TEXTURE4 + i);
-					glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
-					m_lightingShader->setUniform(stringPos, 4 + (int)i);
-					m_lightingShader->setUniform("farPlane", farP);
-					break;
-				}
-			}
-		}
-		m_lightingShader->setUniform("numMats", (int)count);
-	}
-
 	void Renderer::loadBaseAssets() {
 		m_baseAP.load("base.nfpack");
 		const char* gBufferVertex = m_baseAP.get("gBufferVertex.shader")->data;
@@ -436,6 +356,113 @@ namespace nf {
 		float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void Renderer::renderShadowMaps(size_t count) {
+		float nearP = 0.1f, farP = 400.0f;
+		glm::mat4 directionalLightProj = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, nearP, farP);
+		glm::mat4 pointLightProj = glm::perspective(glm::radians(90.0f), 1.0f, nearP, farP);
+		glm::mat4 lightView;
+		glm::mat4 lightSpaceMat;
+		bool directionalRendered = false;
+		unsigned int directionalSlot = 0; //TODO: Test this
+		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
+		for (unsigned int i = 0; i < count; i++) {
+			Light::Type type = m_lights[i]->getType();
+			unsigned int tex = type == Light::Type::DIRECTIONAL ? m_directionalShadowMap : m_pointShadowMaps[i];
+			switch (type) {
+			case Light::Type::DIRECTIONAL: {
+				std::string stringPos;
+				glViewport(0, 0, m_directionalDepthTexSize, m_directionalDepthTexSize);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex, 0);
+				glDrawBuffer(GL_NONE);
+				glReadBuffer(GL_NONE);
+				glClear(GL_DEPTH_BUFFER_BIT);
+				Vec3 posTemp = m_lights[i]->getPosition();
+				glm::vec3 lightPos(posTemp.x, posTemp.y, posTemp.z);
+				lightView = glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
+				lightSpaceMat = directionalLightProj * lightView;
+				m_directionalShadowShader->setUniform("lightSpace", lightSpaceMat);
+				stringPos = "lightSpaceMat[";
+				stringPos += std::to_string(i);
+				stringPos += "]";
+				m_lightingShader->setUniform(stringPos, lightSpaceMat);
+
+				instancedRenderShadows(m_directionalShadowShader);
+
+				stringPos = "light[";
+				stringPos += std::to_string(i);
+				stringPos += "].directionalDepthTex";
+				glActiveTexture(GL_TEXTURE4 + i);
+				glBindTexture(GL_TEXTURE_2D, tex);
+				m_lightingShader->setUniform(stringPos, 4 + (int)i);
+				directionalRendered = true;
+				break;
+			}
+			case Light::Type::POINT: {
+				glViewport(0, 0, m_pointDepthTexSize, m_pointDepthTexSize);
+				glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tex, 0);
+				glDrawBuffer(GL_NONE);
+				glReadBuffer(GL_NONE);
+				glClear(GL_DEPTH_BUFFER_BIT);
+				Vec3 posTemp = m_lights[i]->getPosition();
+				glm::vec3 lightPos(posTemp.x, posTemp.y, posTemp.z);
+				std::vector<glm::mat4> lightSpaceMats;
+				lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+				lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+				lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+				lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+				lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+				lightSpaceMats.push_back(pointLightProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+				for (int j = 0; j < 6; j++) {
+					std::string stringPos = "lightSpaceMat[";
+					stringPos += std::to_string(j);
+					stringPos += "]";
+					m_pointShadowShader->setUniform(stringPos, lightSpaceMats[j]);
+				}
+				m_pointShadowShader->setUniform("farPlane", farP);
+				m_pointShadowShader->setUniform("lightPos", lightPos);
+
+				instancedRenderShadows(m_pointShadowShader);
+
+				std::string stringPos = "light[";
+				stringPos += std::to_string(i);
+				stringPos += "].pointDepthTex";
+				glActiveTexture(GL_TEXTURE4 + i);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+				m_lightingShader->setUniform(stringPos, 4 + (int)i);
+				m_lightingShader->setUniform("farPlane", farP);
+				break;
+			}
+			}
+		}
+		m_lightingShader->setUniform("numMats", (int)count);
+	}
+
+	void Renderer::instancedRenderShadows(Shader* shader) {
+		std::unordered_map<Model*, std::vector<glm::mat4>> modelsToDraw;
+		for (Entity* curr : m_lGame) {
+			modelsToDraw[curr->getModel()].push_back(curr->getModelMatrix());
+		}
+		for (auto& curr : modelsToDraw) {
+			std::vector<glm::mat4>& mats = curr.second;
+			std::string pos;
+			size_t modelsRemaining = mats.size();
+			while (modelsRemaining != 0) {
+				size_t modelCount;
+				if (modelsRemaining > 60)
+					modelCount = 60;
+				else
+					modelCount = modelsRemaining;
+				modelsRemaining -= modelCount;
+				for (unsigned int i = 0; i < modelCount; i++) {
+					pos = std::to_string(i) + "]";
+					shader->setUniform("model[" + pos, mats[i]);
+				}
+				curr.first->render(shader, true, (unsigned int)modelCount);
+				mats.erase(mats.begin(), mats.begin() + modelCount);
+			}
+		}
 	}
 
 	Renderer::~Renderer() {

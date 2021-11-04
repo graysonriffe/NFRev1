@@ -59,7 +59,7 @@ namespace nf {
 				modelsRemaining -= modelCount;
 				for (unsigned int i = 0; i < modelCount; i++) {
 					pos = std::to_string(i) + "]";
-					shader->setUniform(m_modelString + pos, mats[i]);
+					shader->setUniform("model[" + pos, mats[i]);
 				}
 				curr.first->render(shader, false, (unsigned int)modelCount);
 				mats.erase(mats.begin(), mats.begin() + modelCount);

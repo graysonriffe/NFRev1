@@ -317,7 +317,6 @@ namespace nf {
 				if (m_stateChange)
 					doStateChange();
 				startOfLastFrame = std::chrono::steady_clock::now();
-				//Should the physics update before user code?
 				m_physics->update(m_deltaTime);
 				m_currentState->update(m_deltaTime);
 				m_currentState->render(*m_renderer);

@@ -33,10 +33,10 @@ namespace nf {
 
 		~Renderer();
 	private:
-		void renderShadowMaps(size_t count);
-
 		void loadBaseAssets();
 		void createShadowMaps();
+		void renderShadowMaps(size_t count);
+		void instancedRenderShadows(Shader* shader);
 
 		Application* m_app;
 
