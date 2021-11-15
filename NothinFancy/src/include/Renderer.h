@@ -30,6 +30,7 @@ namespace nf {
 		void render(Cubemap& in);
 
 		void doFrame(Camera* camera, float dT);
+		void setAmbient(float am);
 
 		~Renderer();
 	private:

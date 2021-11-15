@@ -29,6 +29,8 @@ namespace nf {
 		virtual void render(Renderer& renderer);
 
 		Camera* getCamera();
+		//Defaults to 0.1f
+		void setAmbientLight(float stength);
 		//In units of Earth gravity (9.81 m/s^2)
 		void setGravity(const Vec3& gravity);
 		void setGravity(float strength);

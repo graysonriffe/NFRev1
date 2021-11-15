@@ -24,6 +24,7 @@ namespace nf {
 
 		void setWindowIcon(HICON hIcon);
 		void setWindowCursor(HCURSOR hCursor);
+		Renderer* getRenderer() const;
 		AudioEngine* getAudioEngine() const;
 		PhysicsEngine* getPhysicsEngine() const;
 		void addState(Gamestate* state, const std::string& stateName);

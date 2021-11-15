@@ -29,6 +29,7 @@ private:
 	nf::Sound sound2;
 
 	float grav;
+	float amb;
 
 	std::vector<nf::Entity*> entities;
 };

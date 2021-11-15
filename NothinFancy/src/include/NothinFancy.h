@@ -1,6 +1,8 @@
-//TODO: Rework this file to only contain functions the frontend will need to access
-
 #pragma once
+//TODO: Rework this file to only contain functions the frontend will need to access
+//Maybe a implementation define here?
+
+
 #include <chrono>
 #include <unordered_map>
 #include <array>

@@ -22,6 +22,7 @@ uniform Light light[12];
 uniform int numberOfLights;
 uniform bool isContinued;
 uniform float farPlane;
+uniform float ambientStrength;
 
 uniform sampler2D gBPos;
 uniform sampler2D gBNorm;
@@ -88,7 +89,6 @@ void main() {
 	float specPower = specTemp.r;
 	float matSpec = specTemp.g;
 
-	float ambientStrength = 0.1f;
 	vec3 ambient = ambientStrength * matDiff;
 	if (!isContinued)
 		color += ambient;

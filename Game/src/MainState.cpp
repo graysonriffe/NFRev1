@@ -7,7 +7,7 @@ void MainState::onEnter() {
 	ap.load("example.nfpack");
 	test.create(ap.get("2mats.obj"), nf::Entity::Type::DYNAMIC);
 	test.setPosition(nf::Vec3(0.0, 1.5, -5.0));
-	plane.create(ap.get("env.obj"), nf::Entity::Type::ENVIRONMENT);
+	plane.create(ap.get("env.obj"), nf::Entity::Type::MAP);
 	plane.setScale(20.0);
 	plane.setPosition(0.0, -20.0, 0.0);
 	text.create("", nf::Vec2(0.1, 0.025), nf::Vec3(0.8));
@@ -27,9 +27,9 @@ void MainState::onEnter() {
 	sound2.setVolume(3.0);
 	sound2.setEntity(test);
 
-	for (int x = 0; x < 5; x++) {
-		for (int y = 0; y < 5; y++) {
-			for (int z = 0; z < 5; z++) {
+	for (int x = 0; x < 3; x++) {
+		for (int y = 0; y < 3; y++) {
+			for (int z = 0; z < 3; z++) {
 				entities.push_back(new nf::Entity);
 				entities.back()->create(ap.get("2mats.obj"), nf::Entity::Type::DYNAMIC);
 				entities.back()->setPosition(nf::Vec3(5.0 + x * 2.05, 1.0 + y * 2.05, -5.0 + z * 2.05));
@@ -39,6 +39,8 @@ void MainState::onEnter() {
 
 	grav = 2.0f;
 	setGravity(grav);
+
+	amb = 0.1f;
 
 	camera->setPosition(-20.0, 15.0, 0.0);
 	camera->setRotation(85.0, -30.0);
@@ -102,6 +104,13 @@ void MainState::update(float deltaTime) {
 		setGravity(1.0f);
 	}
 	gravText.setText("Gravity Scale: " + std::to_string(grav));
+
+	if (app->isKeyHeld(NFI_LEFT))
+		amb -= 0.01f;
+	if (app->isKeyHeld(NFI_RIGHT))
+		amb += 0.01f;
+	if (amb >= 0.0f)
+		setAmbientLight(amb);
 
 	if (app->isKeyPressed(NFI_ESCAPE))
 		app->quit();

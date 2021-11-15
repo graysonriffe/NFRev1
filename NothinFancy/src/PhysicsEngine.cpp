@@ -4,9 +4,6 @@
 #include "Entity.h"
 #include "Model.h"
 
-//Remove this
-#include "Input.h"
-
 namespace nf {
 	class PhysicsErrorCallback : public PxErrorCallback {
 		virtual void reportError(PxErrorCode::Enum code, const char* message, const char* file, int line) {
@@ -234,7 +231,7 @@ namespace nf {
 			act->userData = entity;
 			m_scene->addActor(*act);
 		}
-		else if (type == Entity::Type::ENVIRONMENT) {
+		else if (type == Entity::Type::MAP) {
 			PxRigidStatic* act = PxCreateStatic(*m_phy, PxTransform(PxIdentity), PxTriangleMeshGeometry(triangleMesh), *mat);
 			act->userData = entity;
 			m_scene->addActor(*act);

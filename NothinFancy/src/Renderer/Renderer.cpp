@@ -290,6 +290,12 @@ namespace nf {
 		SwapBuffers(m_hdc);
 	}
 
+	void Renderer::setAmbient(float am) {
+		if (am < 0.0f)
+			Error("Cannot have a negative ambient light strength!");
+		m_lightingShader->setUniform("ambientStrength", am);
+	}
+
 	void Renderer::loadBaseAssets() {
 		m_baseAP.load("base.nfpack");
 		const char* gBufferVertex = m_baseAP.get("gBufferVertex.shader")->data;

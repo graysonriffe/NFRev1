@@ -54,6 +54,10 @@ namespace nf {
 		return camera;
 	}
 
+	void Gamestate::setAmbientLight(float strength) {
+		app->getRenderer()->setAmbient(strength);
+	}
+
 	void Gamestate::setGravity(const Vec3& gravity) {
 		app->getPhysicsEngine()->setGravity(gravity * 9.81f);
 	}

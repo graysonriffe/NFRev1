@@ -37,7 +37,7 @@ namespace nf {
 			bool convex = false, triangle = false;
 			if (m_type == Entity::Type::STATIC || m_type == Entity::Type::DYNAMIC)
 				convex = true;
-			else if (m_type == Entity::Type::ENVIRONMENT)
+			else if (m_type == Entity::Type::MAP)
 				triangle = true;
 			m_model = new Model(model, convex, triangle);
 			model->alreadyLoaded = true;

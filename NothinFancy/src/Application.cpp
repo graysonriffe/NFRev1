@@ -45,11 +45,21 @@ namespace nf {
 		SetClassLongPtr(m_window, GCLP_HCURSOR, (LONG_PTR)hCursor);
 	}
 
+	Renderer* Application::getRenderer() const {
+		if (!m_renderer)
+			Error("Application not running yet!");
+		return m_renderer;
+	}
+
 	AudioEngine* Application::getAudioEngine() const {
+		if(!m_audio)
+			Error("Application not running yet!");
 		return m_audio;
 	}
 
 	PhysicsEngine* Application::getPhysicsEngine() const {
+		if (!m_physics)
+			Error("Application not running yet!");
 		return m_physics;
 	}
 
