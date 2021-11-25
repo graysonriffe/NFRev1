@@ -11,7 +11,7 @@ namespace nf {
 			Debug::ErrorImp(message, file, line);
 			__debugbreak();
 #else
-			Error(message);
+			NFError(message);
 #endif
 		}
 	};
@@ -33,7 +33,7 @@ namespace nf {
 		m_err = new PhysicsErrorCallback;
 		m_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_alloc, *m_err);
 		if (!m_foundation)
-			Error("Could not initialize physics engine!");
+			NFError("Could not initialize physics engine!");
 
 #ifdef _DEBUG
 		m_pvd = PxCreatePvd(*m_foundation);
@@ -43,11 +43,11 @@ namespace nf {
 
 		m_phy = PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, PxTolerancesScale(), false, m_pvd);
 		if (!m_phy)
-			Error("Could not initialize physics engine!");
+			NFError("Could not initialize physics engine!");
 
 		m_cooking = PxCreateCooking(PX_PHYSICS_VERSION, *m_foundation, PxCookingParams(PxTolerancesScale()));
 		if (!m_cooking)
-			Error("Could not initialize physics engine!");
+			NFError("Could not initialize physics engine!");
 
 		unsigned int threads = std::thread::hardware_concurrency() - 1;
 		if (threads < 0) threads = 0;
@@ -177,7 +177,7 @@ namespace nf {
 
 		PxDefaultMemoryOutputStream buf;
 		if (!m_cooking->cookConvexMesh(desc, buf))
-			Error("Could not create convex mesh!");
+			NFError("Could not create convex mesh!");
 
 		PxDefaultMemoryInputData in(buf.getData(), buf.getSize());
 		PxConvexMesh* mesh = m_phy->createConvexMesh(in);
@@ -195,7 +195,7 @@ namespace nf {
 
 		PxDefaultMemoryOutputStream buf;
 		if (!m_cooking->cookTriangleMesh(desc, buf))
-			Error("Could not create triangle mesh!");
+			NFError("Could not create triangle mesh!");
 
 		PxDefaultMemoryInputData in(buf.getData(), buf.getSize());
 		PxTriangleMesh* mesh = m_phy->createTriangleMesh(in);
@@ -218,7 +218,7 @@ namespace nf {
 		else if (m_triangleMeshes.find(entity->getModel()) != m_triangleMeshes.end())
 			triangleMesh = m_triangleMeshes[entity->getModel()];
 		else
-			Error("No physics mesh found for this entity!");
+			NFError("No physics mesh found for this entity!");
 
 		//Dynamic or static
 		if (type == Entity::Type::DYNAMIC) {

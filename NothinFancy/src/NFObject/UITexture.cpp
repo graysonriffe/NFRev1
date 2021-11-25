@@ -18,11 +18,11 @@ namespace nf {
 
 	void UITexture::create(Asset* textureAsset, const Vec2& position, float scale, float opacity) {
 		if (m_constructed)
-			Error("UITexture already created!");
+			NFError("UITexture already created!");
 		m_constructed = true;
 		ATexture* tex;
 		if ((tex = dynamic_cast<ATexture*>(textureAsset)) == nullptr)
-			Error("Non-texture asset passed to UITexture::create!");
+			NFError("Non-texture asset passed to UITexture::create!");
 		m_position = position;
 		m_scale = scale;
 		m_opacity = opacity;

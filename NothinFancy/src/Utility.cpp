@@ -114,7 +114,7 @@ namespace nf {
 		std::ofstream out;
 		out.open(filename, std::ios::binary);
 		if (!out)
-			Error("File \"" + (std::string)filename + (std::string)"\" could not be written!");
+			NFError("File \"" + (std::string)filename + (std::string)"\" could not be written!");
 		std::string write(in);
 		if (encrypted) {
 			for (unsigned int i = 0; i < write.size(); i++)
@@ -132,7 +132,7 @@ namespace nf {
 		std::ifstream in;
 		in.open(filename, std::ios::binary);
 		if (!in)
-			Error("File \"" + (std::string)filename + (std::string)"\" could not be read!");
+			NFError("File \"" + (std::string)filename + (std::string)"\" could not be read!");
 		std::stringstream ss;
 		ss << in.rdbuf();
 		std::string read(ss.str());

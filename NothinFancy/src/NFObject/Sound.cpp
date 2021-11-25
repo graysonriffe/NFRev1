@@ -94,11 +94,11 @@ namespace nf {
 
 	void Sound::create(Asset* soundAsset) {
 		if (m_constructed)
-			Error("Sound already created!");
+			NFError("Sound already created!");
 		m_constructed = true;
 		ASound* sound;
 		if ((sound = dynamic_cast<ASound*>(soundAsset)) == nullptr)
-			Error("Non-sound asset passed to Sound::create!");
+			NFError("Non-sound asset passed to Sound::create!");
 		std::string data(sound->data, sound->size);
 
 		size_t dataSize;
@@ -107,7 +107,7 @@ namespace nf {
 		else if (data.find("RIFF") == 0)
 			dataSize = loadWAV(data);
 		else
-			Error("Sound asset not of correct format!");
+			NFError("Sound asset not of correct format!");
 
 		m_xBuffer.pAudioData = (unsigned char*)m_buffer;
 		m_xBuffer.AudioBytes = (unsigned int)dataSize;
@@ -167,11 +167,11 @@ namespace nf {
 		unsigned int fileSize = *(unsigned int*)&data[4];
 		size_t fmtPos;
 		if ((fmtPos = data.find("fmt")) == std::string::npos)
-			Error("WAV not of correct format!");
+			NFError("WAV not of correct format!");
 		std::memcpy(&m_format, &data[fmtPos + 8], 16);
 		size_t dataPos;
 		if ((dataPos = data.find("data")) == std::string::npos)
-			Error("WAV not of correct m_format!");
+			NFError("WAV not of correct m_format!");
 		unsigned int dataSize = *(unsigned int*)&data[dataPos + 4];
 		m_buffer = new char[dataSize];
 		std::memcpy(m_buffer, &data[dataPos + 8], dataSize);

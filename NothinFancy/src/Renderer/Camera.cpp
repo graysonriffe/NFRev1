@@ -31,28 +31,21 @@ namespace nf {
 		return m_type;
 	}
 
-	void Camera::moveForward(float speed) {
-		Vec3 temp = m_front * speed;
+	void Camera::move(const Vec2& offset) {
+		moveX(offset.x);
+		moveZ(offset.y);
+	}
+
+	void Camera::moveZ(float offset) {
+		Vec3 temp = m_front * offset;
 		m_position += temp;
 	}
 
-	void Camera::moveBackward(float speed) {
-		Vec3 temp = m_front * speed;
-		m_position -= temp;
-	}
-
-	void Camera::moveRight(float speed) {
+	void Camera::moveX(float offset) {
 		glm::vec3 front = { m_front.x, m_front.y, m_front.z };
-		glm::vec3 temp = glm::normalize(glm::cross(front, glm::vec3(0.0, 1.0, 0.0))) * speed;
+		glm::vec3 temp = glm::normalize(glm::cross(front, glm::vec3(0.0, 1.0, 0.0))) * offset;
 		Vec3 move = { temp.x, temp.y, temp.z };
 		m_position += move;
-	}
-
-	void Camera::moveLeft(float speed) {
-		glm::vec3 front = { m_front.x, m_front.y, m_front.z };
-		glm::vec3 temp = glm::normalize(glm::cross(front, glm::vec3(0.0, 1.0, 0.0))) * speed;
-		Vec3 move = { temp.x, temp.y, temp.z };
-		m_position -= move;
 	}
 
 	void Camera::setPosition(float x, float y, float z) {
@@ -81,7 +74,7 @@ namespace nf {
 		return m_front;
 	}
 
-	void Camera::bind(Shader* gBufferShader, Shader* lightingShader, Shader* cubemapShader) {
+	void Camera::update(Shader* gBufferShader, Shader* lightingShader, Shader* cubemapShader) {
 		glm::mat4 view;
 
 		switch (m_type) {
@@ -104,7 +97,7 @@ namespace nf {
 				break;
 			}
 			case Type::ORBIT: {
-
+				//TODO: Camera orbit mode
 				break;
 			}
 			case Type::FIXED: {

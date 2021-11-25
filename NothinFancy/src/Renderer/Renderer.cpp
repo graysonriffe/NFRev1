@@ -59,7 +59,7 @@ namespace nf {
 		wglMakeCurrent(m_hdc, m_hglrc);
 		glewExperimental = GL_TRUE;
 		if (glewInit() != GLEW_OK)
-			Error("Could not initialize GLEW!");
+			NFError("Could not initialize GLEW!");
 		const int attrib[] = {
 			WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
 			WGL_CONTEXT_MINOR_VERSION_ARB, 3,
@@ -71,7 +71,7 @@ namespace nf {
 		wglMakeCurrent(m_hdc, m_hglrc);
 		//TODO: Configure V-Sync with a custom max FPS
 		wglSwapIntervalEXT(0);
-		Log("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
+		NFLog("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 		glDepthFunc(GL_LESS);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -137,23 +137,23 @@ namespace nf {
 
 	void Renderer::render(Entity& in) {
 		if (in.isConstructed() == false)
-			Error("Tried to render Entity before being created!");
+			NFError("Tried to render Entity before being created!");
 		m_lGame.push_back(&in);
 		//TODO: Sort transparent objects by distance; Farthest first
 	}
 	void Renderer::render(UIElement& in) {
 		if (in.isConstructed() == false)
-			Error("Tried to render a UI element before being created!");
+			NFError("Tried to render a UI element before being created!");
 		m_lUI.push_back(&in);
 	}
 	void Renderer::render(Light& in) {
 		if (in.isConstructed() == false)
-			Error("Tried to render a light before being created!");
+			NFError("Tried to render a light before being created!");
 		m_lights.push_back(&in);
 	}
 	void Renderer::render(Cubemap& in) {
 		if (in.isConstructed() == false)
-			Error("Tried to render a cubemap before being created!");
+			NFError("Tried to render a cubemap before being created!");
 		m_cubemap = &in;
 	}
 
@@ -163,7 +163,7 @@ namespace nf {
 		glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 1000.0f);
-		camera->bind(m_gBufferShader, m_lightingShader, m_cubemapShader);
+		camera->update(m_gBufferShader, m_lightingShader, m_cubemapShader);
 
 		//First, fill the gBuffer with entities
 		m_gBufferShader->setUniform("proj", proj);
@@ -284,7 +284,7 @@ namespace nf {
 		//Check for OpenGL errors
 		GLenum err = glGetError();
 		if (err != GL_NO_ERROR)
-			Error("OpenGL error " + std::to_string(err));
+			NFError("OpenGL error " + std::to_string(err));
 
 		//Show completed frame
 		SwapBuffers(m_hdc);
@@ -292,7 +292,7 @@ namespace nf {
 
 	void Renderer::setAmbient(float am) {
 		if (am < 0.0f)
-			Error("Cannot have a negative ambient light strength!");
+			NFError("Cannot have a negative ambient light strength!");
 		m_lightingShader->setUniform("ambientStrength", am);
 	}
 

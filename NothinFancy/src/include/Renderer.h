@@ -17,22 +17,59 @@ namespace nf {
 	class VertexArray;
 	class IndexBuffer;
 
+	/**
+	 * @brief Handles rendering user objects
+	 * 
+	 * This should only be accessed in a gamestate's render function.
+	 * 
+	 * @todo Maybe move to something like rendering everything automatically and adding a
+	 * show function to entities and UI stuff?
+	*/
 	class Renderer {
 	public:
-		Renderer(Application* app);
-
+		/**
+		 * @brief Renders an Entity
+		 * @param in Entity to render
+		 * 
+		 * This function adds an Entity to the list of entites to render in the next frame.
+		 * 
+		 * @note An entity will participate in the physics simulation if it is setup to
+		 * do so regardless of if it is rendered or not.
+		*/
+		void render(Entity& in);
+		/**
+		 * @brief Renders a UIElement
+		 * @param in UIElement to render
+		 * 
+		 * This function adds a UIElement to the list UIElements to render in the next frame.
+		*/
+		void render(UIElement& in);
+		/**
+		 * @brief Renders a Light
+		 * @param in Light to render
+		 * 
+		 * This function adds a Light to the list of lights to render in the next frame.
+		*/
+		void render(Light& in);
+		/**
+		 * @brief Renders a Cubemap
+		 * @param in Cubemap to render
+		 * 
+		 * This function sets the next frame's Cubemap.
+		 * 
+		 * @note Because only one Cubemap can be rendered in a frame, only the last call to
+		 * this function before a frame is produced will take effect.
+		*/
+		void render(Cubemap& in);
+#ifndef NFIMPL
 		void setFade(bool in, bool out, bool text = true);
 		bool isFadeOutComplete();
-
-		void render(Entity& in);
-		void render(UIElement& in);
-		void render(Light& in);
-		void render(Cubemap& in);
-
 		void doFrame(Camera* camera, float dT);
 		void setAmbient(float am);
 
+		Renderer(Application* app);
 		~Renderer();
+#endif
 	private:
 		void loadBaseAssets();
 		void createShadowMaps();

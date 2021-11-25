@@ -1,7 +1,7 @@
 #include "MainState.h"
 
 void MainState::onEnter() {
-	Log("MainState onEnter!");
+	NFLog("MainState onEnter!");
 	currCamType = nf::Camera::Type::FIRST_PERSON;
 	camera->setType(currCamType);
 	ap.load("example.nfpack");
@@ -31,7 +31,7 @@ void MainState::onEnter() {
 		for (int y = 0; y < 3; y++) {
 			for (int z = 0; z < 3; z++) {
 				entities.push_back(new nf::Entity);
-				entities.back()->create(ap.get("2mats.obj"), nf::Entity::Type::DYNAMIC);
+				entities.back()->create(nf::BaseAssets::cone, nf::Entity::Type::DYNAMIC);
 				entities.back()->setPosition(nf::Vec3(5.0 + x * 2.05, 1.0 + y * 2.05, -5.0 + z * 2.05));
 			}
 		}
@@ -52,20 +52,21 @@ void MainState::update(float deltaTime) {
 		camera->setType(currCamType);
 	}
 
-	float speed = 5.0;
+	float speed;
 	if (camera->getType() == nf::Camera::Type::FIRST_PERSON) {
 		if (app->isKeyHeld(NFI_SHIFT))
-			speed = 20.0;
+			speed = 20.0f;
 		else
-			speed = 5.0;
+			speed = 5.0f;
+		speed *= deltaTime;
 		if (app->isKeyHeld(NFI_W))
-			camera->moveForward(speed * deltaTime);
+			camera->moveZ(speed);
 		if (app->isKeyHeld(NFI_S))
-			camera->moveBackward(speed * deltaTime);
+			camera->moveZ(-speed);
 		if (app->isKeyHeld(NFI_D))
-			camera->moveRight(speed * deltaTime);
+			camera->moveX(speed);
 		if (app->isKeyHeld(NFI_A))
-			camera->moveLeft(speed * deltaTime);
+			camera->moveX(-speed);
 	}
 
 	text.setText("FPS: " + std::to_string(app->getFPS()));
@@ -134,7 +135,7 @@ void MainState::render(nf::Renderer& renderer) {
 }
 
 void MainState::onExit() {
-	Log("MainState onExit!");
+	NFLog("MainState onExit!");
 
 	entities.clear();
 }

@@ -1,6 +1,7 @@
 .vs/
 bin/
 int/
+manual/
 *.aps
 *.res
 *.nfpack

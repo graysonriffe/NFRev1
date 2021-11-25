@@ -2,11 +2,11 @@
 //TODO: Rework this file to only contain functions the frontend will need to access
 //Maybe a implementation define here?
 
+//TODO: Prevent including other headers other than this one
 
-#include <chrono>
-#include <unordered_map>
-#include <array>
-#include <Windows.h>
+#ifndef NFIMPL
+#define NFIMPL 1
+#endif
 
 #include "Config.h"
 #include "Application.h"

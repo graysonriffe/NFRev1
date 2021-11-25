@@ -19,7 +19,7 @@ namespace nf {
 		m_newLine("\n")
 	{
 		if (model->neededTextures.size() > 32)
-			Error("Model exceedes 32 texture limit!");
+			NFError("Model exceedes 32 texture limit!");
 		std::vector<char> file(model->data, model->data + model->size);
 		size_t mtlPos = std::search(file.begin(), file.end(), m_newMtl, m_newMtl + std::strlen(m_newMtl)) - file.begin();
 		std::vector<char> mtl(&file[mtlPos], &file[0] + file.size());
@@ -72,15 +72,15 @@ namespace nf {
 			}
 			else if (std::strcmp(&firstWord[0], "f") == 0) {
 				if (!tcPresent)
-					Error("No texture coordinates found in model!");
+					NFError("No texture coordinates found in model!");
 				if (!vnPresent)
-					Error("No normals found in model!");
+					NFError("No normals found in model!");
 
 				unsigned int vertexIndex[3], uvIndex[3], vnIndex[3];
 				char temp;
 				ss >> vertexIndex[0] >> temp >> uvIndex[0] >> temp >> vnIndex[0] >> vertexIndex[1] >> temp >> uvIndex[1] >> temp >> vnIndex[1] >> vertexIndex[2] >> temp >> uvIndex[2] >> temp >> vnIndex[2];
 				if (ss.rdbuf()->in_avail() > 1)
-					Error("Model has non-triangle faces!");
+					NFError("Model has non-triangle faces!");
 				mats[usingMat]->vbIndices.push_back(vertexIndex[0]);
 				mats[usingMat]->vbIndices.push_back(vertexIndex[1]);
 				mats[usingMat]->vbIndices.push_back(vertexIndex[2]);
@@ -232,7 +232,7 @@ namespace nf {
 			matCount++;
 		}
 		if (m_materials.size() > 32)
-			Error("Model exceedes 32 material limit!");
+			NFError("Model exceedes 32 material limit!");
 		m_vao = new VertexArray;
 		m_vao->addBuffer(&vboPositions[0], vboPositions.size() * sizeof(float));
 		m_vao->pushFloat(3);

@@ -44,7 +44,9 @@ namespace nf {
 
 	}
 
-	AssetPack::AssetPack() {
+	AssetPack::AssetPack() :
+		m_loaded(false)
+	{
 
 	}
 
@@ -87,7 +89,7 @@ namespace nf {
 					}
 					curr = cubemaps[cmName];
 					if (curr->numImages == 6)
-						Error("Duplicate cubemap images in pack \"" + (std::string)packName + (std::string)"\"!");
+						NFError("Duplicate cubemap images in pack \"" + (std::string)packName + (std::string)"\"!");
 					if (assetName.find("_cmfront") != std::string::npos) {
 						curr->frontData = new char[assetSize];
 						std::memcpy(curr->frontData, &assetContents[0], assetSize);
@@ -135,7 +137,7 @@ namespace nf {
 					}
 					curr = buttons[buttonName];
 					if (curr->numImages == 3)
-						Error("Duplicate button images in pack \"" + (std::string)packName + (std::string)"\"!");
+						NFError("Duplicate button images in pack \"" + (std::string)packName + (std::string)"\"!");
 					if (assetName.find("_buttonidle") != std::string::npos) {
 						curr->idleTex.data = new char[assetSize];
 						std::memcpy(curr->idleTex.data, &assetContents[0], assetSize);
@@ -196,12 +198,12 @@ namespace nf {
 				m_assets[assetName] = sound;
 				continue;
 			}
-			Error("Invalid asset extention in pack \"" + (std::string)packName + (std::string)"\"!");
+			NFError("Invalid asset extention in pack \"" + (std::string)packName + (std::string)"\"!");
 		}
 		if (cubemapCount % 6 != 0)
-			Error("Could not find full cubemap in pack \"" + (std::string)packName + (std::string)"\"!");
+			NFError("Could not find full cubemap in pack \"" + (std::string)packName + (std::string)"\"!");
 		if (buttonCount % 3 != 0)
-			Error("Could not find full button set in pack \"" + (std::string)packName + (std::string)"\"!");
+			NFError("Could not find full button set in pack \"" + (std::string)packName + (std::string)"\"!");
 
 		while (packContentsOBJ.size()) {
 			size_t startingPos = packContentsOBJ.find_first_of("#NFASSET ") + 9;
@@ -244,26 +246,35 @@ namespace nf {
 			}
 		}
 
+		m_loaded = true;
 		if (packName != "base.nfpack") {
 			if (!Application::getApp()->getCurrentState()->isRunning())
 				Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
 		}
 	}
 
+	bool AssetPack::isLoaded() {
+		return m_loaded;
+	}
+
 	Asset* AssetPack::get(const char* in) {
+		if (!m_loaded) NFError("AssetPack has not been loaded yet!");
 		if (m_assets.find(in) == m_assets.end())
-			Error("Could not find asset \"" + (std::string)in + (std::string)"\" in asset pack!");
+			NFError("Could not find asset \"" + (std::string)in + (std::string)"\" in asset pack!");
 		return m_assets[in];
 	}
 
 	Asset* AssetPack::get(std::string& in) {
+		if (!m_loaded) NFError("AssetPack has not been loaded yet!");
 		return get(in.c_str());
 	}
 
 	Asset* AssetPack::operator[](const char* in) {
+		if (!m_loaded) NFError("AssetPack has not been loaded yet!");
 		return get(in);
 	}
 	Asset* AssetPack::operator[](std::string& in) {
+		if (!m_loaded) NFError("AssetPack has not been loaded yet!");
 		return get(in.c_str());
 	}
 
@@ -275,6 +286,8 @@ namespace nf {
 		for (auto curr : m_assets)
 			delete curr.second;
 		m_assets.clear();
+
+		m_loaded = false;
 	}
 
 	AssetPack::~AssetPack() {

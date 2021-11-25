@@ -11,7 +11,7 @@ namespace nf {
 	}
 
 	void Drawable::bind() {
-		Error("Tried to bind an invalid object!");
+		NFError("Tried to bind an invalid object!");
 	}
 
 	unsigned int Drawable::getIndexCount() {

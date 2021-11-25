@@ -6,7 +6,7 @@
 
 namespace nf {
 	void IntroGamestate::onEnter() {
-		Log("Intro onEnter!");
+		NFLog("Intro onEnter!");
 		m_scale = 2.0;
 		m_logoTex.create(BaseAssets::logo, Vec2(0.0, 0.0));
 		m_logoTex.centered(true, true);
@@ -37,6 +37,6 @@ namespace nf {
 	}
 
 	void IntroGamestate::onExit() {
-		Log("Intro onExit!");
+		NFLog("Intro onExit!");
 	}
 }

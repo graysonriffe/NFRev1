@@ -39,15 +39,15 @@ namespace nf {
 	}
 
 	void Gamestate::onEnter() {
-		Error("Gamestate has no overridden onEnter function!");
+		NFError("Gamestate has no overridden onEnter function!");
 	}
 
 	void Gamestate::update(float deltaTime) {
-		Error("Gamestate has no overridden update function!");
+		NFError("Gamestate has no overridden update function!");
 	}
 
 	void Gamestate::render(Renderer& renderer) {
-		Error("Gamestate has no overridden render function!");
+		NFError("Gamestate has no overridden render function!");
 	}
 
 	Camera* Gamestate::getCamera() {
@@ -67,7 +67,7 @@ namespace nf {
 	}
 
 	void Gamestate::onExit() {
-		Error("Gamestate has no overridden onExit function!");
+		NFError("Gamestate has no overridden onExit function!");
 	}
 
 	void Gamestate::stop() {

@@ -14,10 +14,10 @@ namespace nf {
 	{
 		HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 		if (FAILED(hr))
-			Error("Could not initialize COM!");
+			NFError("Could not initialize COM!");
 		hr = XAudio2Create(&m_engine);
 		if (FAILED(hr))
-			Error("Could not initialize the audio engine!");
+			NFError("Could not initialize the audio engine!");
 #ifdef _DEBUG
 		XAUDIO2_DEBUG_CONFIGURATION debug = { 0 };
 		debug.TraceMask = XAUDIO2_LOG_ERRORS | XAUDIO2_LOG_WARNINGS;
@@ -30,7 +30,7 @@ namespace nf {
 		else if (SUCCEEDED(hr))
 			m_isActive = true;
 		else
-			Error("Could not initialize the audio engine!");
+			NFError("Could not initialize the audio engine!");
 		m_threadRunning = true;
 		m_thread = std::thread(&AudioEngine::runAudioThread, this);
 	}
@@ -45,7 +45,7 @@ namespace nf {
 				return true;
 			}
 			else {
-				Error("Could not initialize audio!");
+				NFError("Could not initialize audio!");
 				return false;
 			}
 		}
@@ -115,7 +115,7 @@ namespace nf {
 							break;
 						}
 						else if (!SUCCEEDED(hr))
-							Error("Could not play sound!");
+							NFError("Could not play sound!");
 						curr.voice = source;
 						curr.voice->SubmitSourceBuffer(curr.buffer);
 						curr.voice->SetVolume(curr.volume);

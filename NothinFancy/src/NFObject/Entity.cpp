@@ -24,12 +24,12 @@ namespace nf {
 
 	void Entity::create(Asset* modelAsset, Type type) {
 		if (m_constructed)
-			Error("Entity already created!");
+			NFError("Entity already created!");
 		m_constructed = true;
 		m_type = type;
 		AModel* model;
 		if ((model = dynamic_cast<AModel*>(modelAsset)) == nullptr)
-			Error("Non-model asset passed to Entity::create!");
+			NFError("Non-model asset passed to Entity::create!");
 		if (model->alreadyLoaded) {
 			m_model = model->loadedModel;
 		}

@@ -5,7 +5,7 @@
 #include "Utility.h"
 
 namespace nf {
-	DEBUGINIT;
+	NFDEBUGINIT;
 
 	Application::Application(Config& config) :
 		m_currentConfig(config),
@@ -18,21 +18,12 @@ namespace nf {
 		m_stateChange(false),
 		m_stateChangeStarted(false)
 	{
-		Log("Creating NF application");
-		Log("Width: " + std::to_string(m_currentConfig.width) + ", Height: " + std::to_string(m_currentConfig.height) + ", Fullscreen: " + std::to_string(m_currentConfig.fullscreen) + ", Title: " + m_currentConfig.title);
+		NFLog("Creating NF application");
+		NFLog("Width: " + std::to_string(m_currentConfig.width) + ", Height: " + std::to_string(m_currentConfig.height) + ", Fullscreen: " + std::to_string(m_currentConfig.fullscreen) + ", Title: " + m_currentConfig.title);
 
 		if (getApp(true) != nullptr)
-			Error("Cannot create two NF Application objects!");
+			NFError("Cannot create two NF Application objects!");
 		setApp(this);
-		m_hInst = GetModuleHandle(NULL);
-		registerWindowClass();
-		RECT windowSize = getWindowRect();
-		int x = 0;
-		int y = 0;
-		calculateNewWindowPos(x, y);
-		m_window = CreateWindowEx(NULL, m_wclassName, toWide(m_currentConfig.title).data(), WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX, x, y, windowSize.right, windowSize.bottom, NULL, NULL, m_hInst, NULL);
-		SetProp(m_window, L"App", this);
-		if (m_currentConfig.fullscreen) toggleFullscreen();
 	}
 
 	void Application::setWindowIcon(HICON hIcon) {
@@ -47,19 +38,19 @@ namespace nf {
 
 	Renderer* Application::getRenderer() const {
 		if (!m_renderer)
-			Error("Application not running yet!");
+			NFError("Application not running yet!");
 		return m_renderer;
 	}
 
 	AudioEngine* Application::getAudioEngine() const {
 		if(!m_audio)
-			Error("Application not running yet!");
+			NFError("Application not running yet!");
 		return m_audio;
 	}
 
 	PhysicsEngine* Application::getPhysicsEngine() const {
 		if (!m_physics)
-			Error("Application not running yet!");
+			NFError("Application not running yet!");
 		return m_physics;
 	}
 
@@ -68,7 +59,7 @@ namespace nf {
 			m_states[stateName] = state;
 		}
 		else
-			Error("State \"" + (std::string)stateName + (std::string)"\" already exists!");
+			NFError("State \"" + (std::string)stateName + (std::string)"\" already exists!");
 	}
 
 	void Application::setDefaultState(const std::string& stateName) {
@@ -78,10 +69,10 @@ namespace nf {
 				m_defaultStateAdded = true;
 			}
 			else
-				Error("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!");
+				NFError("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!");
 		}
 		else
-			Error("More than one default state defined!");
+			NFError("More than one default state defined!");
 	}
 
 	const std::string& Application::getDefaultState() {
@@ -92,6 +83,15 @@ namespace nf {
 #ifdef _DEBUG
 		SetThreadDescription(GetCurrentThread(), L"Input Thread");
 #endif
+		m_hInst = GetModuleHandle(NULL);
+		registerWindowClass();
+		RECT windowSize = getWindowRect();
+		int x = 0;
+		int y = 0;
+		calculateNewWindowPos(x, y);
+		m_window = CreateWindowEx(NULL, m_wclassName, toWide(m_currentConfig.title).data(), WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX, x, y, windowSize.right, windowSize.bottom, NULL, NULL, m_hInst, NULL);
+		SetProp(m_window, L"App", this);
+		if (m_currentConfig.fullscreen) toggleFullscreen();
 		showWindow(true);
 		m_running = true;
 		MSG msg = { };
@@ -119,7 +119,7 @@ namespace nf {
 
 	void Application::changeState(const std::string& stateName) {
 		if (m_states.find(stateName) == m_states.end())
-			Error("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!");
+			NFError("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!");
 		m_stateChange = true;
 		m_nextState = m_states[stateName];
 	}
@@ -210,7 +210,7 @@ namespace nf {
 
 	Application* Application::getApp(bool first) {
 		if (!currentApp && !first)
-			Error("No Application has been created yet!");
+			NFError("No Application has been created yet!");
 		return currentApp;
 	}
 
@@ -226,7 +226,7 @@ namespace nf {
 			RegisterClass(&wclass);
 		}
 		else
-			Error("Cannot run multiple NF applications concurrently!");
+			NFError("Cannot run multiple NF applications concurrently!");
 	}
 
 	RECT Application::getWindowRect() const {
@@ -303,7 +303,7 @@ namespace nf {
 
 	void Application::quit() {
 		m_quit = true;
-		Log("Exiting NF application");
+		NFLog("Exiting NF application");
 	}
 
 	void Application::runMainGameThread() {
@@ -340,7 +340,7 @@ namespace nf {
 					static int i = 0;
 					i++;
 					if (i % 5 == 0)
-						Log("FPS: " + std::to_string(m_FPS));
+						NFLog("FPS: " + std::to_string(m_FPS));
 #endif
 					m_fpsClock1 = std::chrono::steady_clock::now();
 				}

@@ -19,7 +19,7 @@ namespace nf {
 
 	void Text::create(const std::string& string, const Vec2& position, const Vec3& color, float opacity, float scale, Asset* fontAsset) {
 		if (m_constructed)
-			Error("Text already created!");
+			NFError("Text already created!");
 		m_constructed = true;
 		m_string = string;
 		m_position = position;
@@ -28,7 +28,7 @@ namespace nf {
 		m_opacity = opacity;
 		AFont* font;
 		if ((font = dynamic_cast<AFont*>(fontAsset)) == nullptr)
-			Error("Non-font asset passed to Text::create!");
+			NFError("Non-font asset passed to Text::create!");
 		if (font->alreadyLoaded) {
 			m_font = font->loadedFont;
 		}
@@ -36,10 +36,10 @@ namespace nf {
 			m_font = new Font;
 			FT_Library ft;
 			if (FT_Init_FreeType(&ft))
-				Error("Could not initialize FreeType!");
+				NFError("Could not initialize FreeType!");
 			FT_Face face;
 			if (FT_New_Memory_Face(ft, (const unsigned char*)font->data, (unsigned int)font->size, 0, &face))
-				Error("Could not load font!");
+				NFError("Could not load font!");
 			FT_Set_Pixel_Sizes(face, 0, 160);
 			for (unsigned char c = 0; c < 128; c++) {
 				FT_Load_Char(face, c, FT_LOAD_RENDER);

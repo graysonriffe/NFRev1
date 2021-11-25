@@ -23,7 +23,7 @@ namespace nf {
 
 	void Button::create(const Vec2& position, std::string string, Asset* buttonAsset, float scale, float opacity) {
 		if (m_constructed)
-			Error("Button already created!");
+			NFError("Button already created!");
 		m_constructed = true;
 		m_position = position;
 		m_string = string;
@@ -36,12 +36,12 @@ namespace nf {
 		m_text.setOpacity(m_opacity);
 		AButton* button;
 		if ((button = dynamic_cast<AButton*>(buttonAsset)) == nullptr)
-			Error("Non-button asset passed to Button::create!");
+			NFError("Non-button asset passed to Button::create!");
 		m_idleTexture = new Texture(&button->idleTex);
 		m_hoverTexture = new Texture(&button->hoverTex);
 		m_pressedTexture = new Texture(&button->pressedTex);
 		if (!((m_idleTexture->getDimensions() == m_hoverTexture->getDimensions()) && (m_idleTexture->getDimensions() == m_pressedTexture->getDimensions()))) {
-			Error("Button images are not the same size!");
+			NFError("Button images are not the same size!");
 		}
 		float tc[3][4] = {
 			0.0, 1.0,

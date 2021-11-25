@@ -14,7 +14,7 @@ namespace nf {
 
 	void Light::create(const Vec3& position, const Vec3& color, float strength, Type type) {
 		if (m_constructed)
-			Error("Light already created!");
+			NFError("Light already created!");
 		m_constructed = true;
 		m_position = position;
 		m_color = color;
