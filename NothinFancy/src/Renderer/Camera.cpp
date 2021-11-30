@@ -1,9 +1,9 @@
-#include "Camera.h"
+#include "nf/Camera.h"
 
 #include "glm/glm.hpp"
 
-#include "Application.h"
-#include "Shader.h"
+#include "nf/Application.h"
+#include "nf/Shader.h"
 
 namespace nf {
 	Camera::Camera(Application* app) :

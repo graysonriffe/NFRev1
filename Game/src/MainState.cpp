@@ -5,21 +5,32 @@ void MainState::onEnter() {
 	currCamType = nf::Camera::Type::FIRST_PERSON;
 	camera->setType(currCamType);
 	ap.load("example.nfpack");
+
 	test.create(ap.get("2mats.obj"), nf::Entity::Type::DYNAMIC);
 	test.setPosition(nf::Vec3(0.0, 1.5, -5.0));
 	plane.create(ap.get("env.obj"), nf::Entity::Type::MAP);
 	plane.setScale(20.0);
 	plane.setPosition(0.0, -20.0, 0.0);
-	text.create("", nf::Vec2(0.1, 0.025), nf::Vec3(0.8));
-	text.centered(true);
-	gravText.create("", nf::Vec2(0.025, 0.2), nf::Vec3(0.8), 1.0f, 0.5f);
-	uiTex.create(nf::BaseAssets::logo, nf::Vec2(0.025, 0.025), 0.5);
-	button.create(nf::Vec2(0.8, 0.025), "Reset");
-	button2.create(nf::Vec2(0.6, 0.025), "Play Sound");
+
 	light.create(nf::Vec3(0.0, 20.0, 0.0), nf::Vec3(1.0, 1.0, 1.0));
 	light2.create(nf::Vec3(-10.0, 20.0, -10.0), nf::Vec3(1.0, 1.0, 1.0));
 	light3.create(nf::Vec3(10.0, 20.0, 10.0), nf::Vec3(1.0, 1.0, 1.0));
 	cm.create(nf::BaseAssets::cubemap);
+
+	text.create("", nf::Vec2(0.1, 0.025), nf::Vec3(0.8));
+	text.centered(true);
+	moveText.create("WASD - move", nf::Vec2(0.025, 0.8), nf::Vec3(0.8), 0.5f);
+	lookText.create("Mouse - look", nf::Vec2(0.025, 0.75), nf::Vec3(0.8), 0.5f);
+	leftClickText.create("Left Click - Shoot single sphere", nf::Vec2(0.025, 0.7), nf::Vec3(0.8), 0.5f);
+	rightClickText.create("Right Click - Shoot many spheres", nf::Vec2(0.025, 0.65), nf::Vec3(0.8), 0.5f);
+	upAndDownText.create("Up and Down - Change the gravity", nf::Vec2(0.025, 0.6), nf::Vec3(0.8), 0.5f);
+	leftAndRightText.create("Left and Right - Change the default ambient light", nf::Vec2(0.025, 0.55), nf::Vec3(0.8), 0.5f);
+	escText.create("ESC - Quit", nf::Vec2(0.025, 0.5), nf::Vec3(0.8), 0.5f);
+	currGravText.create("", nf::Vec2(0.025, 0.25), nf::Vec3(0.8), 0.5f);
+	currLightText.create("", nf::Vec2(0.025, 0.2), nf::Vec3(0.8), 0.5f);
+	uiTex.create(nf::BaseAssets::logo, nf::Vec2(0.025, 0.025), 0.5);
+	button.create(nf::Vec2(0.8, 0.025), "Reset");
+	button2.create(nf::Vec2(0.6, 0.025), "Play Sound");
 
 	sound.create(ap.get("sound.wav"));
 	sound.setEntity(test);
@@ -31,7 +42,7 @@ void MainState::onEnter() {
 		for (int y = 0; y < 3; y++) {
 			for (int z = 0; z < 3; z++) {
 				entities.push_back(new nf::Entity);
-				entities.back()->create(nf::BaseAssets::cone, nf::Entity::Type::DYNAMIC);
+				entities.back()->create(nf::BaseAssets::cube, nf::Entity::Type::DYNAMIC);
 				entities.back()->setPosition(nf::Vec3(5.0 + x * 2.05, 1.0 + y * 2.05, -5.0 + z * 2.05));
 			}
 		}
@@ -40,9 +51,9 @@ void MainState::onEnter() {
 	grav = 2.0f;
 	setGravity(grav);
 
-	amb = 0.1f;
+	amb = 0.5f;
 
-	camera->setPosition(-20.0, 15.0, 0.0);
+	camera->setPosition(-20.0, 7.0, 0.0);
 	camera->setRotation(85.0, -30.0);
 }
 
@@ -104,7 +115,7 @@ void MainState::update(float deltaTime) {
 		grav = 2.0f;
 		setGravity(1.0f);
 	}
-	gravText.setText("Gravity Scale: " + std::to_string(grav));
+	currGravText.setText("Gravity Scale: " + std::to_string(grav));
 
 	if (app->isKeyHeld(NFI_LEFT))
 		amb -= 0.01f;
@@ -112,6 +123,7 @@ void MainState::update(float deltaTime) {
 		amb += 0.01f;
 	if (amb >= 0.0f)
 		setAmbientLight(amb);
+	currLightText.setText("Ambient Light Multiplier: " + std::to_string(amb));
 
 	if (app->isKeyPressed(NFI_ESCAPE))
 		app->quit();
@@ -124,7 +136,15 @@ void MainState::render(nf::Renderer& renderer) {
 	renderer.render(light2);
 	renderer.render(light3);
 	renderer.render(text);
-	renderer.render(gravText);
+	renderer.render(moveText);
+	renderer.render(lookText);
+	renderer.render(leftClickText);
+	renderer.render(rightClickText);
+	renderer.render(upAndDownText);
+	renderer.render(currGravText);
+	renderer.render(leftAndRightText);
+	renderer.render(currLightText);
+	renderer.render(escText);
 	renderer.render(uiTex);
 	renderer.render(button);
 	renderer.render(button2);

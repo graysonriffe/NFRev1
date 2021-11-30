@@ -1,7 +1,7 @@
-#include "AudioEngine.h"
+#include "nf/AudioEngine.h"
 
-#include "Application.h"
-#include "Entity.h"
+#include "nf/Application.h"
+#include "nf/Entity.h"
 
 namespace nf {
 	AudioEngine::AudioEngine(Application* app) :

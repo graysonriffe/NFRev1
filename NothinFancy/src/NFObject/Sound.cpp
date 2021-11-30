@@ -1,10 +1,10 @@
-#include "Sound.h"
+#include "nf/Sound.h"
 
 #include "vorbis/vorbisfile.h"
 
-#include "Application.h"
-#include "Assets.h"
-#include "Entity.h"
+#include "nf/Application.h"
+#include "nf/Assets.h"
+#include "nf/Entity.h"
 
 namespace nf {
 #pragma region Ogg File Loading

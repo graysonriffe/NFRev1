@@ -1,11 +1,11 @@
-#include "Button.h"
+#include "nf/Button.h"
 
 #include "GL/glew.h"
 
-#include "Application.h"
-#include "Input.h"
-#include "Texture.h"
-#include "Shader.h"
+#include "nf/Application.h"
+#include "nf/Input.h"
+#include "nf/Texture.h"
+#include "nf/Shader.h"
 
 namespace nf {
 	Button::Button() :

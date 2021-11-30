@@ -1,8 +1,8 @@
-#include "IntroGamestate.h"
+#include "nf/IntroGamestate.h"
 
-#include "Application.h"
-#include "Utility.h"
-#include "Input.h"
+#include "nf/Application.h"
+#include "nf/Utility.h"
+#include "nf/Input.h"
 
 namespace nf {
 	void IntroGamestate::onEnter() {

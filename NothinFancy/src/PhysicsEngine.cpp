@@ -1,8 +1,8 @@
-#include "PhysicsEngine.h"
+#include "nf/PhysicsEngine.h"
 
-#include "Application.h"
-#include "Entity.h"
-#include "Model.h"
+#include "nf/Application.h"
+#include "nf/Entity.h"
+#include "nf/Model.h"
 
 namespace nf {
 	class PhysicsErrorCallback : public PxErrorCallback {

@@ -1,10 +1,10 @@
-#include "Assets.h"
+#include "nf/Assets.h"
 
 #include <sstream>
 
-#include "Application.h"
-#include "Model.h"
-#include "Utility.h"
+#include "nf/Application.h"
+#include "nf/Model.h"
+#include "nf/Utility.h"
 
 namespace nf {
 	Asset::~Asset() {

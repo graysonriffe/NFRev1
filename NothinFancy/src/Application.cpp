@@ -1,12 +1,10 @@
-#include "Application.h"
+#include "nf/Application.h"
 
 #include <thread>
 
-#include "Utility.h"
+#include "nf/Utility.h"
 
 namespace nf {
-	NFDEBUGINIT;
-
 	Application::Application(Config& config) :
 		m_currentConfig(config),
 		m_running(false),
@@ -83,6 +81,8 @@ namespace nf {
 #ifdef _DEBUG
 		SetThreadDescription(GetCurrentThread(), L"Input Thread");
 #endif
+		if (m_defaultState.empty())
+			NFError("No default gamestate has been set!");
 		m_hInst = GetModuleHandle(NULL);
 		registerWindowClass();
 		RECT windowSize = getWindowRect();
@@ -129,10 +129,7 @@ namespace nf {
 	}
 
 	void Application::showWindow(bool show) {
-		if (show)
-			ShowWindow(m_window, SW_SHOW);
-		else
-			ShowWindow(m_window, SW_HIDE);
+		show ? ShowWindow(m_window, SW_SHOW) : ShowWindow(m_window, SW_HIDE);
 	}
 
 	const HWND& Application::getWindow() {

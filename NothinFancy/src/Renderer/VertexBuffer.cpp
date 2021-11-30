@@ -1,8 +1,8 @@
-#include "VertexBuffer.h"
+#include "nf/VertexBuffer.h"
 
 #include "GL/glew.h"
 
-#include "Utility.h"
+#include "nf/Utility.h"
 
 namespace nf {
 	VertexBuffer::VertexBuffer(const void* data, const size_t size) {

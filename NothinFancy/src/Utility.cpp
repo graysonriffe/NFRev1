@@ -1,4 +1,5 @@
-#include "Utility.h"
+#include "nf/Utility.h"
+
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -8,7 +9,7 @@
 #include <compressapi.h>
 #include "glm/glm.hpp"
 
-#include "Config.h"
+#include "nf/Config.h"
 
 namespace nf {
 	static DECOMPRESSOR_HANDLE s_dHandle;
@@ -16,32 +17,34 @@ namespace nf {
 	static const float deg2rad = (float)M_PI / 180.0f;
 
 #ifdef _DEBUG
+	NFDEBUGINIT;
+
 	void Debug::LogImp(const char* in) {
 		std::chrono::duration<float> time = getCurrentTime();
-		std::printf("[%.4f] Debug: %s\n", time.count(), in);
+		std::printf("[%.4f] NF Log: %s\n", time.count(), in);
 	}
 
 	void Debug::LogImp(const std::string& in) {
 		std::chrono::duration<float> time = getCurrentTime();
-		std::printf("[%.4f] Debug: ", time.count());
+		std::printf("[%.4f] NF Log: ", time.count());
 		std::cout << in << "\n";
 	}
 
 	void Debug::LogImp(int in) {
 		std::chrono::duration<float> time = getCurrentTime();
-		std::printf("[%.4f] Debug: %i\n", time.count(), in);
+		std::printf("[%.4f] NF Log: %i\n", time.count(), in);
 	}
 
 	void Debug::LogImp(float in) {
 		std::chrono::duration<float> time = getCurrentTime();
-		std::printf("[%.4f] Debug: %.4f\n", time.count(), in);
+		std::printf("[%.4f] NF Log: %.4f\n", time.count(), in);
 	}
 	//TODO: Test every Error in release mode
 	void Debug::ErrorImp(const char* in, const char* filename, int line) {
 		std::chrono::duration<float> time = getCurrentTime();
 		static HANDLE cmd = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(cmd, FOREGROUND_RED);
-		std::printf("[%.4f] Error (%s, %i): %s\n", time.count(), filename, line, in);
+		std::printf("[%.4f] NF Error (%s, %i): %s\n", time.count(), filename, line, in);
 		SetConsoleTextAttribute(cmd, 7);
 	}
 
@@ -49,7 +52,7 @@ namespace nf {
 		std::chrono::duration<float> time = getCurrentTime();
 		static HANDLE cmd = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(cmd, FOREGROUND_RED);
-		std::printf("[%.4f] Error (%s, %i): ", time.count(), filename, line);
+		std::printf("[%.4f] NF Error (%s, %i): ", time.count(), filename, line);
 		std::cout << in << "\n";
 		SetConsoleTextAttribute(cmd, 7);
 	}

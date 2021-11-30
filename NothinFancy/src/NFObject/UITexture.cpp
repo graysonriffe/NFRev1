@@ -1,11 +1,11 @@
-#include "UITexture.h"
+#include "nf/UITexture.h"
 
 #include "GL/glew.h"
 
-#include "Application.h"
-#include "Assets.h"
-#include "Texture.h"
-#include "Shader.h"
+#include "nf/Application.h"
+#include "nf/Assets.h"
+#include "nf/Texture.h"
+#include "nf/Shader.h"
 
 namespace nf {
 	UITexture::UITexture() :

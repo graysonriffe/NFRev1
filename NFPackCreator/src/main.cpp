@@ -8,8 +8,6 @@
 #include <Windows.h>
 #include <compressapi.h>
 
-#define COMPRESS 1
-
 COMPRESSOR_HANDLE cHandle;
 
 void Log(const std::string& in) {
@@ -20,7 +18,8 @@ void Log(const char* in) {
 	std::cout << "[NFPackCreator] Info: " << in << "\n";
 }
 
-__declspec(noreturn) void Error(const std::string& in) {
+[[noreturn]]
+void Error(const std::string& in) {
 	HANDLE cmd = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(cmd, FOREGROUND_RED);
 	std::cout << "[NFPackCreator] Error: " + in + "\n";
@@ -65,7 +64,6 @@ void writeFile(const std::string& filename, const std::string& in, bool encrypte
 		}
 		write.insert(0, "NFEF");
 	}
-#if COMPRESS
 	Log("Compressing...");
 	size_t compSize;
 	Compress(cHandle, &write[0], write.size(), NULL, 0, &compSize);
@@ -74,9 +72,7 @@ void writeFile(const std::string& filename, const std::string& in, bool encrypte
 
 	out.write(buff, compSize);
 	delete[] buff;
-#else
 	out << write;
-#endif
 	out.close();
 }
 
@@ -120,8 +116,6 @@ int main(int argc, char* argv[]) {
 		if (!currDir.is_directory())
 			continue;
 		std::string filename = currDir.path().filename().string().append(".nfpack");
-		/*if (filename == "base.nfpack")
-			Error("Cannot create a pack called base.nfpack!");*/
 		Log("Creating pack \"" + filename + (std::string)"\"");
 		std::vector<std::string> packFilenames;
 		std::string currFileExtension;

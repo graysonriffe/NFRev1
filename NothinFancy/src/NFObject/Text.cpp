@@ -1,12 +1,12 @@
-#include "Text.h"
+#include "nf/Text.h"
 
 #include "GL/glew.h"
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
-#include "Application.h"
-#include "UIElement.h"
-#include "Shader.h"
+#include "nf/Application.h"
+#include "nf/UIElement.h"
+#include "nf/Shader.h"
 
 namespace nf {
 	Text::Text() :
@@ -17,7 +17,7 @@ namespace nf {
 
 	}
 
-	void Text::create(const std::string& string, const Vec2& position, const Vec3& color, float opacity, float scale, Asset* fontAsset) {
+	void Text::create(const std::string& string, const Vec2& position, const Vec3& color, float scale, float opacity, Asset* fontAsset) {
 		if (m_constructed)
 			NFError("Text already created!");
 		m_constructed = true;

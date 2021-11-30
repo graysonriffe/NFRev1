@@ -1,12 +1,12 @@
-#include "Cubemap.h"
+#include "nf/Cubemap.h"
 
 #include <vector>
 #include "GL/glew.h"
 #include "stb_image.h"
 
-#include "Application.h"
-#include "Shader.h"
-#include "Assets.h"
+#include "nf/Application.h"
+#include "nf/Shader.h"
+#include "nf/Assets.h"
 
 namespace nf {
 	Cubemap::Cubemap() :

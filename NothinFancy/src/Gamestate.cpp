@@ -1,11 +1,11 @@
-#include "Gamestate.h"
+#include "nf/Gamestate.h"
 
-#include "Application.h"
-#include "PhysicsEngine.h"
-#include "Entity.h"
-#include "Model.h"
-#include "Texture.h"
-#include "Utility.h"
+#include "nf/Application.h"
+#include "nf/PhysicsEngine.h"
+#include "nf/Entity.h"
+#include "nf/Model.h"
+#include "nf/Texture.h"
+#include "nf/Utility.h"
 
 namespace nf {
 	Gamestate::Gamestate() :

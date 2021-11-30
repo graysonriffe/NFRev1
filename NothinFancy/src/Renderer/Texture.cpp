@@ -1,11 +1,11 @@
-#include "Texture.h"
+#include "nf/Texture.h"
 
 #include "GL/glew.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#include "Assets.h"
-#include "Utility.h"
+#include "nf/Assets.h"
+#include "nf/Utility.h"
 
 namespace nf {
 	Texture::Texture(ATexture* tex, bool linear) :

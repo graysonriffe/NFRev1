@@ -92,91 +92,91 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\include\Config.h">
+    <ClInclude Include="src\include\nf\Config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\include\NothinFancy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Utility.h">
+    <ClInclude Include="src\include\nf\Utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Application.h">
+    <ClInclude Include="src\include\nf\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Gamestate.h">
+    <ClInclude Include="src\include\nf\Gamestate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\IntroGamestate.h">
+    <ClInclude Include="src\include\nf\IntroGamestate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Input.h">
+    <ClInclude Include="src\include\nf\Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Renderer.h">
+    <ClInclude Include="src\include\nf\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\VertexBuffer.h">
+    <ClInclude Include="src\include\nf\VertexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\IndexBuffer.h">
+    <ClInclude Include="src\include\nf\IndexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\VertexArray.h">
+    <ClInclude Include="src\include\nf\VertexArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Shader.h">
+    <ClInclude Include="src\include\nf\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Drawable.h">
+    <ClInclude Include="src\include\nf\Drawable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Model.h">
+    <ClInclude Include="src\include\nf\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Entity.h">
+    <ClInclude Include="src\include\nf\Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Texture.h">
+    <ClInclude Include="src\include\nf\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Assets.h">
+    <ClInclude Include="src\include\nf\Assets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Camera.h">
+    <ClInclude Include="src\include\nf\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\UIElement.h">
+    <ClInclude Include="src\include\nf\UIElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Text.h">
+    <ClInclude Include="src\include\nf\Text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\UITexture.h">
+    <ClInclude Include="src\include\nf\UITexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Light.h">
+    <ClInclude Include="src\include\nf\Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Cubemap.h">
+    <ClInclude Include="src\include\nf\Cubemap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\NFObject.h">
+    <ClInclude Include="src\include\nf\NFObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Button.h">
+    <ClInclude Include="src\include\nf\Button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\AudioEngine.h">
+    <ClInclude Include="src\include\nf\AudioEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Sound.h">
+    <ClInclude Include="src\include\nf\Sound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\GBuffer.h">
+    <ClInclude Include="src\include\nf\GBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\PhysicsEngine.h">
+    <ClInclude Include="src\include\nf\PhysicsEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

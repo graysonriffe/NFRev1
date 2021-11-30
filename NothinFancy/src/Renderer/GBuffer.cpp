@@ -1,11 +1,11 @@
-#include "GBuffer.h"
+#include "nf/GBuffer.h"
 
 #include "GL/glew.h"
 
-#include "Application.h"
-#include "Entity.h"
-#include "Model.h"
-#include "Shader.h"
+#include "nf/Application.h"
+#include "nf/Entity.h"
+#include "nf/Model.h"
+#include "nf/Shader.h"
 
 namespace nf {
 	GBuffer::GBuffer() :

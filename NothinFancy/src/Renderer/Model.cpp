@@ -1,4 +1,4 @@
-#include "Model.h"
+#include "nf/Model.h"
 
 #include <map>
 #include <algorithm>
@@ -7,10 +7,10 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "GL/glew.h"
 
-#include "Application.h"
-#include "Texture.h"
-#include "Shader.h"
-#include "Utility.h"
+#include "nf/Application.h"
+#include "nf/Texture.h"
+#include "nf/Shader.h"
+#include "nf/Utility.h"
 
 namespace nf {
 	Model::Model(AModel* model, bool physicsConvex, bool physicsTriangle) :

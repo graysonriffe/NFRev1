@@ -1,8 +1,8 @@
-#include "VertexArray.h"
+#include "nf/VertexArray.h"
 
 #include "GL/glew.h"
 
-#include "Utility.h"
+#include "nf/Utility.h"
 
 namespace nf {
 	VertexArray::VertexArray() {

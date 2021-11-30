@@ -1,7 +1,7 @@
-#include "Light.h"
+#include "nf/Light.h"
 
-#include "Application.h"
-#include "Shader.h"
+#include "nf/Application.h"
+#include "nf/Shader.h"
 
 namespace nf {
 	Light::Light() :

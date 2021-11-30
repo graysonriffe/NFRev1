@@ -1,11 +1,11 @@
-#include "Entity.h"
+#include "nf/Entity.h"
 
 #include<vector>
 #include "glm/gtx/quaternion.hpp"
 
-#include "Application.h"
-#include "Model.h"
-#include "Shader.h"
+#include "nf/Application.h"
+#include "nf/Model.h"
+#include "nf/Shader.h"
 
 namespace nf {
 	Entity::Entity() :

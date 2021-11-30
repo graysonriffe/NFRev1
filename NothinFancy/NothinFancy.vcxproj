@@ -21,13 +21,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -71,7 +71,7 @@
       <AdditionalDependencies>glew32s.lib;opengl32.lib;freetype.lib;xaudio2.lib;Cabinet.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib;PhysXFoundation.lib;PhysXCommon.lib;PhysX.lib;PhysXCooking.lib;PhysXExtensions.lib;PhysXPvdSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(ProjectDir)dep\lib\Shared;$(ProjectDir)dep\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)dep\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4006 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
     <ProjectReference>
@@ -105,7 +105,7 @@
       <AdditionalDependencies>glew32s.lib;opengl32.lib;freetype.lib;xaudio2.lib;Cabinet.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib;PhysXFoundation.lib;PhysXCommon.lib;PhysX.lib;PhysXCooking.lib;PhysXExtensions.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(ProjectDir)dep\lib\Shared;$(ProjectDir)dep\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)dep\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4006 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
     <ProjectReference>
@@ -145,35 +145,35 @@
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\include\Assets.h" />
-    <ClInclude Include="src\include\AudioEngine.h" />
-    <ClInclude Include="src\include\Button.h" />
-    <ClInclude Include="src\include\Camera.h" />
-    <ClInclude Include="src\include\Cubemap.h" />
-    <ClInclude Include="src\include\Entity.h" />
-    <ClInclude Include="src\include\Application.h" />
-    <ClInclude Include="src\include\Config.h" />
-    <ClInclude Include="src\include\Drawable.h" />
-    <ClInclude Include="src\include\Gamestate.h" />
-    <ClInclude Include="src\include\GBuffer.h" />
-    <ClInclude Include="src\include\IndexBuffer.h" />
-    <ClInclude Include="src\include\IntroGamestate.h" />
-    <ClInclude Include="src\include\Input.h" />
-    <ClInclude Include="src\include\Light.h" />
-    <ClInclude Include="src\include\Model.h" />
-    <ClInclude Include="src\include\NFObject.h" />
+    <ClInclude Include="src\include\nf\Assets.h" />
+    <ClInclude Include="src\include\nf\AudioEngine.h" />
+    <ClInclude Include="src\include\nf\Button.h" />
+    <ClInclude Include="src\include\nf\Camera.h" />
+    <ClInclude Include="src\include\nf\Cubemap.h" />
+    <ClInclude Include="src\include\nf\Entity.h" />
+    <ClInclude Include="src\include\nf\Application.h" />
+    <ClInclude Include="src\include\nf\Config.h" />
+    <ClInclude Include="src\include\nf\Drawable.h" />
+    <ClInclude Include="src\include\nf\Gamestate.h" />
+    <ClInclude Include="src\include\nf\GBuffer.h" />
+    <ClInclude Include="src\include\nf\IndexBuffer.h" />
+    <ClInclude Include="src\include\nf\IntroGamestate.h" />
+    <ClInclude Include="src\include\nf\Input.h" />
+    <ClInclude Include="src\include\nf\Light.h" />
+    <ClInclude Include="src\include\nf\Model.h" />
+    <ClInclude Include="src\include\nf\NFObject.h" />
     <ClInclude Include="src\include\NothinFancy.h" />
-    <ClInclude Include="src\include\PhysicsEngine.h" />
-    <ClInclude Include="src\include\Renderer.h" />
-    <ClInclude Include="src\include\Shader.h" />
-    <ClInclude Include="src\include\Sound.h" />
-    <ClInclude Include="src\include\Text.h" />
-    <ClInclude Include="src\include\Texture.h" />
-    <ClInclude Include="src\include\UIElement.h" />
-    <ClInclude Include="src\include\UITexture.h" />
-    <ClInclude Include="src\include\Utility.h" />
-    <ClInclude Include="src\include\VertexArray.h" />
-    <ClInclude Include="src\include\VertexBuffer.h" />
+    <ClInclude Include="src\include\nf\PhysicsEngine.h" />
+    <ClInclude Include="src\include\nf\Renderer.h" />
+    <ClInclude Include="src\include\nf\Shader.h" />
+    <ClInclude Include="src\include\nf\Sound.h" />
+    <ClInclude Include="src\include\nf\Text.h" />
+    <ClInclude Include="src\include\nf\Texture.h" />
+    <ClInclude Include="src\include\nf\UIElement.h" />
+    <ClInclude Include="src\include\nf\UITexture.h" />
+    <ClInclude Include="src\include\nf\Utility.h" />
+    <ClInclude Include="src\include\nf\VertexArray.h" />
+    <ClInclude Include="src\include\nf\VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

@@ -1,8 +1,8 @@
-#include "Shader.h"
+#include "nf/Shader.h"
 
 #include "GL/glew.h"
 
-#include "Utility.h"
+#include "nf/Utility.h"
 
 namespace nf {
 	Shader::Shader(const char* vertexSource, const char* fragmentSource, const char* geometrySource) {

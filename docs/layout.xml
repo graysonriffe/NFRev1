@@ -5,8 +5,8 @@
     <tab type="mainpage" visible="yes" title=""/>
     <tab type="pages" visible="yes" title="" intro=""/>
     <tab type="modules" visible="yes" title="" intro=""/>
-    <tab type="namespaces" visible="yes" title="API">
-      <tab type="namespacelist" visible="yes" title="Class List" intro="Here, you can find a list of every useful class to use in NF."/>
+    <tab type="namespaces" visible="no" title="API">
+      <tab type="namespacelist" visible="yes" title="API" intro="Here, you can find a list of every useful class to use in NF."/>
       <tab type="namespacemembers" visible="no" title="" intro=""/>
     </tab>
     <tab type="concepts" visible="yes" title="">
@@ -19,7 +19,7 @@
     <tab type="classes" visible="no" title="API">
       <tab type="classlist" visible="no" title="Classes" intro=""/>
       <tab type="classindex" visible="$ALPHABETICAL_INDEX" title=""/> 
-      <tab type="hierarchy" visible="yes" title="" intro=""/>
+      <tab type="hierarchy" visible="no" title="" intro=""/>
       <tab type="classmembers" visible="no" title="" intro=""/>
     </tab>
     <tab type="structs" visible="yes" title="">
