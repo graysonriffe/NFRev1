@@ -1,3 +1,23 @@
+.image
+{
+        text-align: left;
+}
+
+img:not([src='logofull.png']):not([src="search/mag_sel.svg"]):not([src="doxygen.svg"]):not([src="logo.png"])
+{
+		box-shadow: 0.5em 0.5em 0.5em grey;
+}
+
+div.caption
+{
+		margin-top: 0.5em;
+}
+
+#nav-sync
+{
+	visibility: hidden;
+}
+
 /* The standard CSS for doxygen 1.9.2 */
 
 body, table, div, p, dl {
@@ -1400,11 +1420,6 @@ dl.section dd {
 	margin: 0px;
 	width: 100%;
 	border-bottom: 1px solid #B48453;
-}
-
-.image
-{
-        text-align: left;
 }
 
 .dotgraph

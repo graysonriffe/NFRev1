@@ -5,7 +5,7 @@ for Windows. It was created by Grayson Riffe in 2021. This manual aims to aid th
 with using this engine to create games and visualizations. It contains the
 [user guide](tutorial.html) and the [API reference](namespaces.html).
 
-@image html logofull.png "Engine Logo" width=200px
+@image html logofull.png "Engine Logo" width=15%
 
 Features
 ===
@@ -30,6 +30,5 @@ at any time.
 Example App
 ===
 
-You can download the source or build for the example game that includes all of the
-aforementioned features.
-@todo Example App download
+In the engine download, the example app's source and a build is included in the `example`
+folder.

@@ -1,4 +1,5 @@
 @page assets Asset System
+@tableofcontents
 
 This page details NF's asset system and custom pack format.
 
