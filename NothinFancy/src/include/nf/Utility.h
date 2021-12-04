@@ -7,7 +7,7 @@
 /**
  * @brief Nothin' Fancy namespace
  * 
- * Every class and struct lives inside of this namespace
+ * Every class and struct lives inside of this namespace.
  * 
  * It could be useful to `using` this namespace:
  * 
@@ -20,7 +20,15 @@ namespace nf {
 //Strips __FILE__ down to only the name of the file
 #define __FILENAME__ strrchr(__FILE__, '\\') + 1
 //Initializes static variables needed for debugging
-#define NFDEBUGINIT std::chrono::steady_clock::time_point Debug::m_initTime = std::chrono::high_resolution_clock::now();
+#define NFDEBUGINIT std::chrono::steady_clock::time_point Debug::m_initTime = std::chrono::high_resolution_clock::now(); \
+bool Debug::m_timerStarted = false
+/**
+* @defgroup macros Macros
+* 
+* Macros to aid in debugging and developing with NF
+* 
+* @{
+*/
 /**
 * Pauses the engine for a set amount of seconds
 */
@@ -43,11 +51,33 @@ namespace nf {
 */
 #define NFError(x) {nf::Debug::ErrorImp(x,__FILENAME__, __LINE__);\
 __debugbreak();}
-	/**
-	 * @brief Handles NFLog and NFError calls
-	*/
+/**
+* A timer useful for timing functions
+* 
+* To time a function, place this macro at the beginning of it:
+* 
+* ~~~
+* void myFunc() {
+*	NFTimer;
+*	//Rest of function to be timed...
+* } //Prints here
+* ~~~
+* 
+* The result will be logged when the scope it's declared in ends.
+*/
+#define NFTimer nf::Timer _nfTimer(__func__)
+/**
+* @}
+*/
+#ifndef NFIMPL
+#define NFTimerLoad nf::Timer _nfTimer(__func__, true);
+#endif
+
 	class Debug {
 	public:
+		static void startTimer();
+		static void stopTimer();
+
 		static void LogImp(const char* in);
 		static void LogImp(const std::string& in);
 		static void LogImp(int in);
@@ -57,8 +87,20 @@ __debugbreak();}
 		[[noreturn]]
 		static void ErrorImp(const std::string& in, const char* filename, int line);
 	private:
+		static void printCurrentTime();
 		static std::chrono::steady_clock::time_point m_initTime;
-		static std::chrono::duration<float> getCurrentTime();
+		static bool m_timerStarted;
+	};
+
+	class Timer {
+	public:
+		Timer(const std::string& function, bool onEnter = false);
+
+		~Timer();
+	private:
+		std::chrono::steady_clock::time_point m_initTime;
+		bool m_loading;
+		std::string m_funcName;
 	};
 #else
 #define NFDEBUGINIT
@@ -67,6 +109,8 @@ __debugbreak();}
 #define NFLog(x)
 #define NFError(x) {MessageBox(FindWindow(L"NFClass", NULL), toWide(x).data(), L"NF Engine Error", MB_OK | MB_ICONERROR);\
 std::exit(-1);}
+#define NFTimer
+#define NFTimerLoad
 #endif
 
 	/**
@@ -364,10 +408,11 @@ std::exit(-1);}
 		float w;
 	};
 
+#ifndef NFIMPL
 	const std::wstring toWide(const char* in);
 	const std::wstring toWide(const std::string& in);
-
 	Vec4 degToQuat(const Vec3& in);
+#endif
 
 	/**
 	 * @brief Writes a stream of bytes as as std::string into a file in a specified location

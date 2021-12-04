@@ -177,7 +177,6 @@ namespace nf {
 		void getMouseDiff(int& x, int& y);
 		static Application* getApp(bool first = false);
 #endif
-		~Application();
 	private:
 		void registerWindowClass();
 		RECT getWindowRect() const;

@@ -314,7 +314,7 @@ pre.fragment {
 }
 
 div.fragment {
-  padding: 0 0 1px 0; /*Fixed: last line underline overlap border*/
+  padding: 5px 0 5px 5px; /*Fixed: last line underline overlap border*/
   margin: 4px 8px 4px 2px;
 	background-color: #FDFCFB;
 	border: 1px solid #E5D5C4;
@@ -322,9 +322,9 @@ div.fragment {
 
 div.line {
 	font-family: monospace, fixed;
-        font-size: 13px;
+        font-size: 15px;
 	min-height: 13px;
-	line-height: 1.0;
+	line-height: 1.1;
 	text-wrap: unrestricted;
 	white-space: -moz-pre-wrap; /* Moz */
 	white-space: -pre-wrap;     /* Opera 4-6 */

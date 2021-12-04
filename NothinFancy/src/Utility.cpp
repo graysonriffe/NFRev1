@@ -19,47 +19,79 @@ namespace nf {
 #ifdef _DEBUG
 	NFDEBUGINIT;
 
+	void Debug::startTimer() {
+		m_timerStarted = true;
+		m_initTime = std::chrono::steady_clock::now();
+	}
+
+	void Debug::stopTimer() {
+		m_timerStarted = false;
+	}
+
 	void Debug::LogImp(const char* in) {
-		std::chrono::duration<float> time = getCurrentTime();
-		std::printf("[%.4f] NF Log: %s\n", time.count(), in);
+		if(m_timerStarted)
+			printCurrentTime();
+		std::printf("NF Log: %s\n", in);
 	}
 
 	void Debug::LogImp(const std::string& in) {
-		std::chrono::duration<float> time = getCurrentTime();
-		std::printf("[%.4f] NF Log: ", time.count());
+		if (m_timerStarted)
+			printCurrentTime();
+		std::printf("NF Log: ");
 		std::cout << in << "\n";
 	}
 
 	void Debug::LogImp(int in) {
-		std::chrono::duration<float> time = getCurrentTime();
-		std::printf("[%.4f] NF Log: %i\n", time.count(), in);
+		if (m_timerStarted)
+			printCurrentTime();
+		std::printf("NF Log: %i\n", in);
 	}
 
 	void Debug::LogImp(float in) {
-		std::chrono::duration<float> time = getCurrentTime();
-		std::printf("[%.4f] NF Log: %.4f\n", time.count(), in);
+		if (m_timerStarted)
+			printCurrentTime();
+		std::printf("NF Log: %.4f\n", in);
 	}
 	//TODO: Test every Error in release mode
 	void Debug::ErrorImp(const char* in, const char* filename, int line) {
-		std::chrono::duration<float> time = getCurrentTime();
+		if (m_timerStarted)
+			printCurrentTime();
 		static HANDLE cmd = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(cmd, FOREGROUND_RED);
-		std::printf("[%.4f] NF Error (%s, %i): %s\n", time.count(), filename, line, in);
+		std::printf("NF Error (%s, %i): %s\n", filename, line, in);
 		SetConsoleTextAttribute(cmd, 7);
 	}
 
 	void Debug::ErrorImp(const std::string& in, const char* filename, int line) {
-		std::chrono::duration<float> time = getCurrentTime();
+		if (m_timerStarted)
+			printCurrentTime();
 		static HANDLE cmd = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(cmd, FOREGROUND_RED);
-		std::printf("[%.4f] NF Error (%s, %i): ", time.count(), filename, line);
+		std::printf("NF Error (%s, %i): ", filename, line);
 		std::cout << in << "\n";
 		SetConsoleTextAttribute(cmd, 7);
 	}
 
-	std::chrono::duration<float> Debug::getCurrentTime() {
+	void Debug::printCurrentTime() {
 		std::chrono::steady_clock::time_point now = std::chrono::high_resolution_clock::now();
-		return now - m_initTime;
+		std::chrono::duration<float> dur = now - m_initTime;
+		std::printf("[%.4f] ", dur.count());
+	}
+
+	Timer::Timer(const std::string& function, bool onEnter) {
+		m_funcName = function;
+		m_initTime = std::chrono::steady_clock::now();
+		m_loading = onEnter;
+		if (!m_loading)
+			NFLog("Started timing \"" + m_funcName + (std::string)"\"");
+	}
+
+	Timer::~Timer() {
+		std::chrono::duration<float> dur = std::chrono::steady_clock::now() - m_initTime;
+		if (!m_loading)
+			NFLog("\"" + m_funcName + (std::string)"\" took " + std::to_string(dur.count()) + (std::string)" seconds.");
+		else
+			NFLog("Loading took " + std::to_string(dur.count()) + (std::string)" seconds.");
 	}
 #endif
 

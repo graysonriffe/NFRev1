@@ -140,7 +140,7 @@ namespace nf {
 		callbacks.close_func = v_close;
 		callbacks.tell_func = v_tell;
 
-		int open = ov_open_callbacks(&memFile, &file, nullptr, 0, callbacks);
+		ov_open_callbacks(&memFile, &file, nullptr, 0, callbacks);
 		char* buff = new char[65536 * 1000];
 
 		int stream = 0;
@@ -164,7 +164,6 @@ namespace nf {
 	}
 
 	size_t Sound::loadWAV(std::string& data) {
-		unsigned int fileSize = *(unsigned int*)&data[4];
 		size_t fmtPos;
 		if ((fmtPos = data.find("fmt")) == std::string::npos)
 			NFError("WAV not of correct format!");

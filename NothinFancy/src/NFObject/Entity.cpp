@@ -22,10 +22,11 @@ namespace nf {
 			m_member = true;
 	}
 
-	void Entity::create(Asset* modelAsset, Type type) {
+	void Entity::create(Asset* modelAsset, const Vec3& position, Type type) {
 		if (m_constructed)
 			NFError("Entity already created!");
 		m_constructed = true;
+		setPosition(position);
 		m_type = type;
 		AModel* model;
 		if ((model = dynamic_cast<AModel*>(modelAsset)) == nullptr)

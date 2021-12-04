@@ -16,8 +16,8 @@ namespace nf {
 		m_stateChange(false),
 		m_stateChangeStarted(false)
 	{
-		NFLog("Creating NF application");
-		NFLog("Width: " + std::to_string(m_currentConfig.width) + ", Height: " + std::to_string(m_currentConfig.height) + ", Fullscreen: " + std::to_string(m_currentConfig.fullscreen) + ", Title: " + m_currentConfig.title);
+		NFLog("Constructing application");
+		NFLog("Width: " + std::to_string(m_currentConfig.width) + ", Height: " + std::to_string(m_currentConfig.height) + ", Fullscreen: " + (m_currentConfig.fullscreen ? "true" : "false") + ", Title: " + m_currentConfig.title);
 
 		if (getApp(true) != nullptr)
 			NFError("Cannot create two NF Application objects!");
@@ -78,7 +78,9 @@ namespace nf {
 	}
 
 	void Application::run() {
+		NFLog("Running application...");
 #ifdef _DEBUG
+		Debug::startTimer();
 		SetThreadDescription(GetCurrentThread(), L"Input Thread");
 #endif
 		if (m_defaultState.empty())
@@ -111,6 +113,9 @@ namespace nf {
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 		mainThread.join();
+#ifdef _DEBUG
+		Debug::stopTimer();
+#endif
 	}
 
 	bool Application::hasCustomWindowIcon() {
@@ -118,10 +123,12 @@ namespace nf {
 	}
 
 	void Application::changeState(const std::string& stateName) {
+		if (m_stateChange) return;
 		if (m_states.find(stateName) == m_states.end())
 			NFError("State \"" + (std::string)stateName + (std::string)"\" doesn't exist!");
 		m_stateChange = true;
 		m_nextState = m_states[stateName];
+		NFLog("Changing to state \"" + stateName + (std::string)"\"");
 	}
 
 	Gamestate* Application::getCurrentState() {
@@ -300,7 +307,6 @@ namespace nf {
 
 	void Application::quit() {
 		m_quit = true;
-		NFLog("Exiting NF application");
 	}
 
 	void Application::runMainGameThread() {
@@ -343,12 +349,11 @@ namespace nf {
 				}
 			}
 		}
-		m_audio->stopAllSounds();
 		m_currentState->stop();
-		delete sIntro;
 		delete m_physics;
 		delete m_audio;
 		delete m_renderer;
+		delete sIntro;
 	}
 
 	void Application::doStateChange() {
@@ -445,6 +450,7 @@ namespace nf {
 				break;
 			}
 			case WM_CLOSE: {
+				NFLog("Exiting NF application");
 				DestroyWindow(hWnd);
 				return 0;
 			}
@@ -454,13 +460,6 @@ namespace nf {
 			}
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
-
-	Application::~Application() {
-		for (std::pair<std::string, Gamestate*> state : m_states) {
-			Gamestate* curr = state.second;
-			delete curr;
-		}
 	}
 
 	Application* Application::currentApp = nullptr;

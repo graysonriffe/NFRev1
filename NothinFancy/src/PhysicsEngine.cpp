@@ -30,6 +30,7 @@ namespace nf {
 		m_stepSize(1.0f / 60.0f),
 		m_accumulator(0.0)
 	{
+		NFLog("Initializing physics engine...");
 		m_err = new PhysicsErrorCallback;
 		m_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_alloc, *m_err);
 		if (!m_foundation)
@@ -54,6 +55,8 @@ namespace nf {
 		m_dispacher = PxDefaultCpuDispatcherCreate(threads);
 
 		m_defaultMat = m_phy->createMaterial(0.5f, 0.5f, 0.0f);
+
+		NFLog("Initialized physics engine");
 	}
 
 	void PhysicsEngine::newScene() {

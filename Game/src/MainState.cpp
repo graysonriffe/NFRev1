@@ -6,11 +6,9 @@ void MainState::onEnter() {
 	camera->setType(currCamType);
 	ap.load("example.nfpack");
 
-	test.create(ap.get("2mats.obj"), nf::Entity::Type::DYNAMIC);
-	test.setPosition(nf::Vec3(0.0, 1.5, -5.0));
-	plane.create(ap.get("env.obj"), nf::Entity::Type::MAP);
+	test.create(ap.get("2mats.obj"), nf::Vec3(0.0, 1.5, -5.0), nf::Entity::Type::DYNAMIC);
+	plane.create(ap.get("env.obj"), nf::Vec3(0.0, -20.0, 0.0), nf::Entity::Type::MAP);
 	plane.setScale(20.0);
-	plane.setPosition(0.0, -20.0, 0.0);
 
 	light.create(nf::Vec3(0.0, 20.0, 0.0), nf::Vec3(1.0, 1.0, 1.0));
 	light2.create(nf::Vec3(-10.0, 20.0, -10.0), nf::Vec3(1.0, 1.0, 1.0));
@@ -42,8 +40,7 @@ void MainState::onEnter() {
 		for (int y = 0; y < 3; y++) {
 			for (int z = 0; z < 3; z++) {
 				entities.push_back(new nf::Entity);
-				entities.back()->create(nf::BaseAssets::cube, nf::Entity::Type::DYNAMIC);
-				entities.back()->setPosition(nf::Vec3(5.0 + x * 2.05, 1.0 + y * 2.05, -5.0 + z * 2.05));
+				entities.back()->create(nf::BaseAssets::cube, nf::Vec3(5.0 + x * 2.05, 1.0 + y * 2.05, -5.0 + z * 2.05), nf::Entity::Type::DYNAMIC);
 			}
 		}
 	}
@@ -51,7 +48,8 @@ void MainState::onEnter() {
 	grav = 2.0f;
 	setGravity(grav);
 
-	amb = 0.5f;
+	amb = 0.1f;
+	setAmbientLight(amb);
 
 	camera->setPosition(-20.0, 7.0, 0.0);
 	camera->setRotation(85.0, -30.0);
@@ -97,8 +95,7 @@ void MainState::update(float deltaTime) {
 
 	if (camera->getType() == nf::Camera::Type::FIRST_PERSON && (app->isMouseClicked(NFI_LEFTMOUSE) || app->isMouseHeld(NFI_RIGHTMOUSE))) {
 		entities.push_back(new nf::Entity);
-		entities.back()->create(nf::BaseAssets::sphere, nf::Entity::Type::DYNAMIC);
-		entities.back()->setPosition(camera->getPosition() + camera->getRotation() * 5.0);
+		entities.back()->create(nf::BaseAssets::sphere, camera->getPosition() + camera->getRotation() * 5.0, nf::Entity::Type::DYNAMIC);
 		entities.back()->setVelocity(camera->getRotation() * 100.0f);
 		entities.back()->setMass(1000.0f);
 	}

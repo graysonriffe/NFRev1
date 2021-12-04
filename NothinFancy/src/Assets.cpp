@@ -59,7 +59,6 @@ namespace nf {
 		unsigned int cubemapCount = 0;
 		unsigned int buttonCount = 0;
 		while (packContents.size()) {
-			size_t startingPos = packContents.find_first_of("#NFASSET ") + 9;
 			packContents = packContents.substr(9);
 			size_t endAssetNamePos = packContents.find_first_of('\n');
 			std::string assetName = packContents.substr(0, endAssetNamePos);
@@ -206,7 +205,6 @@ namespace nf {
 			NFError("Could not find full button set in pack \"" + (std::string)packName + (std::string)"\"!");
 
 		while (packContentsOBJ.size()) {
-			size_t startingPos = packContentsOBJ.find_first_of("#NFASSET ") + 9;
 			packContentsOBJ = packContentsOBJ.substr(9);
 			size_t endAssetNamePos = packContentsOBJ.find_first_of('\n');
 			std::string assetName = packContentsOBJ.substr(0, endAssetNamePos);
@@ -223,7 +221,6 @@ namespace nf {
 				assetContents = packContentsOBJ;
 				packContentsOBJ = "";
 			}
-			size_t assetSize = assetContents.size();
 
 			if (extension == "obj") {
 				AModel* model = new AModel;
@@ -236,6 +233,7 @@ namespace nf {
 					}
 				}
 				assetContents = assetContents.substr(assetContents.find("\n") + 1);
+				size_t assetSize = assetContents.size();
 				model->data = new char[assetSize];
 				std::memcpy(model->data, &assetContents[0], assetSize);
 				model->size = assetSize;

@@ -53,6 +53,7 @@ namespace nf {
 		/**
 		 * @brief Creates an entity
 		 * @param modelAsset A model Asset pointer
+		 * @param position Initial position vector
 		 * @param type Type of entity; Defaults to Type::STATIC
 		 * 
 		 * This function will initialize an entity by loading its associated model from
@@ -61,7 +62,7 @@ namespace nf {
 		 * @warning Calling this function twice before the state exits will result in an
 		 * error. See @ref isConstructed.
 		*/
-		void create(Asset* modelAsset, Type type = Type::STATIC);
+		void create(Asset* modelAsset, const Vec3& position, Type type = Type::STATIC);
 		/**
 		 * @brief Queries whether or not the entity has been created
 		 * @return If the entity has been created

@@ -1,11 +1,8 @@
+//This is the main header for the entire engine.
 #pragma once
-//TODO: Rework this file to only contain functions the frontend will need to access
-//Maybe a implementation define here?
-
-//TODO: Prevent including other headers other than this one
 
 #ifndef NFIMPL
-#define NFIMPL 1
+#define NFIMPL
 #endif
 
 #include "nf/Config.h"

@@ -34,6 +34,7 @@ namespace nf {
 		m_fadeText(true),
 		m_fadeOutComplete(false)
 	{
+		NFLog("Initializing renderer...");
 		m_hdc = GetDC(m_app->getWindow());
 		PIXELFORMATDESCRIPTOR pfd = {
 			sizeof(PIXELFORMATDESCRIPTOR),
@@ -123,6 +124,8 @@ namespace nf {
 		m_quadVAO->finishBufferLayout();
 		m_quadIB = new IndexBuffer(quadIB, 6);
 		m_loadingText.create("NFLoadingText", Vec2(0.025f, 0.044f), Vec3(0.7f));
+
+		NFLog("Initialized renderer");
 	}
 
 	void Renderer::setFade(bool in, bool out, bool text) {
@@ -165,59 +168,57 @@ namespace nf {
 		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_app->getConfig().width / (float)m_app->getConfig().height, 0.1f, 1000.0f);
 		camera->update(m_gBufferShader, m_lightingShader, m_cubemapShader);
 
-		//First, fill the gBuffer with entities
-		m_gBufferShader->setUniform("proj", proj);
-		m_gBuffer->render(m_lGame, m_gBufferShader);
+		if (m_lGame.size()) {
+			//First, fill the gBuffer with entities
+			m_gBufferShader->setUniform("proj", proj);
+			m_gBuffer->render(m_lGame, m_gBufferShader);
 
-		//Light entities using the gBuffer
-		size_t lightsRemaining = m_lights.size();
-		if (!lightsRemaining) {
-			m_quadVAO->bind();
-			m_quadIB->bind();
-			m_lightingShader->bind();
-			m_gBuffer->bindTextures(m_lightingShader);
-			glDrawElements(GL_TRIANGLES, m_quadIB->getCount(), GL_UNSIGNED_INT, nullptr);
+			//Light entities using the gBuffer
+			size_t lightsRemaining = m_lights.size();
+			unsigned int drawCount = 0;
+			do {
+				size_t currLightsDrawn;
+				if (lightsRemaining > m_texSlots)
+					currLightsDrawn = m_texSlots;
+				else
+					currLightsDrawn = lightsRemaining;
+				lightsRemaining -= currLightsDrawn;
+				m_lightingShader->setUniform("numberOfLights", (int)currLightsDrawn);
+				if (drawCount == 0)
+					m_lightingShader->setUniform("isContinued", false);
+				else {
+					m_lightingShader->setUniform("isContinued", true);
+					glBlendFunc(GL_ONE, GL_ONE);
+					glDepthFunc(GL_LEQUAL);
+				}
+				for (unsigned int i = 0; i < currLightsDrawn; i++)
+					m_lights[i]->bind(m_lightingShader, i);
+				renderShadowMaps(currLightsDrawn);
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
+				m_quadVAO->bind();
+				m_quadIB->bind();
+				m_lightingShader->bind();
+				m_gBuffer->bindTextures(m_lightingShader);
+#ifdef _DEBUG
+				m_lightingShader->validate();
+#endif
+				glDrawElements(GL_TRIANGLES, m_quadIB->getCount(), GL_UNSIGNED_INT, nullptr);
+				m_lights.erase(m_lights.begin(), m_lights.begin() + currLightsDrawn);
+				drawCount++;
+			} while (lightsRemaining > 0);
+			m_lGame.clear();
+			m_lights.clear();
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glDepthFunc(GL_LESS);
 		}
-		unsigned int drawCount = 0;
-		while (lightsRemaining > 0) {
-			size_t currLightsDrawn;
-			if (lightsRemaining > m_texSlots)
-				currLightsDrawn = m_texSlots;
-			else
-				currLightsDrawn = lightsRemaining;
-			lightsRemaining -= currLightsDrawn;
-			m_lightingShader->setUniform("numberOfLights", (int)currLightsDrawn);
-			if(drawCount == 0)
-				m_lightingShader->setUniform("isContinued", false);
-			else {
-				m_lightingShader->setUniform("isContinued", true);
-				glBlendFunc(GL_ONE, GL_ONE);
-				glDepthFunc(GL_LEQUAL);
-			}
-			for (unsigned int i = 0; i < currLightsDrawn; i++)
-				m_lights[i]->bind(m_lightingShader, i);
-			renderShadowMaps(currLightsDrawn);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glViewport(0, 0, m_app->getConfig().width, m_app->getConfig().height);
-			m_quadVAO->bind();
-			m_quadIB->bind();
-			m_lightingShader->bind();
-			m_gBuffer->bindTextures(m_lightingShader);
-			glDrawElements(GL_TRIANGLES, m_quadIB->getCount(), GL_UNSIGNED_INT, nullptr);
-			m_lights.erase(m_lights.begin(), m_lights.begin() + currLightsDrawn);
-			drawCount++;
-		}
-		m_lGame.clear();
-		m_lights.clear();
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glDepthFunc(GL_LESS);
 
 		//Draw the cubemap if one is currently set
 		if (m_cubemap != nullptr) {
 			m_cubemapShader->setUniform("proj", proj);
 			m_cubemap->render(m_cubemapShader);
+			m_cubemap = nullptr;
 		}
-		m_cubemap = nullptr;
 
 		//Draw UI elements
 		glDisable(GL_DEPTH_TEST);
@@ -297,6 +298,7 @@ namespace nf {
 	}
 
 	void Renderer::loadBaseAssets() {
+		NFLog("Loading base assets...");
 		m_baseAP.load("base.nfpack");
 		const char* gBufferVertex = m_baseAP.get("gBufferVertex.shader")->data;
 		const char* gBufferFragment = m_baseAP.get("gBufferFragment.shader")->data;
@@ -334,6 +336,8 @@ namespace nf {
 		BaseAssets::cubemap = (ACubemap*)m_baseAP.get("default.cm");
 		BaseAssets::font = (AFont*)m_baseAP.get("default.ttf");
 		BaseAssets::button = (AButton*)m_baseAP.get("default.button");
+
+		NFLog("Base assets loaded");
 	}
 
 	void Renderer::createShadowMaps() {
@@ -371,7 +375,6 @@ namespace nf {
 		glm::mat4 lightView;
 		glm::mat4 lightSpaceMat;
 		bool directionalRendered = false;
-		unsigned int directionalSlot = 0; //TODO: Test this
 		glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
 		for (unsigned int i = 0; i < count; i++) {
 			Light::Type type = m_lights[i]->getType();

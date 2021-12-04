@@ -16,6 +16,8 @@ int main(int argc, char* argv[]) {
 		app.setDefaultState("Main State");
 
 		app.run();
+
+		delete test;
 	}
 
 	return 0;

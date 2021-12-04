@@ -4,11 +4,12 @@
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
     <tab type="pages" visible="yes" title="" intro=""/>
-    <tab type="modules" visible="yes" title="" intro=""/>
+    <tab type="modules" visible="no" title="" intro=""/>
     <tab type="namespaces" visible="no" title="API">
-      <tab type="namespacelist" visible="yes" title="API" intro="Here, you can find a list of every useful class to use in NF."/>
-      <tab type="namespacemembers" visible="no" title="" intro=""/>
+		<tab type="namespacelist" visible="yes" title="API" intro="Here, you can find a list of every useful class to use in NF."/>
+		<tab type="namespacemembers" visible="no" title="" intro=""/>
     </tab>
+	<tab type="user" url="@ref macros" title="Macros" intro=""/>
     <tab type="concepts" visible="yes" title="">
     </tab>
     <tab type="interfaces" visible="yes" title="">
@@ -35,7 +36,7 @@
       <tab type="filelist" visible="no" title="" intro=""/>
       <tab type="globals" visible="no" title="" intro=""/>
     </tab>
-    <tab type="examples" visible="yes" title="" intro=""/>  
+    <tab type="examples" visible="yes" title="Snippets" intro="Here, you can find a list of snippets that showcase different features of the engine."/>
   </navindex>
 
   <!-- Layout definition for a class page -->

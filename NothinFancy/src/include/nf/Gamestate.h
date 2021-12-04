@@ -14,10 +14,10 @@ namespace nf {
 	class Texture;
 
 	/**
-	 * @brief A state NF can be in that includes a collection of objects and user-defined
+	 * @brief An engine state that includes a world, objects, and user-defined
 	 * behavior
 	 * 
-	 * Every user-defined state inherits from this class.
+	 * Every state inherits from this class.
 	*/
 	class Gamestate {
 	public:
@@ -37,7 +37,7 @@ namespace nf {
 		 * @brief Update function
 		 * @param deltaTime Amount of time the previous frame took to produce in seconds
 		 * 
-		 * This function is called every frame. It is called before render.
+		 * This function is called every frame. It is called before @ref render.
 		 * 
 		 * The deltaTime parameter's purpose is to create non-frame-dependant gameplay. This
 		 * number should be multiplied with user numbers likes velocities. Doing this will

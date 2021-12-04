@@ -17,7 +17,7 @@ namespace nf {
 			NFError("Could not initialize COM!");
 		hr = XAudio2Create(&m_engine);
 		if (FAILED(hr))
-			NFError("Could not initialize the audio engine!");
+			NFError("Could not initialize audio engine!");
 #ifdef _DEBUG
 		XAUDIO2_DEBUG_CONFIGURATION debug = { 0 };
 		debug.TraceMask = XAUDIO2_LOG_ERRORS | XAUDIO2_LOG_WARNINGS;
@@ -25,12 +25,16 @@ namespace nf {
 		m_engine->SetDebugConfiguration(&debug, 0);
 #endif
 		hr = m_engine->CreateMasteringVoice(&m_masterVoice);
-		if (hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
+		if (hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND)) {
 			m_isActive = false;
-		else if (SUCCEEDED(hr))
+			NFLog("Audio engine not initialized since no audio devices found");
+		}
+		else if (SUCCEEDED(hr)) {
 			m_isActive = true;
+			NFLog("Initialized audio engine");
+		}
 		else
-			NFError("Could not initialize the audio engine!");
+			NFError("Could not initialize audio engine!");
 		m_threadRunning = true;
 		m_thread = std::thread(&AudioEngine::runAudioThread, this);
 	}
@@ -42,10 +46,11 @@ namespace nf {
 				return false;
 			else if (hr == S_OK) {
 				m_isActive = true;
+				NFLog("Initialized audio engine");
 				return true;
 			}
 			else {
-				NFError("Could not initialize audio!");
+				NFError("Could not initialize audio engine!");
 				return false;
 			}
 		}
@@ -61,6 +66,9 @@ namespace nf {
 		while (m_threadRunning && !m_isActive) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
+
+		if (!m_isActive)
+			return;
 
 		DWORD cm;
 		m_masterVoice->GetChannelMask(&cm);
@@ -192,6 +200,7 @@ namespace nf {
 	}
 
 	AudioEngine::~AudioEngine() {
+		stopAllSounds();
 		m_threadRunning = false;
 		m_thread.join();
 		m_engine->Release();
