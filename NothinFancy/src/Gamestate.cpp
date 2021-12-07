@@ -24,6 +24,9 @@ namespace nf {
 
 		if (physics)
 			app->getPhysicsEngine()->newScene();
+
+		setAmbientLight(0.1f);
+
 		NFTimerLoad;
 		onEnter();
 

@@ -6,12 +6,12 @@ This tutorial aims to teach the basics of the engine and how to use it.
 First, follow the steps on the @ref install page. Once the template MSVC project is setup,
 you can begin here.
 
-@section nfArch Engine Architecture
+@section nfArchTut Engine Architecture
 
-An NF app is made up of a set of states represented by the nf::Gamestate class. When
-an nf::Application is running, it is either running a state or loading one. Below is an
-image that describes what the main thread of an NF app would be typically doing in
-the program's lifetime.
+An NF app is made up of a set of states represented by the nf::Gamestate class. A gamestate
+has a set of objects and programmed behavior. When an nf::Application is running,
+it is either running a state or loading one. Below is an image that describes what the
+main thread of an NF app might be typically doing in the program's lifetime.
 
 @image html applifetime.png "The lifetime of a typical NF app" width=20%
 
@@ -22,7 +22,7 @@ your state's [update function](@ref nf::Gamestate::update).
 To allow a translate unit to use the engine, you must include `NothinFancy.h`. This
 header contains every class and function.
 
-@section createConfig Creating a Config
+@section createConfigTut Creating a Config
 
 The first step to creating an app is creating an nf::Config. A config describes how the
 engine should display on the screen. nf::Config has these fields:
@@ -49,7 +49,7 @@ nf::Config conf2{ 1280, 720, false, "NF Example" };
 
 We then pass this config to an nf::Application
 
-@section createApp Creating and Configuring an Application
+@section createAppTut Creating and Configuring an Application
 
 The nf::Application class represents an instance of the engine. This is the point where
 you will attach your states and run the engine.
@@ -72,6 +72,9 @@ Here are some functions you might want to call at this point:
 - [setWindowCursor](@ref nf::Application::setWindowCursor) - Sets the cursor's image
 when it is visible and inside the window
 
+@note If you never call setWindowIcon before running, the default window icon will be
+set for you.
+
 And here are the functions you **must** call before an app can run:
 
 - [addState](@ref nf::Application::addState) - Adds a state to an app so that it can
@@ -88,7 +91,7 @@ app.setDefaultState("State 1"); //Will error without this
 app.run(); //Blocks until exit
 ~~~
 
-@section createGamestate Creating a Gamestate
+@section createGamestateTut Creating a Gamestate
 
 To create a gamestate, you must create a class that publicly inherits nf::Gamestate
 and overrides its four virtual functions:
@@ -123,15 +126,215 @@ after the logo state:
 @image html blankapp.png "A blank gamestate" width=50%
 
 Congratulations! You now have a basic NF app running. Now we can add objects to our world.
+The window can be closed with Alt + F4 or by the close button.
 
-@section createEntities Adding 3D Objects
+For more about gamestates, see @ref gamestates.
 
+@section createEntitiesTut Adding 3D Objects
 
+In NF, all 3D objects are represented by the nf::Entity class. All entities have a 3D
+model, a position, rotation, scale, and type among others. The [type](@ref nf::Entity::Type)
+of the entity dictates how the object behaves in the physics simulation.
 
-@section createUI Creating a UI
+@note At this point, it's probably a good idea to read the @ref obLifetime page. It discusses
+the creation and destruction of different objects including entities.
 
-@section createCubemap Adding a Cubemap (Skybox)
+To construct an entity, make it a member in your gamestate, or for dynamically created entites,
+allocate it on the heap and add the pointer to a `std::vector` of `nf::Entity*` to keep
+track of them.
+
+~~~cpp
+#include <vector>
+
+class CustomGamestate : public nf::Gamestate {
+private:
+	nf::Entity entity1;
+	nf::Entity entity2;
+	
+	std::vector<nf::Entity*> entities;
+	
+	//Rest of class definition...
+};
+~~~
+
+In your gamestate's `onEnter` function, create the entity with
+[create](@ref nf::Entity::create):
+
+~~~cpp
+void onEnter(float deltaTime) {
+	//Places an immovable (default) cube at (0.0, 0.0, -5.0)
+	entity1.create(nf::BaseAssets::cube, nf::Vec3(0.0, 0.0, -5.0));
+	
+	//Places a movable sphere at (3.0, 1.0, -4.0)
+	entity2.create(nf::BaseAssets::sphere, nf::Vec3(3.0, 1.0, -4.0), nf::Entity::Type::DYNAMIC);
+}
+~~~
+
+The last step is to render the objects by rendering them in your gamestate's `render`
+function:
+
+~~~cpp
+void render(nf::Renderer& renderer) {
+	renderer.render(entity1);
+	renderer.render(entity2);
+}
+~~~
+
+Once the app is run, you should see two grey objects when the state loads: a static cube
+and a falling sphere.
+
+@image html objects.png "Our scene so far" width=50%
+
+Let's add another entity that will be our ground plane so that our sphere has a place to
+land.
+
+~~~cpp
+floor.create(nf::BaseAssets::plane, nf::Vec3(0.0, -3.0, 0.0));
+
+//This plane will be the same size of the cube by default, so let's scale it on every axis...
+floor.setScale(10.0f);
+~~~
+
+Currently, none of the keys on our keyboard (other than Alt + F4) does anything, so let's
+make escape close the app.
+
+@section inputTut Keyboard Input
+
+Every gamestate has a pointer member to the parent nf::Application called `app`. Use this
+member to access the input functions.
+
+In NF, there are two ways to check for key events:
+
+- [isKeyHeld](@ref nf::Application::isKeyHeld) - Returns true for every frame that the
+tested key is held for
+- [isKeyPressed](@ref nf::Application::isKeyPressed) - Returns true for only the first
+frame the key is down regardless of how long it stays down
+
+Both functions take in a key code. The key codes provided by NF all start with `NFI_` and
+an uppercase letter, a number, or word denoting a special key eg `NFI_W`, `NFI_5`,
+and `NFI_SPACE`.
+
+To quit the app when escape is pressed, add this to your `update` funciton:
+
+~~~cpp
+if (app->isKeyPressed(NFI_ESCAPE))
+	app->quit();
+~~~
+
+`app->quit()` will cause the engine to shut down on the next frame and return from
+`nf::Application::run`.
+
+Everything is dark and grey, so let's add some basic lighting.
+
+@section lightingTut Adding Lights
+
+Naturally, the nf::Light class represents a light. It is constructed, created, and rendered
+in the same way that an entity is.
+
+~~~cpp
+light.create(nf::Vec3(0.0, 5.0, 0.0), nf::Vec3(1.0)); //Creates a completely white light
+~~~
+
+Just as with entities, you must also render the light in your `render` function.
+
+@image html basiclighting.png "Our scene with a light" width=50%
+
+Let's go on to controlling the view.
+
+@section controlCameraTut Controlling the Camera
+
+Every gamestate has a pointer member to a nf::Camera called `camera`. Use this to control
+the current camera.
+
+Just like entites, the camera has a [type](@ref nf::Camera::Type) too. The type dictates
+how the mouse interacts with moving the camea. By default, every gamestate starts with
+the camera in `UI` mode which means that the mouse is free to move across the window without
+affecting the camera in any way.
+
+To change to the first person mode, write this in your `onEnter` function somewhere:
+
+~~~cpp
+camera->setType(nf::Camera::Type::FIRST_PERSON);
+~~~
+
+@note The current mouse sensitivity will be able to be changed in a future update.
+
+Now onto actually moving the camera with the classic WASD keys.
+
+Using our previous knowledge of keyboard input, we can write four consecutive `if`
+statements for each of the movement keys:
+
+~~~cpp
+if (app->isKeyHeld(NFI_W))
+	//Move forward
+if (app->isKeyHeld(NFI_A))
+	//Move left
+if (app->isKeyHeld(NFI_S))
+	//Move backward
+if (app->isKeyHeld(NFI_D))
+	//Move right
+~~~
+
+The functions for moving the camera is as follows:
+
+- [move](@ref nf::Camera::move) - Moves the camera based off of an nf::Vec2 in (x, z)
+- [moveZ](@ref nf::Camera::moveZ) - Moves the camera forward and backward with an offset
+- [moveX](@ref nf::Camera::moveX) - Moves the camera left and right with an offset
+
+Since the `offset` here will be called every frame, it's effectively a velocity, and when
+we talk about velocities, it's important to discuss `update`'s only parameter, `deltaTime`.
+
+Delta time in this context is the amount of time that the previous fame took to produce.
+This time includes how long it takes to run your `update` and `render` functions as well
+as everything else in the engine that gets a frame on screen. Why is this important?
+Because it can cancel out framerate differences between different machines.
+
+Let's say that Computer A is a modern-day gaming rig with 8 cores and an RTX 2060.
+Computer A can run our game at a solid 60 FPS. Let's also say that Computer B is an
+older laptop that struggles to run the engine smoothly. It runs our game at around 30 FPS.
+If in our `update` function, we move the camera (or anything at all) by a set amount,
+Computer A will move our view twice the distance than Computer B in any amount of real time
+since there were twice the amount of frames drawn in that time.
+
+The solution is to multiply any velocity you use with this delta time. You will have to change
+your values around a little, but this will make speeds consistant across computers.
+
+With that, we can now complete our movement logic:
+
+~~~cpp
+if (app->isKeyHeld(NFI_W))
+	camera->moveZ(10.0f * deltaTime);
+if (app->isKeyHeld(NFI_A))
+	camera->moveX(-10.0f * deltaTime);
+if (app->isKeyHeld(NFI_S))
+	camera->moveZ(-10.0f * deltaTime);
+if (app->isKeyHeld(NFI_D))
+	camera->moveX(10.0f * deltaTime);
+~~~
+
+We are now able to move around the world.
+
+@image html cameramovement.png "Our scene from a different angle" width=50%
+
+Now let's take care of that black background.
+
+@section createCubemapTut Adding a Cubemap (Skybox)
+
+A world texture is represented by the nf::Cubemap class. Rendering this object will
+display a texture in the world. We use the class the same way we use the others:
+
+~~~cpp
+cubemap.create(nf::BaseAssets::cubemap); //No position or type though
+~~~
+
+After rendering, our world will have a background.
+
+@image html cubemap.png "Our scene with a background" width=50%
+
+@section createUITut Creating a UI
 
 @todo Lighting page?
 
-@section packaging Packaging Your App
+@section debuggingTut Debugging Your App
+
+@section packagingTut Packaging and Distributing Your App

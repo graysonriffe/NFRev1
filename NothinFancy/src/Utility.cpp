@@ -89,7 +89,7 @@ namespace nf {
 	Timer::~Timer() {
 		std::chrono::duration<float> dur = std::chrono::steady_clock::now() - m_initTime;
 		if (!m_loading)
-			NFLog("\"" + m_funcName + (std::string)"\" took " + std::to_string(dur.count()) + (std::string)" seconds.");
+			NFLog("\"" + m_funcName + (std::string)"\" took " + std::to_string(dur.count() * 1000.0f) + (std::string)" ms.");
 		else
 			NFLog("Loading took " + std::to_string(dur.count()) + (std::string)" seconds.");
 	}

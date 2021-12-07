@@ -52,20 +52,20 @@ bool Debug::m_timerStarted = false
 #define NFError(x) {nf::Debug::ErrorImp(x,__FILENAME__, __LINE__);\
 __debugbreak();}
 /**
-* A timer useful for timing functions
+* Times how long functions or scopes take to execute in milliseconds
 * 
 * To time a function, place this macro at the beginning of it:
 * 
 * ~~~
 * void myFunc() {
-*	NFTimer;
+*	NFTimeFunc;
 *	//Rest of function to be timed...
 * } //Prints here
 * ~~~
 * 
 * The result will be logged when the scope it's declared in ends.
 */
-#define NFTimer nf::Timer _nfTimer(__func__)
+#define NFTimeFunc nf::Timer _nfTimer(__func__)
 /**
 * @}
 */
@@ -109,7 +109,7 @@ __debugbreak();}
 #define NFLog(x)
 #define NFError(x) {MessageBox(FindWindow(L"NFClass", NULL), toWide(x).data(), L"NF Engine Error", MB_OK | MB_ICONERROR);\
 std::exit(-1);}
-#define NFTimer
+#define NFTimeFunc
 #define NFTimerLoad
 #endif
 

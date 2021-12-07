@@ -17,7 +17,7 @@ namespace nf {
 	 * texture.
 	 * 
 	 * @sa @ref customButtons
-	 * @ref createUI
+	 * @ref createUITut
 	*/
 	class Button : public UIElement, public NFObject {
 	public:

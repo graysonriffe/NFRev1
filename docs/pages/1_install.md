@@ -24,7 +24,7 @@ Inside the zip file, you will find:
 - **example** - The example app complete with the source and a build
 - **manual** - An offline version of this manual
   - **index.html** - The homepage
-- **redist** - MSVC Redistributable (See @ref packaging)
+- **redist** - MSVC Redistributable (See @ref packagingTut)
 - **template** - A template MSVC project already setup to work with the engine
 
 ---
