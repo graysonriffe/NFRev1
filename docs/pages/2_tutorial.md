@@ -331,10 +331,42 @@ After rendering, our world will have a background.
 
 @image html cubemap.png "Our scene with a background" width=50%
 
+@note Cubemaps do not emit light onto your scene.
+
+@section customAssetsTut Adding Your Assets
+
+NF's asset system builds your assets into NFPacks that the engine reads at runtime. The
+external tool `NFPackCreator.exe` creates these for you. For a complete guide, please
+see @ref assets.
+
 @section createUITut Creating a UI
 
 @todo Lighting page?
 
 @section debuggingTut Debugging Your App
 
+NF has a number of @ref macros that you can use in your debug builds to help you develop
+your application. These macros can log messages, throw errors, time functions, and pause
+the engine.
+
+~~~cpp
+nf::Vec3 pos = camera->getPosition();
+std::string posStr = std::to_string(pos.x) + (std::string)", " + std::to_string(pos.y) + (std::string)", " + std::to_string(pos.z);
+NFLog("Current position: " + posStr);
+//This will print the current position of the camera every frame.
+~~~
+
 @section packagingTut Packaging and Distributing Your App
+
+@note Remember to only ever distribute your release build.
+
+The only external prerequisite when running a NF app is the 2022 64-bit MSVC
+redistributable. The installer is included in the `redist` folder in the engine download.
+
+Other than that, a build can be very simple:
+
+- **NFApp.exe** - The application binary which is named from the MSVC project
+- **assets** - The folder which holds your NFPacks
+  - **base.nfpack** - The NFPack that holds both critical and default assets
+
+These are the only files you need to package in your build.

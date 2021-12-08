@@ -6,7 +6,7 @@ namespace nf {
 	 * 
 	 * This struct contains basic information about the engine's window.
 	 * 
-	 * @todo Add more things here such as mouse sensativity and FPS target?
+	 * @todo Add more things here such as mouse sensitivity and FPS target?
 	*/
 	struct Config {
 	public:

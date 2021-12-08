@@ -1,7 +1,7 @@
 @page assets Asset System
 @tableofcontents
 
-This page details NF's asset system and custom pack format.
+This page details NF's asset system and custom NFPack format.
 
 @section buildAssets How to Build Your Assets
 

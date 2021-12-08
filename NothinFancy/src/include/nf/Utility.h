@@ -39,6 +39,7 @@ bool Debug::m_timerStarted = false
 #define NFSleepMS(x) std::this_thread::sleep_for(std::chrono::milliseconds(x))
 /**
 * In debug mode, this prints a nicely-formatted message complete with a timestamp.
+* It takes in either a `const char*` or `std::string`.
 * 
 * In release mode, this does nothing.
 */
