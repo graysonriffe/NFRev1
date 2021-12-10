@@ -10,7 +10,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj",
 		{771B4AEE-E2C6-4745-AC40-1EF57149612E} = {771B4AEE-E2C6-4745-AC40-1EF57149612E}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NFPackCreator", "NFPackCreator\NFPackCreator.vcxproj", "{771B4AEE-E2C6-4745-AC40-1EF57149612E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NFAssetBuilder", "NFAssetBuilder\NFAssetBuilder.vcxproj", "{771B4AEE-E2C6-4745-AC40-1EF57149612E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

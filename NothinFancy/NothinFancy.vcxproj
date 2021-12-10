@@ -81,7 +81,7 @@
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>cd assets
-"$(SolutionDir)NFPackCreator\bin\x64$(Configuration)\NFPackCreator.exe"</Command>
+"$(SolutionDir)NFAssetBuilder\bin\x64$(Configuration)\NFAssetBuilder.exe"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -116,7 +116,7 @@
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>cd assets
-"$(SolutionDir)NFPackCreator\bin\x64$(Configuration)\NFPackCreator.exe"</Command>
+"$(SolutionDir)NFAssetBuilder\bin\x64$(Configuration)\NFAssetBuilder.exe"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -183,6 +183,11 @@
   <ItemGroup>
     <None Include="res\defaultShader\fragment.shader" />
     <None Include="res\defaultShader\vertex.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NFAssetBuilder\NFAssetBuilder.vcxproj">
+      <Project>{771b4aee-e2c6-4745-ac40-1ef57149612e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

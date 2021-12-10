@@ -361,11 +361,11 @@ namespace nf {
 		for (unsigned int i = 0; i < m_materials.size(); i++) {
 			Texture* curr;
 			if ((curr = std::get<0>(m_materials[i])) != nullptr)
-				Application::getApp()->getCurrentState()->m_texturesToDelete.insert(std::get<0>(m_materials[i]));
+				Application::getApp()->getCurrentState()->m_texturesToDelete.insert(curr);
 			if ((curr = std::get<1>(m_materials[i])) != nullptr)
-				Application::getApp()->getCurrentState()->m_texturesToDelete.insert(std::get<1>(m_materials[i]));
+				Application::getApp()->getCurrentState()->m_texturesToDelete.insert(curr);
 			if ((curr = std::get<2>(m_materials[i])) != nullptr)
-				Application::getApp()->getCurrentState()->m_texturesToDelete.insert(std::get<2>(m_materials[i]));
+				Application::getApp()->getCurrentState()->m_texturesToDelete.insert(curr);
 		}
 	}
 }

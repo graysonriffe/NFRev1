@@ -68,12 +68,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "Grayson Riffe"
-            VALUE "FileDescription", "Nothin' Fancy Asset Pack Creator"
+            VALUE "FileDescription", "Nothin' Fancy Asset Builder"
             VALUE "FileVersion", "1.0"
-            VALUE "InternalName", "NFPackCreator.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2021 Grayson Riffe"
-            VALUE "OriginalFilename", "NFPackCreator.exe"
-            VALUE "ProductName", "Nothin' Fancy Asset Pack Creator"
+            VALUE "InternalName", "NFAssetBuilder.exe"
+            VALUE "LegalCopyright", "Copyright (C) 2021"
+            VALUE "OriginalFilename", "NFAssetBuilder.exe"
+            VALUE "ProductName", "Nothin' Fancy Asset Builder"
             VALUE "ProductVersion", "1.0"
         END
     END

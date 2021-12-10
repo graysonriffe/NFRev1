@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by NFPackCreator.rc
+// Used by NFAssetBuilder.rc
 
 // Next default values for new objects
 // 

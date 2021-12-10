@@ -72,7 +72,7 @@
     </Link>
     <PostBuildEvent>
       <Command>cd assets
-"$(SolutionDir)NFPackCreator\bin\x64$(Configuration)\NFPackCreator.exe"
+"$(SolutionDir)NFAssetBuilder\bin\x64$(Configuration)\NFAssetBuilder.exe"
 if exist "$(OutDir)assets" (rmdir "$(OutDir)assets" /S /Q &amp;&amp; goto end) else goto end
 :end
 mkdir "$(OutDir)assets"
@@ -105,7 +105,7 @@ if exist "base.nfpack" (copy "base.nfpack" "$(OutDir)assets\")</Command>
     </Link>
     <PostBuildEvent>
       <Command>cd assets
-"$(SolutionDir)NFPackCreator\bin\x64$(Configuration)\NFPackCreator.exe"
+"$(SolutionDir)NFAssetBuilder\bin\x64$(Configuration)\NFAssetBuilder.exe"
 if exist "$(OutDir)assets" (rmdir "$(OutDir)assets" /S /Q &amp;&amp; goto end) else goto end
 :end
 mkdir "$(OutDir)assets"

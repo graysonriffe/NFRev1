@@ -336,7 +336,7 @@ After rendering, our world will have a background.
 @section customAssetsTut Adding Your Assets
 
 NF's asset system builds your assets into NFPacks that the engine reads at runtime. The
-external tool `NFPackCreator.exe` creates these for you. For a complete guide, please
+external tool `NFAssetCreator.exe` creates these for you. For a complete guide, please
 see @ref assets.
 
 @section createUITut Creating a UI
