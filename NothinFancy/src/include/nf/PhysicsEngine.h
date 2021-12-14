@@ -21,8 +21,8 @@ namespace nf {
 		void setActorVelocity(Entity* ent, const Vec3& vel);
 		void setActorMass(Entity* ent, float mass);
 		void update(float dt);
-		void addConvexMesh(Model* model, std::vector<float>& vertices);
-		void addTriangleMesh(Model* model, std::vector<float>& vertices, std::vector<unsigned int>& indices);
+		void addConvexMesh(Model* model, const float* vertices, unsigned int buffSize);
+		void addTriangleMesh(Model* model, const float* vertices, unsigned int vertBuffSize, const unsigned int* indices, unsigned int indicesCount);
 		void addActor(Entity* entity);
 		void closeScene();
 

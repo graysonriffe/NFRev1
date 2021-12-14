@@ -160,33 +160,30 @@ namespace nf {
 		out.close();
 	}
 
-	std::string readFile(const std::string& filename, bool compressed) {
+	bool readFile(const std::string& filename, std::string& out, bool assetPack) {
 		if (!s_dHandle)
 			CreateDecompressor(COMPRESS_ALGORITHM_XPRESS_HUFF, NULL, &s_dHandle);
 
 		std::ifstream in;
 		in.open(filename, std::ios::binary);
 		if (!in)
-			NFError("File \"" + (std::string)filename + (std::string)"\" could not be read!");
+			return false;
 		std::stringstream ss;
 		ss << in.rdbuf();
-		std::string read(ss.str());
+		out = ss.str();
 
-		if (compressed) {
+		if (assetPack) {
 			size_t decompSize;
-			Decompress(s_dHandle, &read[0], read.size(), NULL, 0, &decompSize);
+			Decompress(s_dHandle, &out[0], out.size(), NULL, 0, &decompSize);
 			char* buff = new char[decompSize];
-			Decompress(s_dHandle, &read[0], read.size(), buff, decompSize, &decompSize);
-			read = std::string(buff, decompSize);
+			Decompress(s_dHandle, &out[0], out.size(), buff, decompSize, &decompSize);
+			out = std::string(buff, decompSize);
 			delete[] buff;
-		}
 
-		if (read.size() > 4 && read.substr(0, 4) == "NFEF") {
-			read = read.substr(4);
-			for (unsigned int i = 0; i < read.size(); i++)
-				read[i] = read[i] - 100;
+			for (unsigned int i = 0; i < out.size(); i++)
+				out[i] = out[i] - 100;
 		}
-		return read;
+		return true;
 	}
 }
 

@@ -1,6 +1,4 @@
 #pragma once
-#include <string>
-#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -30,4 +28,4 @@ struct TempMaterial {
 
 void cookModel(std::string& in, std::string& MTLin, std::string& out);
 void parseMaterials(std::unordered_map<std::string, TempMaterial*>& mats, std::vector<char>& mtl);
-void getNeededImages(std::string mtl, std::set<std::string>& set);
+std::vector<std::string> getNeededTextures(std::string mtl);

@@ -1,25 +1,29 @@
+#include <iostream>
 #include <thread>
 #include <filesystem>
 #include <set>
-#include <unordered_map>
 
 #include <Windows.h>
 #include <compressapi.h>
 
 #include "Utility.h"
 #include "Models.h"
-#include "Textures.h"
+
+[[noreturn]]
+void printHelp() {
+	std::cout << "Nothin' Fancy Asset Builder\n\nThis tool creates .nfpack files for the NF engine to "
+		"load at runtime. A pack gets created for each directory in the working directory if there "
+		"are only compatible files inside. Subdirectories are not ignored.\n\nFor more information, "
+		"refer to the Nothin' Fancy manual";
+
+	std::exit(0);
+}
 
 int main(int argc, char* argv[]) {
-	Log("Starting up");
+	if (argc > 1 && ((std::string)argv[1] == "-h" || (std::string)argv[1] == "/?"))
+		printHelp();
 
-	if (argc > 1) 
-		if ((std::string)argv[1] == "-h") {
-			Log("Nothin' Fancy Asset Builder\nThis tool creates .nfpack files for the NF engine to load "
-				"at runtime.\nA pack gets created for each directory in the working directory if there "
-				"are only compatible files inside.\nSubdirectories are not ignored.");
-			return 0;
-		}
+	Log("Starting up");
 
 	initCompressor();
 
@@ -35,7 +39,8 @@ int main(int argc, char* argv[]) {
 		std::string currPackFilename = currDir.path().filename().string().append(".nfpack");
 		Log("Building pack " + currPackFilename);
 
-		std::unordered_map<std::string, size_t> packFiles;
+		std::vector<std::string> packFilenames;
+		std::vector<unsigned int> packFileSizes;
 		std::string currFileExtension;
 		std::string currFileIn;
 		std::string currPackOut;
@@ -47,8 +52,8 @@ int main(int argc, char* argv[]) {
 			std::filesystem::path relative = std::filesystem::relative(curr, currDir);
 			std::string currFileName = relative.filename().string();
 
-			for (auto& file : packFiles)
-				if (currFileName == file.first)
+			for (auto& file : packFilenames)
+				if (currFileName == file)
 					Error("Duplicate asset \"" + currFileName + (std::string)"\" in pack!");
 
 			currFileExtension = relative.extension().string().substr(1);
@@ -77,10 +82,11 @@ int main(int argc, char* argv[]) {
 				Log("Cooking model...");
 				cookModel(currFileIn, mtl, currFileOut);
 			}
-			else if (currFileExtension == "png" || currFileExtension == "jpg")
-				cookTexture(currFileIn, currFileOut);
+			else
+				currFileOut = currFileIn;
 
-			packFiles[currFileName] = currFileOut.size();
+			packFilenames.push_back(currFileName);
+			packFileSizes.push_back((unsigned int)currFileOut.size());
 
 			currPackOut += currFileOut;
 
@@ -94,19 +100,16 @@ int main(int argc, char* argv[]) {
 		else
 			Log("Finished gathering files");
 
+		//Write pack header with asset names and sizes
 		std::string header;
-		for (auto& currFile : packFiles) {
-			header += currFile.first;
-			header += ':';
-			header.append((char*)&currFile.second, sizeof(size_t));
-			header += ':';
+		header += std::to_string(fileCount) + (std::string)"\n";
+		for (unsigned int i = 0; i < packFilenames.size(); i++) {
+			header += packFilenames[i];
+			header += '\n';
+			header += std::to_string(packFileSizes[i]);
+			header += '\n';
 		}
-		header.erase(header.size() - 1);
-		header.append("/NFENDOFPACKHEADER");
-		int headerTableSize = (int)header.size();
-		header.insert(0, (char*)&headerTableSize, sizeof(headerTableSize));
-		header.insert(0, (char*)&fileCount, sizeof(fileCount));
-
+		header.append("/ENDHEADER");
 		currPackOut.insert(0, header);
 
 		writePack(currPackFilename, currPackOut);

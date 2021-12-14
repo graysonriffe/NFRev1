@@ -56,8 +56,6 @@ void writePack(const std::string& filename, std::string& in) {
 	if (!out)
 		Error("Pack \"" + filename + (std::string)"\" could not be written!");
 
-	in.insert(0, "NFASSETPACK");
-
 	Log("Encrypting...");
 	for (unsigned int i = 0; i < in.size(); i++)
 		in[i] += 100;
@@ -79,6 +77,9 @@ std::string getNewLine(std::stringstream& stringstream) {
 
 	if (out[out.size() - 1] == '\r')
 		out.erase(out.size() - 1);
+
+	if (out[0] == ' ')
+		out = out.substr(1);
 
 	return out;
 }

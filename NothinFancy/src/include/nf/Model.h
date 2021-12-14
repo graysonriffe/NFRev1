@@ -19,34 +19,18 @@ namespace nf {
 
 		~Model();
 	private:
-		struct TempMaterial {
-			std::vector<float> outVB;
-			std::vector<float> unindexedVB;
-			std::vector<unsigned int> vbIndices;
-			std::vector<float> outTC;
-			std::vector<float> unindexedTC;
-			std::vector<unsigned int> tcIndices;
-			std::vector<float> outVN;
-			std::vector<float> unindexedVN;
-			std::vector<unsigned int> vnIndices;
-			std::vector<float> unindexedTan;
-			std::vector<float> outTan;
-			std::vector<unsigned int> outIB;
-			unsigned int ibCount = 0;
-
-			std::string diffuseTextureName;
+		struct Material {
+			Texture* diffuse;
+			Texture* specular;
+			Texture* normal;
 			Vec3 diffuseColor;
-			std::string specularTextureName;
-			std::string normalTextureName;
 			float shininess = 1.0f;
 		};
 
-		void parseMaterials(std::unordered_map<std::string, TempMaterial*>& mats, std::vector<char>& mtl);
+		void createMaterials(const std::string& mats, AModel* model);
 
 		bool m_base;
-		std::vector<std::tuple<Texture*, Texture*, Texture*, float, float, float, float>> m_materials;
-		const char* m_newMtl;
-		const char* m_newLine;
+		std::vector<Material> m_materials;
 		const std::string m_hasDiffString = "hasDiffuseTex[";
 		const std::string m_diffString = "diffuseTexture[";
 		const std::string m_diffColorString = "diffuseColor[";

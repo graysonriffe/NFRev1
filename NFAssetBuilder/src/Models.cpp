@@ -4,6 +4,7 @@
 #include <sstream>
 #include <filesystem>
 #include <map>
+#include <set>
 
 void cookModel(std::string& OBJin, std::string& MTLin, std::string& out) {
 	std::vector<char> obj(&OBJin[0], &OBJin[0] + OBJin.size());
@@ -156,8 +157,18 @@ void cookModel(std::string& OBJin, std::string& MTLin, std::string& out) {
 	int matCount = 0;
 
 	std::string modelHeader;
-	int numMats = (int)mats.size();
-	modelHeader.append((char*)&numMats, sizeof(numMats));
+	std::vector<std::string> textures = getNeededTextures(MTLin);
+	std::string textureHeader;
+
+	if (textures.empty())
+		textureHeader = "none\n";
+	else
+		for (const auto& curr : textures)
+			textureHeader.append(curr + (std::string)"\n");
+
+	modelHeader.append(textureHeader);
+	modelHeader.append("/ENDTEXTURES\n");
+	modelHeader.append(std::to_string(mats.size()) + (std::string)"\n");
 
 	for (auto& m : mats) {
 		std::string curr = m.first;
@@ -192,13 +203,25 @@ void cookModel(std::string& OBJin, std::string& MTLin, std::string& out) {
 
 		TempMaterial& curr2 = *m.second;
 
-		//Serialize this
-		//curr2.diffuseColor.x, curr2.diffuseColor.y, curr2.diffuseColor.z, curr2.shininess
+		std::string textureIndices;
+		if (!curr2.diffuseTextureName.empty())
+			textureIndices.append(std::to_string((std::find(textures.begin(), textures.end(), curr2.diffuseTextureName) - textures.begin()) + 1) + (std::string)" ");
+		else
+			textureIndices.append(std::to_string(0) + (std::string)" ");
+		if (!curr2.specularTextureName.empty())
+			textureIndices.append(std::to_string((std::find(textures.begin(), textures.end(), curr2.specularTextureName) - textures.begin()) + 1) + (std::string)" ");
+		else
+			textureIndices.append(std::to_string(0) + (std::string)" ");
+		if (!curr2.normalTextureName.empty())
+			textureIndices.append(std::to_string((std::find(textures.begin(), textures.end(), curr2.normalTextureName) - textures.begin()) + 1) + (std::string)" ");
+		else
+			textureIndices.append(std::to_string(0) + (std::string)" ");
 
-		modelHeader.append((char*)&curr2.diffuseColor.x, sizeof(curr2.diffuseColor.x));
-		modelHeader.append((char*)&curr2.diffuseColor.y, sizeof(curr2.diffuseColor.y));
-		modelHeader.append((char*)&curr2.diffuseColor.z, sizeof(curr2.diffuseColor.z));
-		modelHeader.append((char*)&curr2.shininess, sizeof(curr2.shininess));
+		modelHeader.append(textureIndices);
+		modelHeader.append(std::to_string(curr2.diffuseColor.x) + (std::string)" ");
+		modelHeader.append(std::to_string(curr2.diffuseColor.y) + (std::string)" ");
+		modelHeader.append(std::to_string(curr2.diffuseColor.z) + (std::string)" ");
+		modelHeader.append(std::to_string(curr2.shininess) + (std::string)"\n");
 
 		size_t offset = vboPositions.size() / 3;
 		vboPositions.insert(vboPositions.end(), curr2.outVB.begin(), curr2.outVB.end());
@@ -212,20 +235,23 @@ void cookModel(std::string& OBJin, std::string& MTLin, std::string& out) {
 		delete m.second;
 		matCount++;
 	}
+	modelHeader.append("/ENDMATERIALS\n");
 
-	size_t posSize = vboPositions.size() * sizeof(float);
-	size_t tcSize = vboTexCoords.size() * sizeof(float);
-	size_t normSize = vboNormals.size() * sizeof(float);
-	size_t tanSize = vboTangents.size() * sizeof(float);
-	size_t matIndicesSize = vboMaterialIndices.size() * sizeof(int);
-	size_t indicesSize = vboIndices.size() * sizeof(unsigned int);
+	unsigned int posSize = (unsigned int)vboPositions.size() * sizeof(float);
+	unsigned int tcSize = (unsigned int)vboTexCoords.size() * sizeof(float);
+	unsigned int normSize = (unsigned int)vboNormals.size() * sizeof(float);
+	unsigned int tanSize = (unsigned int)vboTangents.size() * sizeof(float);
+	unsigned int matIndicesSize = (unsigned int)vboMaterialIndices.size() * sizeof(int);
+	unsigned int indicesSize = (unsigned int)vboIndices.size() * sizeof(unsigned int);
 
-	modelHeader.append((char*)&posSize, sizeof(posSize));
-	modelHeader.append((char*)&tcSize, sizeof(tcSize));
-	modelHeader.append((char*)&normSize, sizeof(normSize));
-	modelHeader.append((char*)&tanSize, sizeof(tanSize));
-	modelHeader.append((char*)&matIndicesSize, sizeof(matIndicesSize));
-	modelHeader.append((char*)&indicesSize, sizeof(indicesSize));
+	modelHeader.append(std::to_string(posSize) + (std::string)" ");
+	modelHeader.append(std::to_string(tcSize) + (std::string)" ");
+	modelHeader.append(std::to_string(normSize) + (std::string)" ");
+	modelHeader.append(std::to_string(tanSize) + (std::string)" ");
+	modelHeader.append(std::to_string(matIndicesSize) + (std::string)" ");
+	modelHeader.append(std::to_string(vboIndices.size()) + (std::string)"\n");
+
+	modelHeader.append("/ENDHEADER\n");
 
 	out.append(modelHeader);
 	out.append((char*)vboPositions.data(), posSize);
@@ -278,7 +304,8 @@ void parseMaterials(std::unordered_map<std::string, TempMaterial*>& mats, std::v
 	}
 }
 
-void getNeededImages(std::string mtl, std::set<std::string>& set) {
+std::vector<std::string> getNeededTextures(std::string mtl) {
+	std::set<std::string> tex;
 	while (mtl.size()) {
 		size_t pos = mtl.find("map_");
 		if (pos == std::string::npos)
@@ -292,6 +319,15 @@ void getNeededImages(std::string mtl, std::set<std::string>& set) {
 		size_t pos2 = temp.find_last_of("/\\");
 		if (pos2 != std::string::npos)
 			temp = temp.substr(pos2 + 1);
-		set.insert(temp);
+		tex.insert(temp);
 	}
+
+	std::vector<std::string> out;
+
+	if (tex.empty())
+		return out;
+	else
+		for (const auto& curr : tex)
+			out.push_back(curr);
+	return out;
 }

@@ -51,34 +51,37 @@ namespace nf {
 	}
 
 	void AssetPack::load(const char* packName) {
+		NFLog("Loading asset pack \"" + (std::string)packName + (std::string)"\"");
 		std::string path = "assets/" + (std::string)packName;
-		std::string packContents = readFile(path, true);
+		std::string packContents;
+		if (!readFile(path, packContents, true))
+			NFError("Could not find pack file \"" + (std::string)packName + (std::string)"\"!") ;
 		std::string packContentsOBJ = packContents;
 		std::unordered_map<std::string, ACubemap*> cubemaps;
 		std::unordered_map<std::string, AButton*> buttons;
-		unsigned int cubemapCount = 0;
-		unsigned int buttonCount = 0;
-		while (packContents.size()) {
-			packContents = packContents.substr(9);
-			size_t endAssetNamePos = packContents.find_first_of('\n');
-			std::string assetName = packContents.substr(0, endAssetNamePos);
-			packContents = packContents.substr(endAssetNamePos + 1);
-			size_t extensionPos = assetName.find_first_of('.');
-			std::string extension = assetName.substr(extensionPos + 1);
-			std::string assetContents;
-			size_t nextAssetPos = packContents.find("#NFASSET ");
-			if (nextAssetPos != std::string::npos) {
-				assetContents = packContents.substr(0, nextAssetPos - 1);
-				packContents = packContents.substr(nextAssetPos);
-			}
-			else {
-				assetContents = packContents;
-				packContents = "";
-			}
-			unsigned int assetSize = (unsigned int)assetContents.size();
+		unsigned int cubemapFaceCount = 0;
+		unsigned int buttonTextureCount = 0;
 
-			if (extension == "obj")
+		unsigned int assetCount = std::stoi(packContents.substr(0, packContents.find_first_of("\n")));
+
+		unsigned int endHeader = (unsigned int)packContents.find("/ENDHEADER");
+		unsigned int headerLength = endHeader - ((unsigned int)packContents.find_first_of("\n") + 1);
+		std::stringstream header(packContents.substr(packContents.find_first_of("\n") + 1, headerLength));
+		unsigned int assetPos = endHeader + 10;
+		for (unsigned int i = 0; i < assetCount; i++) {
+			std::string assetName;
+			std::getline(header, assetName);
+			std::string temp;
+			std::getline(header, temp);
+			unsigned int assetSize = std::stoi(temp);
+
+			std::string extension = assetName.substr(assetName.find_last_of(".") + 1);
+
+			if (extension == "obj") {
+				assetPos += assetSize;
 				continue;
+			}
+
 			if (extension == "png" || extension == "jpg") {
 				if (assetName.find("_cmfront") != std::string::npos || assetName.find("_cmback") != std::string::npos || assetName.find("_cmtop") != std::string::npos || assetName.find("_cmbottom") != std::string::npos || assetName.find("_cmleft") != std::string::npos || assetName.find("_cmright") != std::string::npos) {
 					std::string cmName = assetName.substr(0, assetName.find('_'));
@@ -91,40 +94,41 @@ namespace nf {
 						NFError("Duplicate cubemap images in pack \"" + (std::string)packName + (std::string)"\"!");
 					if (assetName.find("_cmfront") != std::string::npos) {
 						curr->frontData = new char[assetSize];
-						std::memcpy(curr->frontData, &assetContents[0], assetSize);
+						std::memcpy(curr->frontData, &packContents[assetPos], assetSize);
 						curr->frontSize = assetSize;
 					}
 					if (assetName.find("_cmback") != std::string::npos) {
 						curr->backData = new char[assetSize];
-						std::memcpy(curr->backData, &assetContents[0], assetSize);
+						std::memcpy(curr->backData, &packContents[assetPos], assetSize);
 						curr->backSize = assetSize;
 					}
 					if (assetName.find("_cmtop") != std::string::npos) {
 						curr->topData = new char[assetSize];
-						std::memcpy(curr->topData, &assetContents[0], assetSize);
+						std::memcpy(curr->topData, &packContents[assetPos], assetSize);
 						curr->topSize = assetSize;
 					}
 					if (assetName.find("_cmbottom") != std::string::npos) {
 						curr->bottomData = new char[assetSize];
-						std::memcpy(curr->bottomData, &assetContents[0], assetSize);
+						std::memcpy(curr->bottomData, &packContents[assetPos], assetSize);
 						curr->bottomSize = assetSize;
 					}
 					if (assetName.find("_cmleft") != std::string::npos) {
 						curr->leftData = new char[assetSize];
-						std::memcpy(curr->leftData, &assetContents[0], assetSize);
+						std::memcpy(curr->leftData, &packContents[assetPos], assetSize);
 						curr->leftSize = assetSize;
 					}
 					if (assetName.find("_cmright") != std::string::npos) {
 						curr->rightData = new char[assetSize];
-						std::memcpy(curr->rightData, &assetContents[0], assetSize);
+						std::memcpy(curr->rightData, &packContents[assetPos], assetSize);
 						curr->rightSize = assetSize;
 					}
+					assetPos += assetSize;
 					curr->numImages++;
 
 					if (curr->numImages == 6)
 						m_assets[cmName + (std::string)".cm"] = curr;
 
-					cubemapCount++;
+					cubemapFaceCount++;
 					continue;
 				}
 				else if (assetName.find("_buttonidle") != std::string::npos || assetName.find("_buttonhover") != std::string::npos || assetName.find("_buttonpressed") != std::string::npos) {
@@ -139,30 +143,32 @@ namespace nf {
 						NFError("Duplicate button images in pack \"" + (std::string)packName + (std::string)"\"!");
 					if (assetName.find("_buttonidle") != std::string::npos) {
 						curr->idleTex.data = new char[assetSize];
-						std::memcpy(curr->idleTex.data, &assetContents[0], assetSize);
+						std::memcpy(curr->idleTex.data, &packContents[assetPos], assetSize);
 						curr->idleTex.size = assetSize;
 					}
 					if (assetName.find("_buttonhover") != std::string::npos) {
 						curr->hoverTex.data = new char[assetSize];
-						std::memcpy(curr->hoverTex.data, &assetContents[0], assetSize);
+						std::memcpy(curr->hoverTex.data, &packContents[assetPos], assetSize);
 						curr->hoverTex.size = assetSize;
 					}
 					if (assetName.find("_buttonpressed") != std::string::npos) {
 						curr->pressedTex.data = new char[assetSize];
-						std::memcpy(curr->pressedTex.data, &assetContents[0], assetSize);
+						std::memcpy(curr->pressedTex.data, &packContents[assetPos], assetSize);
 						curr->pressedTex.size = assetSize;
 					}
+					assetPos += assetSize;
 					curr->numImages++;
 
 					if (curr->numImages == 3)
 						m_assets[buttonName + (std::string)".button"] = curr;
 
-					buttonCount++;
+					buttonTextureCount++;
 					continue;
 				}
 				ATexture* texture = new ATexture;
 				texture->data = new char[assetSize];
-				std::memcpy(texture->data, &assetContents[0], assetSize);
+				std::memcpy(texture->data, &packContents[assetPos], assetSize);
+				assetPos += assetSize;
 				texture->size = assetSize;
 				if (packName == "base.nfpack")
 					texture->isBaseAsset = true;
@@ -172,7 +178,8 @@ namespace nf {
 			if (extension == "shader") {
 				AShader* shader = new AShader;
 				shader->data = new char[assetSize + 1];
-				std::memcpy(shader->data, &assetContents[0], assetSize);
+				std::memcpy(shader->data, &packContents[assetPos], assetSize);
+				assetPos += assetSize;
 				shader->data[assetSize] = '\0';
 				m_assets[assetName] = shader;
 				continue;
@@ -180,7 +187,8 @@ namespace nf {
 			if (extension == "ttf") {
 				AFont* font = new AFont;
 				font->data = new char[assetSize];
-				std::memcpy(font->data, &assetContents[0], assetSize);
+				std::memcpy(font->data, &packContents[assetPos], assetSize);
+				assetPos += assetSize;
 				font->size = assetSize;
 				if (packName == "base.nfpack")
 					font->isBaseAsset = true;
@@ -190,7 +198,8 @@ namespace nf {
 			if (extension == "ogg" || extension == "wav") {
 				ASound* sound = new ASound;
 				sound->data = new char[assetSize];
-				std::memcpy(sound->data, &assetContents[0], assetSize);
+				std::memcpy(sound->data, &packContents[assetPos], assetSize);
+				assetPos += assetSize;
 				sound->size = assetSize;
 				if (packName == "base.nfpack")
 					sound->isBaseAsset = true;
@@ -199,49 +208,50 @@ namespace nf {
 			}
 			NFError("Invalid asset extention in pack \"" + (std::string)packName + (std::string)"\"!");
 		}
-		if (cubemapCount % 6 != 0)
+
+		if (cubemapFaceCount % 6 != 0)
 			NFError("Could not find full cubemap in pack \"" + (std::string)packName + (std::string)"\"!");
-		if (buttonCount % 3 != 0)
+		if (buttonTextureCount % 3 != 0)
 			NFError("Could not find full button set in pack \"" + (std::string)packName + (std::string)"\"!");
 
-		while (packContentsOBJ.size()) {
-			packContentsOBJ = packContentsOBJ.substr(9);
-			size_t endAssetNamePos = packContentsOBJ.find_first_of('\n');
-			std::string assetName = packContentsOBJ.substr(0, endAssetNamePos);
-			packContentsOBJ = packContentsOBJ.substr(endAssetNamePos + 1);
-			size_t extensionPos = assetName.find_first_of('.');
-			std::string extension = assetName.substr(extensionPos + 1);
-			std::string assetContents;
-			size_t nextAssetPos = packContentsOBJ.find("#NFASSET ");
-			if (nextAssetPos != std::string::npos) {
-				assetContents = packContentsOBJ.substr(0, nextAssetPos - 1);
-				packContentsOBJ = packContentsOBJ.substr(nextAssetPos);
-			}
-			else {
-				assetContents = packContentsOBJ;
-				packContentsOBJ = "";
-			}
+		//Model pass after ATextures are loaded
+
+		assetPos = endHeader + 10;
+		std::stringstream header2(packContents.substr(packContents.find_first_of("\n") + 1, headerLength));
+		for (unsigned int i = 0; i < assetCount; i++) {
+			std::string assetName;
+			std::getline(header2, assetName);
+			std::string temp;
+			std::getline(header2, temp);
+			unsigned int assetSize = std::stoi(temp);
+
+			std::string extension = assetName.substr(assetName.find_last_of(".") + 1);
 
 			if (extension == "obj") {
 				AModel* model = new AModel;
-				std::string textures = assetContents.substr(0, assetContents.find("\n"));
+				std::string textures = packContents.substr(assetPos, packContents.find("/ENDTEXTURES", assetPos) - assetPos - 1);
 				if (textures != "none") {
 					std::stringstream ss(textures);
 					std::string curr;
-					while (ss >> curr) {
-						model->neededTextures[curr] = (ATexture*)m_assets[curr];
-					}
+					while (std::getline(ss, curr))
+						model->neededTextures.push_back((ATexture*)m_assets[curr]);
 				}
-				assetContents = assetContents.substr(assetContents.find("\n") + 1);
-				size_t assetSize = assetContents.size();
+
+				unsigned int newStartPos = (unsigned int)packContents.find("/ENDTEXTURES", assetPos) + 13;
+				assetSize -= newStartPos - assetPos;
+				assetPos = newStartPos;
 				model->data = new char[assetSize];
-				std::memcpy(model->data, &assetContents[0], assetSize);
+				std::memcpy(model->data, &packContents[assetPos], assetSize);
+				assetPos += assetSize;
 				model->size = assetSize;
 				if (packName == "base.nfpack")
 					model->isBaseAsset = true;
 				m_assets[assetName] = model;
 				continue;
+
 			}
+
+			assetPos += assetSize;
 		}
 
 		m_loaded = true;

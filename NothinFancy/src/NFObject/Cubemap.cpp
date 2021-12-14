@@ -41,17 +41,15 @@ namespace nf {
 		std::vector<CMFace> faces;
 		int tempWidth, tempHeight, tempNChannels;
 		unsigned char* tempData;
-		stbi_set_flip_vertically_on_load(false);
+		stbi_set_flip_vertically_on_load(true);
 		tempData = stbi_load_from_memory((unsigned char*)cm.leftData, cm.leftSize, &tempWidth, &tempHeight, &tempNChannels, 0);
 		faces.emplace_back(tempData, tempWidth, tempHeight, tempNChannels);
 		tempData = stbi_load_from_memory((unsigned char*)cm.rightData, cm.rightSize, &tempWidth, &tempHeight, &tempNChannels, 0);
 		faces.emplace_back(tempData, tempWidth, tempHeight, tempNChannels);
-		stbi_set_flip_vertically_on_load(true);
 		tempData = stbi_load_from_memory((unsigned char*)cm.topData, cm.topSize, &tempWidth, &tempHeight, &tempNChannels, 0);
 		faces.emplace_back(tempData, tempWidth, tempHeight, tempNChannels);
 		tempData = stbi_load_from_memory((unsigned char*)cm.bottomData, cm.bottomSize, &tempWidth, &tempHeight, &tempNChannels, 0);
 		faces.emplace_back(tempData, tempWidth, tempHeight, tempNChannels);
-		stbi_set_flip_vertically_on_load(false);
 		tempData = stbi_load_from_memory((unsigned char*)cm.backData, cm.backSize, &tempWidth, &tempHeight, &tempNChannels, 0);
 		faces.emplace_back(tempData, tempWidth, tempHeight, tempNChannels);
 		tempData = stbi_load_from_memory((unsigned char*)cm.frontData, cm.frontSize, &tempWidth, &tempHeight, &tempNChannels, 0);

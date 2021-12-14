@@ -171,11 +171,11 @@ namespace nf {
 		}
 	}
 
-	void PhysicsEngine::addConvexMesh(Model* model, std::vector<float>& vertices) {
+	void PhysicsEngine::addConvexMesh(Model* model, const float* vertices, unsigned int buffSize) {
 		PxConvexMeshDesc desc;
-		desc.points.count = (unsigned int)vertices.size() / 3;
+		desc.points.count = (unsigned int)buffSize / 12;
 		desc.points.stride = 3 * sizeof(float);
-		desc.points.data = &vertices[0];
+		desc.points.data = vertices;
 		desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
 
 		PxDefaultMemoryOutputStream buf;
@@ -187,14 +187,14 @@ namespace nf {
 		m_convexMeshes[model] = mesh;
 	}
 
-	void PhysicsEngine::addTriangleMesh(Model* model, std::vector<float>& vertices, std::vector<unsigned int>& indices) {
+	void PhysicsEngine::addTriangleMesh(Model* model, const float* vertices, unsigned int vertBuffSize, const unsigned int* indices, unsigned int indicesCount) {
 		PxTriangleMeshDesc desc;
-		desc.points.count = (unsigned int)vertices.size() / 3;
+		desc.points.count = (unsigned int)vertBuffSize / 12;
 		desc.points.stride = sizeof(float) * 3;
-		desc.points.data = &vertices[0];
-		desc.triangles.count = (unsigned int)indices.size() / 3;
+		desc.points.data = vertices;
+		desc.triangles.count = (unsigned int)indicesCount / 3;
 		desc.triangles.stride = sizeof(unsigned int) * 3;
-		desc.triangles.data = &indices[0];
+		desc.triangles.data = indices;
 
 		PxDefaultMemoryOutputStream buf;
 		if (!m_cooking->cookTriangleMesh(desc, buf))

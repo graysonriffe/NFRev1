@@ -428,13 +428,12 @@ std::exit(-1);}
 	/**
 	 * @brief Reads a file's bytes into an std::string
 	 * @param filename Path and name of file to be read, including extensions; Relative or absolute
-	 * @param compressed Internal use only as of now
-	 * @return An std::string containing the specified file's bytes
+	 * @param out The output std::string to receive the file contents
+	 * @param assetPack Internal use only as of now
+	 * @return If the file was successfully read or not
 	 * 
 	 * This function automatically detects whether or not the target file is encrypted
 	 * and decrypts it if it is.
-	 * 
-	 * @todo If files aren't found, the engine errors. Change this.
 	*/
-	std::string readFile(const std::string& filename, bool compressed = false);
+	bool readFile(const std::string& filename, std::string& out, bool assetPack = false);
 }
