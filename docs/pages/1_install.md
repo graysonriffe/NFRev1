@@ -52,14 +52,12 @@ as shown below.
 
 @image html blankproject.png "The template opened in Visual Studio" width=70%
 
-To build the project, go to Build -> Build Solution or Build Project. Both do the same thing
-since there's only one project in the solution initially. You could also hit the default
-keyboard shortcut of `Ctrl-Shift-B`.
+To build the project, go to Build -> Build Solution or Build Project, which will not build
+your assets. You can also also hit the default keyboard shortcut of `Ctrl-Shift-B` to build
+both your app and assets at once.
 
-@note After your application is built, your assets are also built and placed into
-the output `assets` directory. As your project grows, this could take longer and longer,
-so this can be disabled in the project properties dialog under Build Events -> Post-Build Event.
-Change "Use In Build" to "No" and save.
+@note When the "Build Assets" project is built, the resulting NFPacks are moved to
+the output `assets` directory next to your .exe for you.
 
 NF is a **statically-linked** library. This means that your build will not
 rely on any external dlls other than the MSVC redistributable.

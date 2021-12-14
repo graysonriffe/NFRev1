@@ -17,6 +17,7 @@ namespace nf {
 		std::chrono::steady_clock::time_point m_start;
 		float m_scale;
 		UITexture m_logoTex;
+		Text m_verText;
 		Text m_text;
 	};
 }

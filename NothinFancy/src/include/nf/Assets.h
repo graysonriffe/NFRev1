@@ -149,6 +149,7 @@ namespace nf {
 		void destroy() override;
 		~AssetPack();
 	private:
+		bool m_member;
 		bool m_loaded;
 		std::unordered_map<std::string, Asset*> m_assets;
 	};

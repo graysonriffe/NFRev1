@@ -83,6 +83,7 @@ namespace nf {
 #ifdef _DEBUG
 		Debug::startTimer();
 		SetThreadDescription(GetCurrentThread(), L"Input Thread");
+		SetConsoleTitle(toWide("Nothin' Fancy v" + (std::string)NFVERSION).data());
 #endif
 		if (m_defaultState.empty())
 			NFError("No default gamestate has been set!");

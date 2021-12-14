@@ -81,7 +81,7 @@
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>cd assets
-"$(SolutionDir)NFAssetBuilder\bin\x64$(Configuration)\NFAssetBuilder.exe"</Command>
+"$(SolutionDir)NFAssetBuilder\bin\x64Release\NFAssetBuilder.exe"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -116,7 +116,7 @@
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>cd assets
-"$(SolutionDir)NFAssetBuilder\bin\x64$(Configuration)\NFAssetBuilder.exe"</Command>
+"$(SolutionDir)NFAssetBuilder\bin\x64Release\NFAssetBuilder.exe"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

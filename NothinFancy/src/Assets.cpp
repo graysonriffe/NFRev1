@@ -45,9 +45,11 @@ namespace nf {
 	}
 
 	AssetPack::AssetPack() :
+		m_member(false),
 		m_loaded(false)
 	{
-
+		if (!Application::getApp() || !Application::getApp()->getCurrentState())
+			m_member = true;
 	}
 
 	void AssetPack::load(const char* packName) {
@@ -255,10 +257,9 @@ namespace nf {
 		}
 
 		m_loaded = true;
-		if (packName != "base.nfpack") {
-			if (!Application::getApp()->getCurrentState()->isRunning())
+		if (packName != "base.nfpack")
+			if (Application::getApp()->getCurrentState()->isLoading() && m_member)
 				Application::getApp()->getCurrentState()->m_nfObjects.push_back(this);
-		}
 	}
 
 	bool AssetPack::isLoaded() {
