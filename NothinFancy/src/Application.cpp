@@ -16,6 +16,7 @@ namespace nf {
 		m_stateChange(false),
 		m_stateChangeStarted(false)
 	{
+		NFLog("Nothin' Fancy v" + (std::string)NFVERSION);
 		NFLog("Constructing application");
 		NFLog("Width: " + std::to_string(m_currentConfig.width) + ", Height: " + std::to_string(m_currentConfig.height) + ", Fullscreen: " + (m_currentConfig.fullscreen ? "true" : "false") + ", Title: " + m_currentConfig.title);
 

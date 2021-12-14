@@ -16,6 +16,11 @@
  * ~~~
 */
 namespace nf {
+/**
+* @ingroup macros
+* Current version of the engine in the format major.minor.patch
+*/
+#define NFVERSION "0.5.0"
 #if defined(_DEBUG) || defined(doxygen)
 //Strips __FILE__ down to only the name of the file
 #define __FILENAME__ strrchr(__FILE__, '\\') + 1
