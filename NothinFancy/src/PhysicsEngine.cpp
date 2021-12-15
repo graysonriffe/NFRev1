@@ -7,7 +7,7 @@
 namespace nf {
 	class PhysicsErrorCallback : public PxErrorCallback {
 		virtual void reportError(PxErrorCode::Enum code, const char* message, const char* file, int line) {
-#ifdef _DEBUG
+#ifdef NFDEBUG
 			Debug::ErrorImp(message, file, line);
 			__debugbreak();
 #else

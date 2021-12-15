@@ -80,7 +80,7 @@ namespace nf {
 
 	void Application::run() {
 		NFLog("Running application...");
-#ifdef _DEBUG
+#ifdef NFDEBUG
 		Debug::startTimer();
 		SetThreadDescription(GetCurrentThread(), L"Input Thread");
 		SetConsoleTitle(toWide("Nothin' Fancy v" + (std::string)NFVERSION).data());
@@ -115,9 +115,10 @@ namespace nf {
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 		mainThread.join();
-#ifdef _DEBUG
+#ifdef NFDEBUG
 		Debug::stopTimer();
 #endif
+		NFLog("Exited application");
 	}
 
 	bool Application::hasCustomWindowIcon() {
@@ -312,7 +313,7 @@ namespace nf {
 	}
 
 	void Application::runMainGameThread() {
-#ifdef _DEBUG
+#ifdef NFDEBUG
 		SetThreadDescription(GetCurrentThread(), L"Main Engine Thread");
 #endif
 		m_renderer = new Renderer(this);
@@ -341,7 +342,7 @@ namespace nf {
 				m_fpsDuration = m_fpsClock2 - m_fpsClock1;
 				if (m_fpsDuration.count() >= 0.2) {
 					m_FPS = (int)std::round(1.0 / m_deltaTime);
-#ifdef _DEBUG
+#ifdef NFDEBUG
 					static int i = 0;
 					i++;
 					if (i % 5 == 0)
@@ -452,7 +453,6 @@ namespace nf {
 				break;
 			}
 			case WM_CLOSE: {
-				NFLog("Exiting NF application");
 				DestroyWindow(hWnd);
 				return 0;
 			}

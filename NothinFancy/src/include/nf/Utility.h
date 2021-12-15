@@ -21,12 +21,9 @@ namespace nf {
 * Current version of the engine in the format major.minor.patch
 */
 #define NFVERSION "0.5.0"
-#if defined(_DEBUG) || defined(doxygen)
+#if defined(NFDEBUG) || defined(doxygen)
 //Strips __FILE__ down to only the name of the file
 #define __FILENAME__ strrchr(__FILE__, '\\') + 1
-//Initializes static variables needed for debugging
-#define NFDEBUGINIT std::chrono::steady_clock::time_point Debug::m_initTime = std::chrono::high_resolution_clock::now(); \
-bool Debug::m_timerStarted = false
 /**
 * @defgroup macros Macros
 * 
@@ -113,7 +110,7 @@ __debugbreak();}
 #define NFSleepS(x)
 #define NFSleepMS(x)
 #define NFLog(x)
-#define NFError(x) {MessageBox(FindWindow(L"NFClass", NULL), toWide(x).data(), L"NF Engine Error", MB_OK | MB_ICONERROR);\
+#define NFError(x) {MessageBox(FindWindow(L"NFClass", NULL), nf::toWide(x).data(), L"NF Engine Error", MB_OK | MB_ICONERROR);\
 std::exit(-1);}
 #define NFTimeFunc
 #define NFTimerLoad
@@ -414,9 +411,9 @@ std::exit(-1);}
 		float w;
 	};
 
-#ifndef NFIMPL
 	const std::wstring toWide(const char* in);
 	const std::wstring toWide(const std::string& in);
+#ifndef NFIMPL
 	Vec4 degToQuat(const Vec3& in);
 #endif
 

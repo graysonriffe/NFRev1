@@ -16,8 +16,10 @@ namespace nf {
 
 	static const float deg2rad = (float)M_PI / 180.0f;
 
-#ifdef _DEBUG
-	NFDEBUGINIT;
+#ifdef NFDEBUG
+	std::chrono::steady_clock::time_point Debug::m_initTime = std::chrono::high_resolution_clock::now();
+	bool Debug::m_timerStarted = false;
+	static HANDLE cmd = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	void Debug::startTimer() {
 		m_timerStarted = true;
@@ -31,45 +33,34 @@ namespace nf {
 	void Debug::LogImp(const char* in) {
 		if(m_timerStarted)
 			printCurrentTime();
-		std::printf("NF Log: %s\n", in);
+		std::printf("NF ");
+		SetConsoleTextAttribute(cmd, 6);
+		std::printf("Log: ");
+		SetConsoleTextAttribute(cmd, 7);
+		std::printf("%s\n", in);
 	}
 
 	void Debug::LogImp(const std::string& in) {
-		if (m_timerStarted)
-			printCurrentTime();
-		std::printf("NF Log: ");
-		std::cout << in << "\n";
+		LogImp(in.c_str());
 	}
 
 	void Debug::LogImp(int in) {
-		if (m_timerStarted)
-			printCurrentTime();
-		std::printf("NF Log: %i\n", in);
+		LogImp(std::to_string(in));
 	}
 
 	void Debug::LogImp(float in) {
-		if (m_timerStarted)
-			printCurrentTime();
-		std::printf("NF Log: %.4f\n", in);
+		LogImp(std::to_string(in));
 	}
 	//TODO: Test every Error in release mode
 	void Debug::ErrorImp(const char* in, const char* filename, int line) {
 		if (m_timerStarted)
 			printCurrentTime();
-		static HANDLE cmd = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(cmd, FOREGROUND_RED);
 		std::printf("NF Error (%s, %i): %s\n", filename, line, in);
-		SetConsoleTextAttribute(cmd, 7);
 	}
 
 	void Debug::ErrorImp(const std::string& in, const char* filename, int line) {
-		if (m_timerStarted)
-			printCurrentTime();
-		static HANDLE cmd = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(cmd, FOREGROUND_RED);
-		std::printf("NF Error (%s, %i): ", filename, line);
-		std::cout << in << "\n";
-		SetConsoleTextAttribute(cmd, 7);
+		ErrorImp(in.c_str(), filename, line);
 	}
 
 	void Debug::printCurrentTime() {
@@ -91,7 +82,7 @@ namespace nf {
 		if (!m_loading)
 			NFLog("\"" + m_funcName + (std::string)"\" took " + std::to_string(dur.count() * 1000.0f) + (std::string)" ms.");
 		else
-			NFLog("Loading took " + std::to_string(dur.count()) + (std::string)" seconds.");
+			NFLog("Loading state took " + std::to_string(dur.count()) + (std::string)" seconds.");
 	}
 #endif
 

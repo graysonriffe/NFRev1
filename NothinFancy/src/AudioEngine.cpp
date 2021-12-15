@@ -59,7 +59,7 @@ namespace nf {
 	}
 
 	void AudioEngine::runAudioThread() {
-#ifdef _DEBUG
+#ifdef NFDEBUG
 		SetThreadDescription(GetCurrentThread(), L"Audio Thread");
 #endif
 		//Wait to initialize stuff until the master voice is created if it hasn't been already
