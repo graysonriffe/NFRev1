@@ -340,14 +340,8 @@ namespace nf {
 
 				m_fpsClock2 = std::chrono::steady_clock::now();
 				m_fpsDuration = m_fpsClock2 - m_fpsClock1;
-				if (m_fpsDuration.count() >= 0.2) {
+				if (m_fpsDuration.count() >= 0.1) {
 					m_FPS = (int)std::round(1.0 / m_deltaTime);
-#ifdef NFDEBUG
-					static int i = 0;
-					i++;
-					if (i % 5 == 0)
-						NFLog("FPS: " + std::to_string(m_FPS));
-#endif
 					m_fpsClock1 = std::chrono::steady_clock::now();
 				}
 			}

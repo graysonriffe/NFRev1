@@ -50,11 +50,11 @@ top toolbar.
 Once the solution has been opened, you can find the `main.cpp` file inside the `src` folder
 as shown below.
 
-@image html blankproject.png "The template opened in Visual Studio" width=70%
+@image html blanktemplate.png "The template opened in Visual Studio" width=70%
 
-To build the project, go to Build -> Build Solution or Build Project, which will not build
+To build the project, go to Build -> Build Solution or Build Project. The latter will not build
 your assets. You can also also hit the default keyboard shortcut of `Ctrl-Shift-B` to build
-both your app and assets at once.
+both your app and assets.
 
 @note When the "Build Assets" project is built, the resulting NFPacks are moved to
 the output `assets` directory next to your .exe for you.

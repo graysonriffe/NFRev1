@@ -35,9 +35,9 @@ namespace nf {
 			printCurrentTime();
 		std::printf("NF ");
 		SetConsoleTextAttribute(cmd, 6);
-		std::printf("Log: ");
+		std::printf("Log");
 		SetConsoleTextAttribute(cmd, 7);
-		std::printf("%s\n", in);
+		std::printf(": %s\n", in);
 	}
 
 	void Debug::LogImp(const std::string& in) {

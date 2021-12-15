@@ -20,7 +20,7 @@ from `main`. Most of the code that programs the engine's behavior should be call
 your state's [update function](@ref nf::Gamestate::update).
 
 To allow a translate unit to use the engine, you must include `NothinFancy.h`. This
-header contains every class and function.
+header contains every class and function you will need.
 
 @section createConfigTut Creating a Config
 
@@ -29,9 +29,8 @@ engine should display on the screen. nf::Config has these fields:
 
 - `width` - The width of the window if `fullscreen` is set to `false`
 - `height` - The height of the window if `fullscreen` is set to `false`
-- `fullscreen` - `true` sets the display to the size of the monitor the app is
+- `fullscreen` - `true` sets the display to the size of the monitor the app is opened on
 - `title` - The title of the window shown on the caption bar and taskbar
-opened on
 
 To create a 1280 by 720 window with a title of "NF Example", you would write:
 
@@ -336,12 +335,92 @@ After rendering, our world will have a background.
 @section customAssetsTut Adding Your Assets
 
 NF's asset system builds your assets into NFPacks that the engine reads at runtime. The
-external tool `NFAssetCreator.exe` creates these for you. For a complete guide, please
-see @ref assets.
+external tool `NFAssetBuilder.exe` creates these for you. You can then access these packs
+through the nf::AssetPack class. For a complete guide, please see @ref assets.
+
+@image html custommodel.png "An example of a custom model" width=50%
 
 @section createUITut Creating a UI
 
-@todo Lighting page?
+NF currently has three classes of UI objects:
+
+- nf::Text - A string of text on the screen
+- nf::UITexture - Any 2D texture to put on the screen
+- nf::Button - A horizontal button that can be clicked with the mouse
+
+To create a text:
+
+~~~cpp
+text.create("NF Test", nf::Vec2(0.8, 0.1));
+text.setScale(2.0);
+std::string string = "More Text";
+text.setText(string);
+~~~
+
+@note The default font is Microsoft's Segoe UI Light, but a text's font
+[can be changed](@ref customFonts).
+
+To create a texture on the UI:
+
+~~~cpp
+texture.create(nf::BaseAssets::logo, nf::Vec2(0.1, 0.1));
+~~~
+
+To create a clickable button:
+
+~~~cpp
+button.create(nf::Vec2(0.1, 0.1), "Text on button");
+
+//You can also center any of these three classes by calling
+button.centered(true, false);
+//where the first bool is the x-axis and the second is the y-axis
+~~~
+
+The default button textures [can also be changed](@ref customButtons).
+
+Since buttons are controlled by the mouse, they cannot be interacted with in our current
+camera mode. Let's add a keybind that will switch between the appropriate modes.
+
+~~~cpp
+//In our update function...
+if (app->isKeyPressed(NFI_E))
+	camera->setType(camera->getType() == nf::Camera::Type::UI ? nf::Camera::Type::FIRST_PERSON : nf::Camera::Type::UI);
+
+if (button.isClicked()) {
+	NFLog("Clicked!);
+}
+~~~
+
+@image html ui.png "Our new UI with a working button" width=70%
+
+@section soundTut Adding Sound
+
+Our app is silent as of now. To play a sound, create an nf::Sound object and call its
+[play](@ref nf::Sound::play) function. Creating a sound requires a custom asset to be
+loaded. See the [assets page](@ref customSounds).
+
+NF supports 3D sound.
+
+~~~cpp
+sound.create(pack.get("Sound.ogg"));
+
+//In update somewhere...
+sound.play();
+~~~
+
+If a sound is played like this (with no position set), it will sound as if it is coming from
+every direction. But if we set the position of the sound, it will sound as if it originates
+from that position. This can either be done by setting a static position in the world,
+or by specifying an existing nf::Entity, which will cause the sound to always play at that
+entity's origin (probably inside the model).
+
+~~~cpp
+//Play at a static position:
+sound.setPosition(nf::Vec3(10.0, 25.0, 15.0));
+
+//Play dynamically wherever the target entity is:
+sound.setEntity(entity2);
+~~~
 
 @section debuggingTut Debugging Your App
 

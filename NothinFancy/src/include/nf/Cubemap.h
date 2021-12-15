@@ -12,7 +12,7 @@ namespace nf {
 	 * A cubemap is a cube with a texture on each one of its 6 sides.
 	 * 
 	 * @sa @ref createCubemapTut
-	 * @ref customCubemap
+	 * @ref customCubemaps
 	*/
 	class Cubemap : public Drawable, public NFObject {
 	public:
