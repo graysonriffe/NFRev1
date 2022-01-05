@@ -27,5 +27,6 @@ struct TempMaterial {
 };
 
 void cookModel(std::string& in, std::string& MTLin, std::string& out);
-void parseMaterials(std::unordered_map<std::string, TempMaterial*>& mats, std::vector<char>& mtl);
+void parseMaterials(std::unordered_map<std::string, TempMaterial*>& mats, std::string& mtl);
 std::vector<std::string> getNeededTextures(std::string mtl);
+std::string getTextureName(std::stringstream& ss);

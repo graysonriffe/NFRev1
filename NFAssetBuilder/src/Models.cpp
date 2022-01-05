@@ -7,11 +7,9 @@
 #include <set>
 
 void cookModel(std::string& OBJin, std::string& MTLin, std::string& out) {
-	std::vector<char> obj(&OBJin[0], &OBJin[0] + OBJin.size());
-	std::vector<char> mtl(&MTLin[0], &MTLin[0] + MTLin.size());
 
 	std::unordered_map<std::string, TempMaterial*> mats;
-	parseMaterials(mats, mtl);
+	parseMaterials(mats, MTLin);
 
 	std::vector<float> vbRaw, tcRaw, vnRaw;
 	std::string usingMat;
@@ -19,19 +17,16 @@ void cookModel(std::string& OBJin, std::string& MTLin, std::string& out) {
 	bool tcPresent = false, vnPresent = false;
 	size_t position = 0;
 
-	while (true) {
-		size_t nextLine = std::search(obj.begin() + position, obj.end(), "\n", "\n" + std::strlen("\n")) - (obj.begin() + position);
-		if (!nextLine)
-			break;
-		std::vector<char> line(&obj[position], &obj[position + nextLine]);
-		position += nextLine + 1;
-		std::stringstream ss(std::string(&line[0], line.size()));
+	std::stringstream ss(OBJin);
+	std::string line;
+	while (std::getline(ss, line)) {
+		std::stringstream ss2(line);
 		std::string firstWord;
-		ss >> firstWord;
+		ss2 >> firstWord;
 
 		if (std::strcmp(&firstWord[0], "v") == 0) {
 			float x = 0.0f, y = 0.0f, z = 0.0f;
-			ss >> x >> y >> z;
+			ss2 >> x >> y >> z;
 			vbRaw.push_back(x);
 			vbRaw.push_back(y);
 			vbRaw.push_back(z);
@@ -39,21 +34,21 @@ void cookModel(std::string& OBJin, std::string& MTLin, std::string& out) {
 		else if (std::strcmp(&firstWord[0], "vt") == 0) {
 			tcPresent = true;
 			float u = 0.0f, v = 0.0f;
-			ss >> u >> v;
+			ss2 >> u >> v;
 			tcRaw.push_back(u);
 			tcRaw.push_back(v);
 		}
 		else if (std::strcmp(&firstWord[0], "vn") == 0) {
 			vnPresent = true;
 			float x = 0.0f, y = 0.0f, z = 0.0f;
-			ss >> x >> y >> z;
+			ss2 >> x >> y >> z;
 			vnRaw.push_back(x);
 			vnRaw.push_back(y);
 			vnRaw.push_back(z);
 		}
 		else if (std::strcmp(&firstWord[0], "usemtl") == 0) {
 			std::string matName;
-			ss >> matName;
+			ss2 >> matName;
 			usingMat = matName;
 		}
 		else if (std::strcmp(&firstWord[0], "f") == 0) {
@@ -64,8 +59,8 @@ void cookModel(std::string& OBJin, std::string& MTLin, std::string& out) {
 
 			unsigned int vertexIndex[3], uvIndex[3], vnIndex[3];
 			char temp;
-			ss >> vertexIndex[0] >> temp >> uvIndex[0] >> temp >> vnIndex[0] >> vertexIndex[1] >> temp >> uvIndex[1] >> temp >> vnIndex[1] >> vertexIndex[2] >> temp >> uvIndex[2] >> temp >> vnIndex[2];
-			if (ss.rdbuf()->in_avail() > 1)
+			ss2 >> vertexIndex[0] >> temp >> uvIndex[0] >> temp >> vnIndex[0] >> vertexIndex[1] >> temp >> uvIndex[1] >> temp >> vnIndex[1] >> vertexIndex[2] >> temp >> uvIndex[2] >> temp >> vnIndex[2];
+			if (ss2.rdbuf()->in_avail() > 1)
 				Error("Model has non-triangle faces!");
 			mats[usingMat]->vbIndices.push_back(vertexIndex[0]);
 			mats[usingMat]->vbIndices.push_back(vertexIndex[1]);
@@ -262,43 +257,41 @@ void cookModel(std::string& OBJin, std::string& MTLin, std::string& out) {
 	out.append((char*)vboIndices.data(), indicesSize);
 }
 
-void parseMaterials(std::unordered_map<std::string, TempMaterial*>& mats, std::vector<char>& mtl) {
+void parseMaterials(std::unordered_map<std::string, TempMaterial*>& mats, std::string& mtl) {
 	std::string currMat;
 	size_t position = 0;
-	while (true) {
-		size_t nextLine = std::search(mtl.begin() + position, mtl.end(), "\n", "\n" + std::strlen("\n")) - (mtl.begin() + position);
-		if (position + nextLine >= mtl.size())
-			break;
-		std::vector<char> line(&mtl[position], &mtl[position + nextLine]);
-		position += nextLine + 1;
-		std::stringstream ss(std::string(&line[0], line.size()));
+
+	std::stringstream ss(mtl);
+	std::string line;
+	while (std::getline(ss, line)) {
+		std::stringstream ss2(line);
 		std::string firstWord;
-		ss >> firstWord;
+		ss2 >> firstWord;
 
 		if (std::strcmp(&firstWord[0], "newmtl") == 0) {
-			ss >> currMat;
+			ss2 >> currMat;
 			mats[currMat] = new TempMaterial;
 		}
 		else if (std::strcmp(&firstWord[0], "Kd") == 0) {
 			float r = 0.0f, g = 0.0f, b = 0.0f;
-			ss >> r >> g >> b;
+			ss2 >> r >> g >> b;
 			mats[currMat]->diffuseColor = Vec3(r, g, b);
 		}
 		else if (std::strcmp(&firstWord[0], "map_Kd") == 0) {
-			std::string texName = getNewLine(ss);
+			std::string texName = getTextureName(ss2);
 			mats[currMat]->diffuseTextureName = texName;
 		}
 		else if (std::strcmp(&firstWord[0], "map_Ks") == 0) {
-			std::string texName = getNewLine(ss);
+			std::string texName = getTextureName(ss2);
 			mats[currMat]->specularTextureName = texName;
 		}
 		else if (std::strcmp(&firstWord[0], "map_Bump") == 0) {
-			std::string texName = getNewLine(ss);
+			std::string texName = getTextureName(ss2);
 			mats[currMat]->normalTextureName = texName;
 		}
 		else if (std::strcmp(&firstWord[0], "Ns") == 0) {
 			float s = 0.0f;
-			ss >> s;
+			ss2 >> s;
 			mats[currMat]->shininess = s;
 		}
 	}
@@ -329,5 +322,13 @@ std::vector<std::string> getNeededTextures(std::string mtl) {
 	else
 		for (const auto& curr : tex)
 			out.push_back(curr);
+	return out;
+}
+
+std::string getTextureName(std::stringstream& ss) {
+	std::string out;
+	std::getline(ss, out);
+	out = out.substr(out.find_last_of("\\/") + 1);
+
 	return out;
 }

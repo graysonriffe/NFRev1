@@ -15,12 +15,14 @@ main thread of an NF app might be typically doing in the program's lifetime.
 
 @image html applifetime.png "The lifetime of a typical NF app" width=20%
 
-Using the engine's architecture, you might not even write any functions that are called
+Using this architecture, you might not even write any functions that are called
 from `main`. Most of the code that programs the engine's behavior should be called in
 your state's [update function](@ref nf::Gamestate::update).
 
 To allow a translate unit to use the engine, you must include `NothinFancy.h`. This
 header contains every class and function you will need.
+
+---
 
 @section createConfigTut Creating a Config
 
@@ -51,7 +53,7 @@ We then pass this config to an nf::Application
 @section createAppTut Creating and Configuring an Application
 
 The nf::Application class represents an instance of the engine. This is the point where
-you will attach your states and run the engine.
+you will attach your states and run your application.
 
 @note In a program and on a single machine, there can only be one single instance of
 this class at a time. Attempting to create mulitple will result in an error.
@@ -63,7 +65,7 @@ nf::Application app(conf);
 ~~~
 
 Constructing an application doesn't do much. It merely allows you to access the member
-functions to setup your application.
+functions to setup your application and run it later.
 
 Here are some functions you might want to call at this point:
 
@@ -85,7 +87,7 @@ Once these functions have been called, the app can be run:
 
 ~~~cpp
 CustomGamestate* customState = new CustomGamestate; //Inherits nf::Gamestate
-app.addState(customState, "State 1"); //"State One" is this state's identifier.
+app.addState(customState, "State 1"); //"State 1" is this state's identifier.
 app.setDefaultState("State 1"); //Will error without this
 app.run(); //Blocks until exit
 ~~~
@@ -422,6 +424,18 @@ sound.setPosition(nf::Vec3(10.0, 25.0, 15.0));
 sound.setEntity(entity2);
 ~~~
 
+@section gamestateSwitchTut Switching Gamestates
+
+To unload the current state and load another state, call:
+
+~~~cpp
+app->changeState("State 2"); //String identifier we defined earlier
+~~~
+
+@note The currently running state that calls [changeState](@ref nf::Application::changeState)
+does not stop running right away. The `update` and `render` functions of that state are called
+until the loading screen fades in completely.
+
 @section debuggingTut Debugging Your App
 
 NF has a number of @ref macros that you can use in your debug builds to help you develop
@@ -447,5 +461,6 @@ Other than that, a build can be very simple:
 - **NFApp.exe** - The application binary which is named from the MSVC project
 - **assets** - The folder which holds your NFPacks
   - **base.nfpack** - The NFPack that holds both critical and default assets
+  - **Your Assets** - The rest of the NFPacks your application needs
 
 These are the only files you need to package in your build.

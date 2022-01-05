@@ -28,6 +28,8 @@ function while passing in the name of the pack, including the extension.
 5. Call the [get](@ref nf::AssetPack::get) function with the name of the asset file
 to retrieve an Asset pointer to use in various `create` functions.
 
+---
+
 @section customModels Models
 
 To import a custom model into NF, it must first meet some requirements:
@@ -91,10 +93,89 @@ Used in the tutorial app, our model looks like this:
 
 @image html custommodel.png "Our teapot in the engine" width=50%
 
+---
+
 @section customFonts Fonts
+
+Custom fonts can be implemented very easily. All you need to do is include a TrueType
+`.ttf` font in your assets and reference it when you create texts:
+
+~~~cpp
+text.create("Cool Font", nf::Vec2(0.1, 0.2), nf::Vec3(1.0f), 1.0f, 1.0f, ap.get("font.ttf"));
+~~~
+
+@image html customfont.png "A text using the font \"Corsiva\"" width=30%
+
+---
 
 @section customButtons Button Textures
 
+The default button textures can be overridden by adding textures with certain names
+to your assets where "name" can be anything you choose as an identifier.
+
+- **name_buttonidle** - The texture that shows when the button is idle
+- **name_buttonhover** - The texture that shows when the mouse hovers over the button
+- **name_buttonpressed** - The texture that shows when the button clicked
+
+These images can be of any accepted image format. They should all have the same dimensions.
+
+@warning If a button texture set is incomplete, the engine will error when it reads the
+NFPack.
+
+Once the textures are in place, they can be accessed in your nf::AssetPack like
+this:
+
+~~~cpp
+//Text can still be added on top, but I already have text on my texture, so I'll leave it blank.
+button.create(nf::Vec2(0.1, 0.1), "", ap.get("name.button"));
+~~~
+
+With these three textures:
+
+@image html examplebuttonidle.png "Idle" width=20%
+@image html examplebuttonhover.png "Hover" width=20%
+@image html examplebuttonpressed.png "Pressed" width=20%
+
+We get this result:
+
+@htmlonly
+
+<video src="buttondemo.mp4" autoplay loop muted width=50%>
+
+@endhtmlonly
+
+---
+
 @section customCubemaps Cubemaps
 
+Cubemaps are like button textures. Each cubemap consists of 6 textures that are mapped
+to the inside of a giant, unreachable cube in your scene. The engine takes care of rendering
+it. All you need to do is supply these 6 textures in your assets with specific filenames.
+Here, "name" can be anything you choose as an identifier.
+
+- **name_cmfront** - The front texture (-Z direction)
+- **name_cmback** - The back texture (+Z direction)
+- **name_cmright** - The right texture (+X direction)
+- **name_cmleft** - The left texture (-X direction)
+- **name_cmtop** - The top texture (+Y direction)
+- **name_cmbottom** - The bottom texture (-Y direction)
+
+Once the textures are in place, they can be accessed in your nf::AssetPack like
+this:
+
+~~~cpp
+cubemap.create(ap.get("name.cm"));
+~~~
+
+---
+
 @section customSounds Sounds
+
+Sounds are the easiest to include.
+
+All you need to do is place the sound file in your assets and reference it by name
+when creating an nf::Sound object:
+
+~~~cpp
+sound.create(ap.get("sound.ogg"));
+~~~

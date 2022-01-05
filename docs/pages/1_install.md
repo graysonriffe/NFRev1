@@ -44,11 +44,10 @@ project (`NFApp` by default), can be renamed at any time.
 
 @note The template project is setup to build *Debug* and *Release* configurations. The *Debug*
 configuration includes a console window with debug output. The *Release* configuration does
-not have this console window. By default, the current configuration can be changed in the
-top toolbar.
+not have this console window, and will run as fast as possible with maximum optimizations.
+By default, the current configuration can be changed in the top toolbar.
 
-Once the solution has been opened, you can find the `main.cpp` file inside the `src` folder
-as shown below.
+Once the solution has been opened, you can find the `main.cpp` file inside the `src` folder:
 
 @image html blanktemplate.png "The template opened in Visual Studio" width=70%
 
@@ -57,7 +56,7 @@ your assets. You can also also hit the default keyboard shortcut of `Ctrl-Shift-
 both your app and assets.
 
 @note When the "Build Assets" project is built, the resulting NFPacks are moved to
-the output `assets` directory next to your .exe for you.
+the output `assets` directory next to your `.exe` for you.
 
 NF is a **statically-linked** library. This means that your build will not
-rely on any external dlls other than the MSVC redistributable.
+rely on any external dlls other than the MSVC redistributable. See @ref packagingTut.

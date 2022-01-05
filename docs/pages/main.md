@@ -1,8 +1,9 @@
 @tableofcontents
 
 Nothin' Fancy (abbreviated as NF) is an experimental 3D game engine written in C++
-for Windows. It was created by Grayson Riffe in 2021. This manual aims to aid the end-user
-with using this engine to create games and visualizations. It contains the
+for Windows. The engine allows the user to program 3D applications with high-level
+C++. NF was created by Grayson Riffe in 2021. This manual aims to aid the user
+with using NF to create games and visualizations. It contains the
 [user guide](tutorial.html) and the [API reference](namespaces.html).
 
 @image html logofull.png "Engine Logo" width=15%
@@ -25,7 +26,7 @@ at any time.
 - Customizable UI
   - Text
   - Textures
-  - Buttons also with customizable textures
+  - Buttons with customizable textures
 
 Example App
 ===

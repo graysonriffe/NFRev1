@@ -3,14 +3,15 @@
         text-align: left;
 }
 
-img:not([src='logofull.png']):not([src="search/mag_sel.svg"]):not([src="doxygen.svg"]):not([src="logo.png"])
+video, img:not([src="logo.png"]):not([src='logofull.png']):not([src="search/mag_sel.svg"]):not([src="doxygen.svg"])
 {
 		filter: drop-shadow(0.5em 0.5em 0.5em grey);
 }
 
 div.caption
 {
-		margin-top: 0.5em;
+		margin-top: 0.2em;
+		margin-bottom: 0.5em;
 }
 
 #nav-sync
