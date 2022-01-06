@@ -15,15 +15,15 @@ In order to develop an NF application, you must first have the following:
 
 The current version of the engine can be downloaded [here](http://graysonriffe.com/nf/nf.zip).
 
-@note Windows Security may first need to scan some of the included binaries and your
-build output before they can be run. You should never get a message from Windows Security
+@note Your antivirus may first need to scan some of the included binaries and your
+build output before they can be run. You should never get a message from any antivirus
 that a virus has been found in any of these files.
 
 Inside the zip file, you will find:
 
 - **example** - The example app complete with the source and a build
 - **manual** - An offline version of this manual
-  - **index.html** - The homepage
+  - **index.html** - The main page
 - **redist** - MSVC Redistributable (See @ref packagingTut)
 - **template** - A template MSVC project already setup to work with the engine
 
